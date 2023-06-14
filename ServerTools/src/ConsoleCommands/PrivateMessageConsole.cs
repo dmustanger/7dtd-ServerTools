@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -38,12 +38,12 @@ namespace ServerTools
                         Whisper.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Private message has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Private message has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Private message is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Private message is already off"));
                         return;
                     }
                 }
@@ -54,18 +54,18 @@ namespace ServerTools
                         Whisper.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Private message has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Private message has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Private message is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Private message is already on"));
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

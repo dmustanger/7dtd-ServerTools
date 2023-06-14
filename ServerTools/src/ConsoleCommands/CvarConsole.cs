@@ -31,19 +31,19 @@ namespace ServerTools
             {
                 if (_params.Count != 2 && _params.Count != 4)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 4, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 4, found {0}", _params.Count));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("edit"))
                 {
                     if (_params.Count != 4)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, found {0}", _params.Count));
                         return;
                     }
                     if (!int.TryParse(_params[3], out int value))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -56,19 +56,19 @@ namespace ServerTools
                             {
                                 player.Buffs.SetCustomVar(_params[2], value);
                                 cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageModifyCVar>().Setup(player, _params[2], value));
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' with cvar named '{1}' has been set to value '{2}'", cInfo.playerName, _params[2], _params[3]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' with cvar named '{1}' has been set to value '{2}'", cInfo.playerName, _params[2], _params[3]));
                                 return;
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' does not have a cvar named '{1}'", cInfo.playerName, _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' does not have a cvar named '{1}'", cInfo.playerName, _params[2]));
                                 return;
                             }
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[1]));
                         return;
                     }
                 }
@@ -76,7 +76,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -91,25 +91,25 @@ namespace ServerTools
                                 for (int i = 0; i < cvars.Count; i++)
                                 {
                                     KeyValuePair<string, float> cvar = cvars[i];
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Cvar name '{0}' value '{1}'", cvar.Key, cvar.Value));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Cvar name '{0}' value '{1}'", cvar.Key, cvar.Value));
                                 }
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' has no cvar", cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' has no cvar", cInfo.playerName));
                             }
                         }
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[1]));
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

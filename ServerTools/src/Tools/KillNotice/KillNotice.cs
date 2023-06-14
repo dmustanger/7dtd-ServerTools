@@ -223,9 +223,9 @@ namespace ServerTools
                 {
                     Dict.TryGetValue(item, out item);
                 }
-                else
+                else if (string.IsNullOrEmpty(itemClass.GetLocalizedItemName()))
                 {
-                    item = itemClass.GetLocalizedItemName() ?? itemClass.GetItemName();
+                    item = itemClass.GetLocalizedItemName();
                 }
                 if (Show_Level)
                 {

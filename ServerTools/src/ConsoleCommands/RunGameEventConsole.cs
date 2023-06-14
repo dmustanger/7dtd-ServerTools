@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count != 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                     return;
                 }
                 ClientInfo cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
@@ -41,19 +41,19 @@ namespace ServerTools
                         {
                             GameEventManager.Current.HandleAction(_params[1], null, player, false, "");
                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup(_params[1], cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Ran game event named '{0}' on player '{1}'", _params[1], cInfo.CrossplatformId.CombinedString));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Ran game event named '{0}' on player '{1}'", _params[1], cInfo.CrossplatformId.CombinedString));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' in the game events list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' in the game events list", _params[1]));
                             return;
                         }
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online", _params[0]));
                     return;
                 }
             }

@@ -75,7 +75,7 @@ namespace ServerTools
                     if (Kick.Count >= Votes_Needed)
                     {
                         Phrases.Dict.TryGetValue("KickVote10", out string phrase);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", playerKick.entityId, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", playerKick.entityId, phrase), null);
                     }
                     else
                     {

@@ -578,16 +578,16 @@ namespace ServerTools
                 else if (_command.StartsWith("tp "))
                 {
                     _command = _command.Replace("tp ", "tele ");
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
                 else if (_command.StartsWith("teleportplayer "))
                 {
                     _command = _command.Replace("teleportplayer ", "tele ");
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
             }
             catch (Exception e)

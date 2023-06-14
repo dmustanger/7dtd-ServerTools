@@ -46,7 +46,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 && _params.Count > 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -56,12 +56,12 @@ namespace ServerTools
                         Auction.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction is already off"));
                         return;
                     }
                 }
@@ -72,12 +72,12 @@ namespace ServerTools
                         Auction.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction is already on"));
                         return;
                     }
                 }
@@ -85,7 +85,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     if (int.TryParse(_params[1], out int _id))
@@ -157,19 +157,19 @@ namespace ServerTools
                                             PersistentContainer.DataChange = true;
                                         }
 
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] ID {0} has been removed from the auction list", _id));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] ID {0} has been removed from the auction list", _id));
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Could not find this ID listed in the auction. Unable to cancel[-]");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Could not find this ID listed in the auction. Unable to cancel[-]");
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _id));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _id));
                     }
                     return;
                 }
@@ -177,7 +177,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                     }
                     if (int.TryParse(_params[1], out int _id))
                     {
@@ -190,16 +190,16 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
                             }
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] ID {0} has been removed from the auction", _id));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] ID {0} has been removed from the auction", _id));
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Auction does not contain ID {0}", _id));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction does not contain ID {0}", _id));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _id));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _id));
                     }
                     return;
                 }
@@ -207,7 +207,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (Auction.AuctionItems.Count > 0)
@@ -230,7 +230,7 @@ namespace ServerTools
                                         _message = _message.Replace("{Durability}", (100 - auctionItem.Value.useTimes).ToString());
                                         _message = _message.Replace("{Price}", auctionItem.Value.price.ToString());
                                         _message = _message.Replace("{Name}", Wallet.Currency_Name);
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(_message);
+                                        SdtdConsole.Instance.Output(_message);
                                     }
                                 }
                             }
@@ -238,14 +238,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] No items are listed in the auction");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] No items are listed in the auction");
                     }
                 }
                 else if (_params[0].ToLower().Equals("add"))
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -255,25 +255,25 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount += 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Auction entry for '{0}' named '{1}'", _params[1], cInfo.playerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added a Auction entry for '{0}' named '{1}'", _params[1], cInfo.playerName));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].AuctionCount += 1;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Auction entry for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added a Auction entry for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Auction entry", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Auction entry", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -285,11 +285,11 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount -= 1;
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a extra Auction entry for '{0}'", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed a extra Auction entry for '{0}'", _params[1]));
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no extra Auction entries to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no extra Auction entries to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                             }
                         }
                     }
@@ -299,23 +299,23 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_params[1]].AuctionCount -= 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a extra Auction entry for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed a extra Auction entry for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no extra Auction entries to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no extra Auction entries to remove", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a extra Auction entry", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a extra Auction entry", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("show"))
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -323,21 +323,21 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' extra Auction entries", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' extra Auction entries", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].AuctionCount));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' extra Auction entries", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].AuctionCount));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' extra Auction entries", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].AuctionCount));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show extra Auction entries", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show extra Auction entries", _params[1]));
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

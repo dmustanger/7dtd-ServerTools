@@ -44,7 +44,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (Waypoints.IsEnabled)
@@ -52,12 +52,12 @@ namespace ServerTools
                         Waypoints.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Waypoints has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoints has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Waypoints is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoints is already off"));
                         return;
                     }
                 }
@@ -65,7 +65,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (!Waypoints.IsEnabled)
@@ -73,12 +73,12 @@ namespace ServerTools
                         Waypoints.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Waypoints has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoints has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Waypoints is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoints is already on"));
                         return;
                     }
                 }
@@ -86,7 +86,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -96,18 +96,18 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots += 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[_params[1]].WaypointSpots));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[_params[1]].WaypointSpots));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].WaypointSpots += 1;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].WaypointSpots));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].WaypointSpots));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Waypoint spot", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Waypoint spot", _params[1]));
                     }
                     return;
                 }
@@ -122,11 +122,11 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots -= 1;
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots));
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Waypoint spots to remove", _params[2], cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Waypoint spots to remove", _params[2], cInfo.playerName));
                             }
                         }
                     }
@@ -136,16 +136,16 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_params[1]].WaypointSpots -= 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed a Waypoint spot for '{0}' named '{1}'. They now have '{2}'.", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots));
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Waypoint spots to remove", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Waypoint spots to remove", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a Waypoint spot", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a Waypoint spot", _params[2]));
                     }
                     return;
                 }
@@ -155,7 +155,7 @@ namespace ServerTools
                     {
                         if (_senderInfo.RemoteClientInfo == null)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No client info found. Join the server as a client before using this command"));
                             return;
                         }
                         EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
@@ -169,7 +169,7 @@ namespace ServerTools
                             string cost = _params[2];
                             if (!int.TryParse(_params[2], out int _commandCost))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost '{0}'", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost '{0}'", _params[2]));
                                 return;
                             }
                             string[] waypoint = { position, cost };
@@ -177,12 +177,12 @@ namespace ServerTools
                             {
                                 Waypoints.Dict.Add(name, waypoint);
                                 Waypoints.UpdateXml();
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named '{0}' at position '{1}'. Cost set to '{2}'", name, position, cost));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named '{0}' at position '{1}'. Cost set to '{2}'", name, position, cost));
                                 return;
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] A public waypoint with this name already exists. Use a unique name or delete the other waypoint first"));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A public waypoint with this name already exists. Use a unique name or delete the other waypoint first"));
                                 return;
                             }
                         }
@@ -206,7 +206,7 @@ namespace ServerTools
                         string cost = _params[3];
                         if (!int.TryParse(_params[3], out int commandCost))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost '{0}'", _params[4]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid command cost '{0}'", _params[4]));
                             return;
                         }
                         string[] waypoint = { position, cost };
@@ -214,18 +214,18 @@ namespace ServerTools
                         {
                             Waypoints.Dict.Add(name, waypoint);
                             Waypoints.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named '{0}' at position '{1}'. Cost set to '{2}'", name, position, cost));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added public waypoint named '{0}' at position '{1}'. Cost set to '{2}'", name, position, cost));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] A public waypoint with this name already exists. Use a unique name or delete the other waypoint first"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A public waypoint with this name already exists. Use a unique name or delete the other waypoint first"));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found '{0}'", _params.Count));
                         return;
                     }
                 }
@@ -238,18 +238,18 @@ namespace ServerTools
                         {
                             Waypoints.Dict.Remove(name);
                             Waypoints.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed public waypoint named '{0}'", name));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed public waypoint named '{0}'", name));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to remove public waypoint named '{0}'. Waypoint not found", name));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to remove public waypoint named '{0}'. Waypoint not found", name));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found '{0}'", _params.Count));
                         return;
                     }
                 }
@@ -257,7 +257,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -265,16 +265,16 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Waypoint spots", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Waypoint spots", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].WaypointSpots));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Waypoint spots", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].WaypointSpots));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Waypoint spots", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].WaypointSpots));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show Waypoint spots", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show Waypoint spots", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("list"))
@@ -283,19 +283,19 @@ namespace ServerTools
                     {
                         foreach (var _waypoint in Waypoints.Dict)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Waypoint named '{0}' @ position '{1}' with a cost of '{2}' '{3}'", _waypoint.Key, _waypoint.Value[0], _waypoint.Value[1], Wallet.Currency_Name));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Waypoint named '{0}' @ position '{1}' with a cost of '{2}' '{3}'", _waypoint.Key, _waypoint.Value[0], _waypoint.Value[1], Wallet.Currency_Name));
                         }
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no waypoints on the list");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no waypoints on the list");
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

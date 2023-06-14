@@ -29,7 +29,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -39,12 +39,12 @@ namespace ServerTools
                         FirstClaimBlock.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] First claim block has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] First claim block is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block is already off"));
                         return;
                     }
                 }
@@ -55,12 +55,12 @@ namespace ServerTools
                         FirstClaimBlock.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] First claim block has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] First claim block is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block is already on"));
                         return;
                     }
                 }
@@ -74,7 +74,7 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[id].FirstClaimBlock = false;
                             PersistentContainer.DataChange = true;
                         }
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] First claim block reset for all players");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] First claim block reset for all players");
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
@@ -82,22 +82,22 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_params[1]].FirstClaimBlock = false;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] First claim block reset for '{0}'", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] First claim block reset for '{0}'", _params[1]));
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reset is unnecessary for '{0}'", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reset is unnecessary for '{0}'", _params[1]));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not reset player's first claim block. No saved data could be located for '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset player's first claim block. No saved data could be located for '{0}'", _params[1]));
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

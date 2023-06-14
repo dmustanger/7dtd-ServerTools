@@ -45,12 +45,12 @@ namespace ServerTools
             {
                 if (_params.Count < 2 && _params.Count > 5)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[1].Length < 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid item name '{0}'", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid item name '{0}'", _params[1]));
                     return;
                 }
                 else
@@ -154,7 +154,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' '{1}' is not spawned or is dead. Unable to give item", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' '{1}' is not spawned or is dead. Unable to give item", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
                                 }
                             }
                         }

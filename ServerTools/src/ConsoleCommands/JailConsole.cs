@@ -40,7 +40,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 3)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -50,12 +50,12 @@ namespace ServerTools
                         Jail.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail is already off"));
                         return;
                     }
                 }
@@ -66,12 +66,12 @@ namespace ServerTools
                         Jail.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail is already on"));
                         return;
                     }
                 }
@@ -79,7 +79,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1 && _params.Count != 4)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 4, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 4, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params.Count == 1)
@@ -100,7 +100,7 @@ namespace ServerTools
                                 Config.LoadXml();
                                 Phrases.Dict.TryGetValue("Jail3", out string phrase);
                                 phrase = phrase.Replace("{Position}", jposition);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
                                 return;
                             }
                         }
@@ -119,22 +119,22 @@ namespace ServerTools
                                     Config.LoadXml();
                                     Phrases.Dict.TryGetValue("Jail3", out string phrase);
                                     phrase = phrase.Replace("{Position}", jposition);
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
                                     return;
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
                                 }
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
                         }
                     }
                 }
@@ -142,22 +142,22 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
                         return;
                     }
                     if (Jail.Jailed.Contains(_params[1]))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Jail list", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id. {0} is already in the Jail list", _params[1]));
                         return;
                     }
                     if (!int.TryParse(_params[2], out int jailTime))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Jail time is not valid '{0}'", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Jail time is not valid '{0}'", _params[2]));
                         return;
                     }
                     if (Jail.Jail_Position == "0,0,0" || Jail.Jail_Position == "0 0 0" || Jail.Jail_Position == "")
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not put a player in jail. The jail position has not been set"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not put a player in jail. The jail position has not been set"));
                         return;
                     }
                     else
@@ -167,7 +167,7 @@ namespace ServerTools
                         {
                             if (Jail.Jailed.Contains(cInfo.CrossplatformId.CombinedString))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' is already in jail", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' is already in jail", _params[1]));
                                 return;
                             }
                             else
@@ -188,13 +188,13 @@ namespace ServerTools
                                 PersistentContainer.DataChange = true;
                                 if (jailTime > 0)
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have put '{0}' named '{1}' in jail for '{2}' minutes", cInfo.CrossplatformId.CombinedString, cInfo.playerName, jailTime));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put '{0}' named '{1}' in jail for '{2}' minutes", cInfo.CrossplatformId.CombinedString, cInfo.playerName, jailTime));
                                     Phrases.Dict.TryGetValue("Jail1", out string phrase);
                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 if (jailTime == -1)
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have put '{0}' named '{1}' in jail forever", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have put '{0}' named '{1}' in jail forever", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                     Phrases.Dict.TryGetValue("Jail1", out string phrase);
                                     ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
@@ -211,12 +211,12 @@ namespace ServerTools
                                     PersistentContainer.Instance.Players[_params[1]].JailName = cInfo.playerName;
                                     PersistentContainer.Instance.Players[_params[1]].JailDate = DateTime.Now;
                                     PersistentContainer.DataChange = true;
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found online but has been set for jail", _params[1]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found online but has been set for jail", _params[1]));
                                     return;
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid EOS Id '{0}' ", _params[1]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid EOS Id '{0}' ", _params[1]));
                                     return;
                                 }
                             }
@@ -227,14 +227,14 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     else
                     {
                         if (!Jail.Jailed.Contains(_params[1]))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' is not in jail", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' is not in jail", _params[1]));
                             return;
                         }
                         else
@@ -258,7 +258,7 @@ namespace ServerTools
                                         Vector3[] pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(pos[0].x, -1, pos[0].z), null, false));
                                     }
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have released Id '{0}' from jail", _params[1]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You have released Id '{0}' from jail", _params[1]));
                                     return;
                                 }
                             }
@@ -271,12 +271,12 @@ namespace ServerTools
                                         Jail.Jailed.Remove(_params[1]);
                                         PersistentContainer.Instance.Players[_params[1]].JailTime = 0;
                                         PersistentContainer.DataChange = true;
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found online but has been set for jail", _params[1]));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id '{0}' can not be found online but has been set for jail", _params[1]));
                                         return;
                                     }
                                     else
                                     {
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid EOS Id '{0}' ", _params[1]));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid EOS Id '{0}' ", _params[1]));
                                         return;
                                     }
                                 }
@@ -288,12 +288,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (Jail.Jailed.Count == 0)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no Id on the jail list");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no Id on the jail list");
                         return;
                     }
                     else
@@ -310,18 +310,18 @@ namespace ServerTools
                                 double fractionalMinutes = varTime.TotalMinutes;
                                 int timepassed = (int)fractionalMinutes;
                                 int timeleft = jailTime - timepassed;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' is jailed for {2} more minutes", id, jailName, timeleft));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' is jailed for {2} more minutes", id, jailName, timeleft));
                             }
                             else if (jailTime == -1)
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' is jailed forever", id, jailName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' is jailed forever", id, jailName));
                             }
                         }
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

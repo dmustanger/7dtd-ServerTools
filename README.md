@@ -326,18 +326,6 @@ Jail_Position controls where a jailed player is sent to. This is the x, y, z pos
 
 Jail shock will apply the shock buff to them if they try to leave the prison area.
 
-## Net_Package_Detector
-```xml
-<Tool Name="Net_Package_Detector" Enable="False" />
-```
-
-### Attributes
-* __Enable__  
-Set True or False for Enable
-
-### Description
-Automatically detects some of the modified net packages hackers can send to servers and bans them
-
 ## Player_Logs
 ```xml
 <Tool Name="Player_Logs" Enable="False" Vehicle="False" Interval="120" />
@@ -2049,7 +2037,6 @@ Set True or False for Enable
 Allows you to setup a list of waypoints that all players can access.
 
 A command cost can be set for each waypoint.
-
 
 ## Real_World_Time
 ```xml

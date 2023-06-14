@@ -31,7 +31,7 @@ namespace ServerTools
             {
                 if (_params.Count != 2 && _params.Count != 5)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 5, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 5, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params.Count == 2)
@@ -62,26 +62,26 @@ namespace ServerTools
                                         Vector3 trackedVecPos = new Vector3(x, y, z);
                                         if (RangeCheck(player.position, trackedVecPos, range))
                                         {
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Player '{0}' Id '{1}' Time '{2}' Position '{3}' Item Held '{4}'", trackData[3], trackData[2], trackData[0], trackData[1], trackData[4]));
+                                            SdtdConsole.Instance.Output(string.Format("Player '{0}' Id '{1}' Time '{2}' Position '{3}' Item Held '{4}'", trackData[3], trackData[2], trackData[0], trackData[1], trackData[4]));
                                         }
                                     }
                                 }
                             }
                             if (!_found)
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Tracking log lists nobody at this time and range from your current position");
+                                SdtdConsole.Instance.Output("[SERVERTOOLS] Tracking log lists nobody at this time and range from your current position");
                             }
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[1]));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                         return;
                     }
                 }
@@ -113,51 +113,51 @@ namespace ServerTools
                                                         Vector3 trackedVecPos = new Vector3(worldX, worldY, worldZ);
                                                         if (RangeCheck(player.position, trackedVecPos, range))
                                                         {
-                                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Player '{0}' Id '{1}' Time '{2}' Position '{3}' Item Held '{4}'", trackData[3], trackData[2], trackData[0], trackData[1], trackData[4]));
+                                                            SdtdConsole.Instance.Output(string.Format("Player '{0}' Id '{1}' Time '{2}' Position '{3}' Item Held '{4}'", trackData[3], trackData[2], trackData[0], trackData[1], trackData[4]));
                                                         }
                                                     }
                                                 }
                                             }
                                             if (!found)
                                             {
-                                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Tracking results found nobody at this time and range inside the specified position"));
+                                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Tracking results found nobody at this time and range inside the specified position"));
                                             }
                                         }
                                         else
                                         {
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[4]));
+                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[4]));
                                         }
                                     }
                                     else
                                     {
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[3]));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[3]));
                                     }
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[2]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[2]));
                                 }
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[1]));
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                         }
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Tracking log has no data");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Tracking log has no data");
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid arguments");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid arguments");
                 }
             }
             catch (Exception e)

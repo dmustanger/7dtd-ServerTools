@@ -21,7 +21,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue("DamageDetector2", out string phrase);
                     phrase = phrase.Replace("{Value}", _strength.ToString());
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     if (LogEnabled)
                     {
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
@@ -54,7 +54,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue("DamageDetector2", out string phrase);
                     phrase = phrase.Replace("{Value}", _strength.ToString());
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     if (LogEnabled)
                     {
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))

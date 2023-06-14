@@ -890,7 +890,7 @@ namespace ServerTools
                                                             pass += salt;
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
-                                                            IConsoleCommand commandValid = SingletonMonoBehaviour<SdtdConsole>.Instance.GetCommand(clientData[3], false);
+                                                            IConsoleCommand commandValid = SdtdConsole.Instance.GetCommand(clientData[3], false);
                                                             if (commandValid == null)
                                                             {
                                                                 responseMessage += salt;
@@ -903,7 +903,7 @@ namespace ServerTools
                                                                     playerName = "-Web_Panel- " + clientData[0],
                                                                     entityId = -1
                                                                 };
-                                                                List<string> cmdReponse = SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(clientData[3], cInfo);
+                                                                List<string> cmdReponse = SdtdConsole.Instance.ExecuteSync(clientData[3], cInfo);
                                                                 int logCount = OutputLog.ActiveLog.Count;
                                                                 int.TryParse(clientData[2], out int lineNumber);
                                                                 if (logCount >= lineNumber + 1)
@@ -1223,7 +1223,7 @@ namespace ServerTools
                                                             ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                             if (cInfo != null)
                                                             {
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0}", cInfo.CrossplatformId.CombinedString), null);
+                                                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0}", cInfo.CrossplatformId.CombinedString), null);
                                                                 Writer(string.Format("Client '{0}' at IP '{1}' has kicked '{2}' '{3}'", clientData[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString));
                                                                 _response.StatusCode = 200;
                                                             }
@@ -1280,7 +1280,7 @@ namespace ServerTools
                                                             ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(clientData[2]);
                                                             if (cInfo != null)
                                                             {
-                                                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.CrossplatformId.CombinedString), null);
+                                                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", cInfo.CrossplatformId.CombinedString), null);
                                                                 Writer(string.Format("Client '{0}' at IP '{1}' has banned ID '{2}' '{3}' named '{4}'", clientData[0], _ip, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                                                 _response.StatusCode = 200;
                                                             }
@@ -1289,7 +1289,7 @@ namespace ServerTools
                                                                 PersistentPlayerData ppd = GeneralOperations.GetPersistentPlayerDataFromId(clientData[2]);
                                                                 if (ppd != null)
                                                                 {
-                                                                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 1 year", ppd.UserIdentifier.CombinedString), null);
+                                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 year", ppd.UserIdentifier.CombinedString), null);
                                                                     Writer(string.Format("Client '{0}' at IP '{1}' has banned ID '{2}' named '{3}'", clientData[0], _ip, ppd.UserIdentifier.CombinedString, ppd.PlayerName));
                                                                     _response.StatusCode = 406;
                                                                 }

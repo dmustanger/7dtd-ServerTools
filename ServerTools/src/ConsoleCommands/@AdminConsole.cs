@@ -38,7 +38,7 @@ public class @AdminsConsole : ConsoleCmdAbstract
                     if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo) == 0)
                     {
                         ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + message + "[-]", -1, cInfo.playerName, EChatType.Whisper, null);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Message sent to {0}", cInfo.playerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message sent to {0}", cInfo.playerName));
                     }
                 }
             }

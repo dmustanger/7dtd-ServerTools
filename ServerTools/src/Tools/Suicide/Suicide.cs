@@ -143,7 +143,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastKillMe = DateTime.Now;
                     PersistentContainer.DataChange = true;
                 }

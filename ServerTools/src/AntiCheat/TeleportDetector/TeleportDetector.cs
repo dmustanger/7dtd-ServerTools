@@ -23,7 +23,7 @@ namespace ServerTools
                 {
                     if (Jail)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfo.CrossplatformId.CombinedString), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfo.CrossplatformId.CombinedString), null);
                         Phrases.Dict.TryGetValue("Teleport4", out string phrase);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -31,19 +31,19 @@ namespace ServerTools
                     {
                         Phrases.Dict.TryGetValue("Teleport5", out string phrase);
                         ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
 
                     }
                     if (Kick)
                     {
                         Phrases.Dict.TryGetValue("Teleport6", out string phrase);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
 
                     }
                     if (Ban)
                     {
                         Phrases.Dict.TryGetValue("Teleport7", out string phrase);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
 
                     }
                     using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))

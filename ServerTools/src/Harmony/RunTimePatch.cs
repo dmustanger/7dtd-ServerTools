@@ -58,12 +58,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("GameManager_ChangeBlocks_Postfix");
-                    if (postfix == null)
+                    MethodInfo prefix = typeof(Injections).GetMethod("GameManager_ChangeBlocks_Prefix");
+                    if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ChangeBlocks_Postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ChangeBlocks_Prefix"));
                     }
-                    harmony.Patch(original, null, new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(World), "AddFallingBlock");
@@ -77,21 +77,6 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlock_Prefix"));
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
-                }
-
-                original = AccessTools.Method(typeof(World), "AddFallingBlocks");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.AddFallingBlocks Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("AddFallingBlocks_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: AddFallingBlocks_Prefix"));
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -365,21 +350,6 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_SavePlayerData_Postfix"));
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
-                }
-                
-                original = AccessTools.Method(typeof(ConsoleCmdChunkReset), "Execute");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConsoleCmdChunkReset.Execute Class.Method was not found"));
-                }
-                else
-                {
-                    MethodInfo prefix = typeof(Injections).GetMethod("ConsoleCmdChunkReset_Execute_Prefix");
-                    if (prefix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConsoleCmdChunkReset_Execute_Prefix"));
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(BlockLandClaim), "HandleDeactivatingCurrentLandClaims");

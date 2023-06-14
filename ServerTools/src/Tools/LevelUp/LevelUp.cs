@@ -342,11 +342,11 @@ namespace ServerTools
                     {
                         Zones.ZonePlayer.Remove(_cInfo.entityId);
                     }
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                    SdtdConsole.Instance.ExecuteSync(_command, null);
                 }
             }
             catch (Exception e)

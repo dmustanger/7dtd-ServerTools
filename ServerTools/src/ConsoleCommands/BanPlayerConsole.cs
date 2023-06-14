@@ -30,7 +30,7 @@ namespace ServerTools
             {
                 if (_params.Count < 3 || _params.Count > 4)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found {0}", _params.Count));
                     return;
                 }
                 if (_params.Count == 3)
@@ -50,13 +50,13 @@ namespace ServerTools
                                     persistentPlayerData.RemoveLandProtectionBlock(claimLocation);
                                 }
                             }
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} {1} {2}", cInfo.CrossplatformId.CombinedString, _params[1], _params[2]), null);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' '{1}' has been banned. Their claims have been removed", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, _params[0]));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2}", cInfo.CrossplatformId.CombinedString, _params[1], _params[2]), null);
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' '{1}' has been banned. Their claims have been removed", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, _params[0]));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban '{0}'. The player data can not be found", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban '{0}'. The player data can not be found", _params[0]));
                             return;
                         }
                     }
@@ -74,13 +74,13 @@ namespace ServerTools
                                     persistentPlayerData.RemoveLandProtectionBlock(_claimLocation);
                                 }
                             }
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} {1} {2}", persistentPlayerData.UserIdentifier.CombinedString, _params[1], _params[2]), null);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' has been banned. Their claims have been removed", _params[0]));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2}", persistentPlayerData.UserIdentifier.CombinedString, _params[1], _params[2]), null);
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}' has been banned. Their claims have been removed", _params[0]));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban '{0}'. The player data can not be found", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban '{0}'. The player data can not be found", _params[0]));
                             return;
                         }
                     }
@@ -102,13 +102,13 @@ namespace ServerTools
                                     _persistentPlayerData.RemoveLandProtectionBlock(_claimLocation);
                                 }
                             }
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} {1} {2} {3}", cInfo.CrossplatformId.CombinedString, _params[1], _params[2], _params[3]), null);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been banned. Their claims have been removed", _params[0]));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2} {3}", cInfo.CrossplatformId.CombinedString, _params[1], _params[2], _params[3]), null);
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been banned. Their claims have been removed", _params[0]));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. The player data for id can not be found", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. The player data for id can not be found", _params[0]));
                             return;
                         }
                     }
@@ -126,20 +126,20 @@ namespace ServerTools
                                     persistentPlayerData.RemoveLandProtectionBlock(claimLocation);
                                 }
                             }
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} {1} {2} {3}", persistentPlayerData.UserIdentifier.CombinedString, _params[1], _params[2], _params[3]), null);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}' has been banned. Their claims have been removed", _params[0]));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2} {3}", persistentPlayerData.UserIdentifier.CombinedString, _params[1], _params[2], _params[3]), null);
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}' has been banned. Their claims have been removed", _params[0]));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban '{0}'. The player data can not be found", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban '{0}'. The player data can not be found", _params[0]));
                             return;
                         }
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

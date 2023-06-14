@@ -27,7 +27,7 @@ namespace ServerTools
                     if (cInfo != null)
                     {
                         Phrases.Dict.TryGetValue("MagicBullet1", out string phrase);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                         using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                         {
                             sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' running magic bullet hack", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));

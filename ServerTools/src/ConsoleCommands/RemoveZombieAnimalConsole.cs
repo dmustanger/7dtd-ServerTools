@@ -41,7 +41,7 @@ namespace ServerTools
                         }
                     }
                 }
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] All current zombies and animals have been removed from the map"));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] All current zombies and animals have been removed from the map"));
                 Log.Out(string.Format("[SERVERTOOLS] Console command st-RemoveZombieAnimals has been run. All current zombies and animals have been removed from the map."));
             }
             catch (Exception e)

@@ -29,13 +29,13 @@ namespace ServerTools
             {
                 if (_params.Count < 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or more, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or more, found '{0}'", _params.Count));
                     return;
                 }
                 _params.RemoveAt(0);
                 string _message = string.Join(" ", _params);
                 Log.Out(_message);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Log entry: _message");
+                SdtdConsole.Instance.Output("[SERVERTOOLS] Log entry: _message");
             }
             catch (Exception e)
             {

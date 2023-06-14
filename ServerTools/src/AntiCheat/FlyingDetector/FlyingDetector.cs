@@ -76,7 +76,7 @@ namespace ServerTools
                     }
                     Flags.Remove(_cInfo.entityId);
                     Phrases.Dict.TryGetValue("Flying2", out string phrase);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
                     using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                     {
                         sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' flying @ '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _player.position));

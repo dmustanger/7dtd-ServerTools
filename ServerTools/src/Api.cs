@@ -209,7 +209,10 @@ namespace ServerTools
                             {
                                 Zones.ZonePlayer.TryGetValue(player.entityId, out string[] zone);
                                 Zones.ZonePlayer.Remove(player.entityId);
-                                Zones.Reminder.Remove(player.entityId);
+                                if (Zones.Reminder.ContainsKey(player.entityId))
+                                {
+                                    Zones.Reminder.Remove(player.entityId);
+                                }
                                 if (zone[9] != GeneralOperations.Player_Killing_Mode.ToString())
                                 {
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", GeneralOperations.Player_Killing_Mode), true));
@@ -620,7 +623,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.OldPlayerJoined: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in API.OldPlayerJoined: {0}", e.Message);
             }
         }
 
@@ -657,6 +660,10 @@ namespace ServerTools
                 if (Zones.ZonePlayer.ContainsKey(cInfo.entityId))
                 {
                     Zones.ZonePlayer.Remove(cInfo.entityId);
+                }
+                if (Zones.Reminder.ContainsKey(cInfo.entityId))
+                {
+                    Zones.Reminder.Remove(cInfo.entityId);
                 }
                 if (PlayerChecks.TwoSecondMovement.ContainsKey(cInfo.entityId))
                 {

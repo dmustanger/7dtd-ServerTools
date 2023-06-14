@@ -34,12 +34,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found '{0}'", _params.Count));
                         return;
                     }
                     if (!int.TryParse(_params[2], out int value))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: '{0}'", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: '{0}'", _params[2]));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -49,18 +49,18 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost += value;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has increased by '{2}'. Total: '{3}'", _params[1], cInfo.playerName, value, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has increased by '{2}'. Total: '{3}'", _params[1], cInfo.playerName, value, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].ExperienceBoost += value;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has increased by '{2}'. Total: '{3}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, value, PersistentContainer.Instance.Players[_params[1]].ExperienceBoost));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has increased by '{2}'. Total: '{3}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, value, PersistentContainer.Instance.Players[_params[1]].ExperienceBoost));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found", _params[1]));
                     }
                     return;
                 }
@@ -68,12 +68,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found '{0}'", _params.Count));
                         return;
                     }
                     if (!int.TryParse(_params[2], out int value))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: '{0}'", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer: '{0}'", _params[2]));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -87,18 +87,18 @@ namespace ServerTools
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost = 0;
                             }
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has decreased by '{2}'. Total: '{3}'", _params[1], cInfo.playerName, value, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has decreased by '{2}'. Total: '{3}'", _params[1], cInfo.playerName, value, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].ExperienceBoost -= value;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has increased by '{2}'. Total: '{3}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, value, PersistentContainer.Instance.Players[_params[1]].ExperienceBoost));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' has increased by '{2}'. Total: '{3}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, value, PersistentContainer.Instance.Players[_params[1]].ExperienceBoost));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found", _params[1]));
                     }
                     return;
                 }
@@ -106,7 +106,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -114,22 +114,22 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' is set for '{2}'", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' is set for '{2}'", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ExperienceBoost));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' is set for '{2}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].ExperienceBoost));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Experience boost for '{0}' named '{1}' is set for '{2}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].ExperienceBoost));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found", _params[1]));
                     }
                     return;
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

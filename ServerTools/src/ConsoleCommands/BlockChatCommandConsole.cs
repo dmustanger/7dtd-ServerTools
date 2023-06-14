@@ -30,17 +30,17 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower() == "list")
                 {
                     if (GeneralOperations.BlockChatCommands.Count > 0)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Blocked chat command list:");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Blocked chat command list:");
                         for (int i = 0; i < GeneralOperations.BlockChatCommands.Count; i++)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}'", GeneralOperations.BlockChatCommands[i].CrossplatformId.CombinedString, GeneralOperations.BlockChatCommands[i].playerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}'", GeneralOperations.BlockChatCommands[i].CrossplatformId.CombinedString, GeneralOperations.BlockChatCommands[i].playerName));
                         }
                     }
                     return;
@@ -51,18 +51,18 @@ namespace ServerTools
                     if (GeneralOperations.BlockChatCommands.Contains(cInfo))
                     {
                         GeneralOperations.BlockChatCommands.Remove(cInfo);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player '{0}' named '{1}' from the blocked chat command list", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed player '{0}' named '{1}' from the blocked chat command list", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                     else
                     {
                         GeneralOperations.BlockChatCommands.Add(cInfo);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player '{0}' named '{1}' to the blocked chat command list", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player '{0}' named '{1}' to the blocked chat command list", cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                     return;
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}'", _params[0]));
                     return;
                 }
             }

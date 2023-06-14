@@ -39,7 +39,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (Wallet.IsEnabled)
@@ -47,12 +47,12 @@ namespace ServerTools
                         Wallet.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wallet has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wallet has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wallet is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wallet is already off"));
                         return;
                     }
                 }
@@ -60,7 +60,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (!Wallet.IsEnabled)
@@ -68,12 +68,12 @@ namespace ServerTools
                         Wallet.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wallet has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wallet has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wallet is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wallet is already on"));
                         return;
                     }
                 }
@@ -81,7 +81,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     bool negative = false;
@@ -92,7 +92,7 @@ namespace ServerTools
                     }
                     if (!int.TryParse(_params[1], out int adjustCoins))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. '{0}' is not a valid integer", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. '{0}' is not a valid integer", _params[1]));
                         return;
                     }
                     else
@@ -108,13 +108,13 @@ namespace ServerTools
                                     if (negative)
                                     {
                                         Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins);
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         return;
                                     }
                                     else
                                     {
                                         Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins, false);
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                                         return;
                                     }
                                 }
@@ -132,7 +132,7 @@ namespace ServerTools
                     }
                     if (!int.TryParse(_params[1], out int adjustCoins))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value '{0}' is invalid", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not adjust wallet. Value '{0}' is invalid", _params[1]));
                         return;
                     }
                     if (_params[0].Contains("_"))
@@ -143,22 +143,22 @@ namespace ServerTools
                             if (negative)
                             {
                                 Wallet.RemoveCurrency(_params[0], adjustCoins);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                             else
                             {
                                 Wallet.AddCurrency(_params[0], adjustCoins, false);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to wallet '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to wallet '{2}'", _params[1], Wallet.Currency_Name, _params[0]));
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id not found '{0}'", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id not found '{0}'", _params[0]));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[0]));
                     }
                 }
                 else if (_params.Count == 1)
@@ -169,13 +169,13 @@ namespace ServerTools
                         if (cInfo != null)
                         {
                             int currentWallet = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' has '{2}' '{3}'", _params[0], cInfo.playerName, currentWallet, Wallet.Currency_Name));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' named '{1}' has '{2}' '{3}'", _params[0], cInfo.playerName, currentWallet, Wallet.Currency_Name));
                         }
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

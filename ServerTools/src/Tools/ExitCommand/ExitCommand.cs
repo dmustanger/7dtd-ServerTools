@@ -170,7 +170,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue("ExitCommand3", out string phrase);
                 phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.ToString(), phrase), null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.ToString(), phrase), null);
             }
             catch (Exception e)
             {

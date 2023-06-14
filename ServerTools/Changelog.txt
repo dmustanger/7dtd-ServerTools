@@ -1,5 +1,24 @@
 ﻿CHANGELOG
 
+21.0.2
+Built using Alpha 21 experimental assets
+Functioning with Alpha 21 experimental. Untested with other versions
+
+-Fixed st-Maze console command not working as intended
+-Fixed block change over process detection. This also fixed
+the POI_Protection
+-Fixed empty handed player damage causing output log errors
+-Removed console command fix for chunk reset from the base game
+*You may receive an error from Zones upon a player connecting or
+disconnecting. Make sure to install mods to the user data folder,
+not the root directory*
+
+Known issues:
+-Vaultbox tool does not work consistently for all
+servers. Recommend keeping it disabled
+-Shop panel does not recognize two players using the same ip
+-RIO is not functioning as intended
+
 21.0.1
 Built using Alpha 21 experimental assets
 Functioning with Alpha 21 experimental. Untested with other versions

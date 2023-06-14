@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
@@ -60,7 +60,7 @@ namespace ServerTools
                         }
                     }
                 }
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Door access set for '{0}'", _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Door access set for '{0}'", _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
             }
             catch (Exception e)
             {

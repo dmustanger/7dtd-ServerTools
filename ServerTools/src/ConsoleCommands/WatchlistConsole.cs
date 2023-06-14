@@ -36,7 +36,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -46,12 +46,12 @@ namespace ServerTools
                         WatchList.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already off"));
                         return;
                     }
                 }
@@ -62,12 +62,12 @@ namespace ServerTools
                         WatchList.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already on"));
                         return;
                     }
                 }
@@ -75,23 +75,23 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
                     if (_params[1].Contains("_"))
                     {
                         if (WatchList.Dict.ContainsKey(_params[1]))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not add '{0}'. Id is already in the watchlist", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add '{0}'. Id is already in the watchlist", _params[1]));
                             return;
                         }
                         WatchList.Dict.Add(_params[1], _params[2]);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added Id '{0}' with the reason '{1}' to the watchlist", _params[1], _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id '{0}' with the reason '{1}' to the watchlist", _params[1], _params[2]));
                         WatchList.UpdateXml();
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
                         return;
                     }
                 }
@@ -99,24 +99,24 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     if (_params[1].Contains("_"))
                     {
                         if (!WatchList.Dict.ContainsKey(_params[1]))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' was not found on the list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' was not found on the list", _params[1]));
                             return;
                         }
                         WatchList.Dict.Remove(_params[1]);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed Id '{0}' from the watchlist", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed Id '{0}' from the watchlist", _params[1]));
                         WatchList.UpdateXml();
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid Id '{0}'", _params[1]));
                         return;
                     }
                 }
@@ -124,23 +124,23 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (WatchList.Dict.Count < 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] There are no Id on the watchlist");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no Id on the watchlist");
                         return;
                     }
                     foreach (KeyValuePair<string, string> _key in WatchList.Dict)
                     {
                         string _output = string.Format("{0} {1}", _key.Key, _key.Value);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(_output);
+                        SdtdConsole.Instance.Output(_output);
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

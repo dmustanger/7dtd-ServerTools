@@ -13,65 +13,71 @@ namespace ServerTools
         {
             try
             {
-                if (_victim is EntityPlayer && _victim.IsAlive())
+                if (_victim != null && _attacker != null)
                 {
-                    ClientInfo cInfoVictim = GeneralOperations.GetClientInfoFromEntityId(_victim.entityId);
-                    if (cInfoVictim != null)
+                    if (_victim is EntityPlayer && _victim.IsAlive())
                     {
+                        ClientInfo cInfoVictim = GeneralOperations.GetClientInfoFromEntityId(_victim.entityId);
+                        if (cInfoVictim == null)
+                        {
+                            return true;
+                        }
                         EntityPlayer victimPlayer = _victim as EntityPlayer;
                         if (_attacker is EntityPlayer)
                         {
                             ClientInfo cInfoAttacker = GeneralOperations.GetClientInfoFromEntityId(_attacker.entityId);
-                            if (cInfoAttacker != null)
+                            if (cInfoAttacker == null)
                             {
-                                EntityPlayer attackingPlayer = _attacker as EntityPlayer;
-                                if (___attackingItem != null)
+                                return true;
+                            }
+                            EntityPlayer attackingPlayer = _attacker as EntityPlayer;
+                            if (___attackingItem == null)
+                            {
+                                return true;
+                            }
+                            if (DamageDetector.LogEnabled)
+                            {
+                                float distance = attackingPlayer.GetDistance(victimPlayer);
+                                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                 {
-                                    if (DamageDetector.LogEnabled)
-                                    {
-                                        float distance = attackingPlayer.GetDistance(victimPlayer);
-                                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                        {
-                                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage. Distance '{11}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, cInfoVictim.latestPlayerData.ecd.pos, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
-                                            sw.WriteLine();
-                                            sw.Dispose();
-                                        }
-                                    }
-                                    if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(_victim as EntityPlayer, cInfoAttacker, ___strength, ___attackingItem))
-                                    {
-                                        return false;
-                                    }
-                                    if (InfiniteAmmo.IsEnabled && ___attackingItem.ItemClass != null && ___attackingItem.ItemClass.IsGun())
-                                    {
-                                        int slot = attackingPlayer.inventory.holdingItemIdx;
-                                        InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
-                                    }
+                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage. Distance '{11}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, cInfoVictim.latestPlayerData.ecd.pos, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
+                                    sw.WriteLine();
+                                    sw.Dispose();
                                 }
-                                if (NewPlayerProtection.IsEnabled)
+                            }
+                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidPvP(_victim as EntityPlayer, cInfoAttacker, ___strength, ___attackingItem))
+                            {
+                                return false;
+                            }
+                            if (InfiniteAmmo.IsEnabled && ___attackingItem.ItemClass != null && ___attackingItem.ItemClass.IsGun())
+                            {
+                                int slot = attackingPlayer.inventory.holdingItemIdx;
+                                InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
+                            }
+                            if (NewPlayerProtection.IsEnabled)
+                            {
+                                if (NewPlayerProtection.IsProtected(victimPlayer))
                                 {
-                                    if (NewPlayerProtection.IsProtected(victimPlayer))
-                                    {
-                                        Phrases.Dict.TryGetValue("NewPlayerProtection2", out string phrase);
-                                        ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                        return false;
-                                    }
-                                    else if (NewPlayerProtection.IsProtected(attackingPlayer))
-                                    {
-                                        Phrases.Dict.TryGetValue("NewPlayerProtection1", out string phrase);
-                                        ChatHook.ChatMessage(cInfoVictim, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                        return false;
-                                    }
-                                }
-                                if (Lobby.IsEnabled && Lobby.PvE && (Lobby.IsLobby(victimPlayer.position) || Lobby.IsLobby(attackingPlayer.position)))
-                                {
-                                    Lobby.PvEViolation(cInfoAttacker);
+                                    Phrases.Dict.TryGetValue("NewPlayerProtection2", out string phrase);
+                                    ChatHook.ChatMessage(cInfoAttacker, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                                if (Market.IsEnabled && Market.PvE && (Market.IsMarket(victimPlayer.position) || Market.IsMarket(attackingPlayer.position)))
+                                else if (NewPlayerProtection.IsProtected(attackingPlayer))
                                 {
-                                    Market.PvEViolation(cInfoAttacker);
+                                    Phrases.Dict.TryGetValue("NewPlayerProtection1", out string phrase);
+                                    ChatHook.ChatMessage(cInfoVictim, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
+                            }
+                            if (Lobby.IsEnabled && Lobby.PvE && (Lobby.IsLobby(victimPlayer.position) || Lobby.IsLobby(attackingPlayer.position)))
+                            {
+                                Lobby.PvEViolation(cInfoAttacker);
+                                return false;
+                            }
+                            if (Market.IsEnabled && Market.PvE && (Market.IsMarket(victimPlayer.position) || Market.IsMarket(attackingPlayer.position)))
+                            {
+                                Market.PvEViolation(cInfoAttacker);
+                                return false;
                             }
                         }
                         else if (NewPlayerProtection.IsEnabled && NewPlayerProtection.IsProtected(victimPlayer))
@@ -79,64 +85,68 @@ namespace ServerTools
                             return false;
                         }
                     }
-                }
-                else if (_victim is EntityZombie && _attacker is EntityPlayer)
-                {
-                    ClientInfo cInfoAttacker = GeneralOperations.GetClientInfoFromEntityId(_attacker.entityId);
-                    if (cInfoAttacker != null)
+                    else if (_victim is EntityZombie && _attacker is EntityPlayer)
                     {
-                        EntityPlayer attackingPlayer = _attacker as EntityPlayer;
-                        if (___attackingItem != null)
+                        ClientInfo cInfoAttacker = GeneralOperations.GetClientInfoFromEntityId(_attacker.entityId);
+                        if (cInfoAttacker == null)
                         {
-                            if (DamageDetector.LogEnabled)
+                            return true;
+                        }
+                        EntityPlayer attackingPlayer = _attacker as EntityPlayer;
+                        if (___attackingItem == null)
+                        {
+                            return true;
+                        }
+                        if (DamageDetector.LogEnabled)
+                        {
+                            float distance = attackingPlayer.GetDistance(_victim);
+                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                             {
-                                float distance = attackingPlayer.GetDistance(_victim);
-                                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
-                                    sw.WriteLine();
-                                    sw.Dispose();
-                                }
-                            }
-                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, ___strength, ___attackingItem))
-                            {
-                                return false;
-                            }
-                            if (InfiniteAmmo.IsEnabled && ___attackingItem.ItemClass != null && ___attackingItem.ItemClass.IsGun())
-                            {
-                                int slot = attackingPlayer.inventory.holdingItemIdx;
-                                InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
+                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
+                                sw.WriteLine();
+                                sw.Dispose();
                             }
                         }
-                    }
-                }
-                else if (_victim is EntityAnimal && _attacker is EntityPlayer)
-                {
-                    ClientInfo cInfoAttacker = GeneralOperations.GetClientInfoFromEntityId(_attacker.entityId);
-                    if (cInfoAttacker != null)
-                    {
-                        EntityPlayer attackingPlayer = _attacker as EntityPlayer;
-                        if (___attackingItem != null)
+                        if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, ___strength, ___attackingItem))
                         {
-                            if (DamageDetector.LogEnabled)
+                            return false;
+                        }
+                        if (InfiniteAmmo.IsEnabled && ___attackingItem.ItemClass != null && ___attackingItem.ItemClass.IsGun())
+                        {
+                            int slot = attackingPlayer.inventory.holdingItemIdx;
+                            InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
+                        }
+                    }
+                    else if (_victim is EntityAnimal && _attacker is EntityPlayer)
+                    {
+                        ClientInfo cInfoAttacker = GeneralOperations.GetClientInfoFromEntityId(_attacker.entityId);
+                        if (cInfoAttacker == null)
+                        {
+                            return true;
+                        }
+                        EntityPlayer attackingPlayer = _attacker as EntityPlayer;
+                        if (___attackingItem == null)
+                        {
+                            return true;
+                        }
+                        if (DamageDetector.LogEnabled)
+                        {
+                            float distance = attackingPlayer.GetDistance(_victim);
+                            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                             {
-                                float distance = attackingPlayer.GetDistance(_victim);
-                                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                                {
-                                    sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
-                                    sw.WriteLine();
-                                    sw.Dispose();
-                                }
+                                sw.WriteLine(string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' hit '{5}' named '{6}' @ '{7}' using '{8}' for '{9}' damage. Distance '{10}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, cInfoAttacker.latestPlayerData.ecd.pos, _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, distance));
+                                sw.WriteLine();
+                                sw.Dispose();
                             }
-                            if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, ___strength, ___attackingItem))
-                            {
-                                return false;
-                            }
-                            if (InfiniteAmmo.IsEnabled && ___attackingItem.ItemClass != null && ___attackingItem.ItemClass.IsGun())
-                            {
-                                int slot = attackingPlayer.inventory.holdingItemIdx;
-                                InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
-                            }
+                        }
+                        if (DamageDetector.IsEnabled && !DamageDetector.IsValidEntityDamage(attackingPlayer, cInfoAttacker, ___strength, ___attackingItem))
+                        {
+                            return false;
+                        }
+                        if (InfiniteAmmo.IsEnabled && ___attackingItem.ItemClass != null && ___attackingItem.ItemClass.IsGun())
+                        {
+                            int slot = attackingPlayer.inventory.holdingItemIdx;
+                            InfiniteAmmo.Exec(cInfoAttacker, attackingPlayer, slot, ___attackingItem);
                         }
                     }
                 }

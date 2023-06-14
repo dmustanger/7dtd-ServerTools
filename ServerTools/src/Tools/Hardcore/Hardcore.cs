@@ -19,20 +19,17 @@ namespace ServerTools
             {
                 if (int.TryParse(stats[2], out int extraLives))
                 {
-                    if (extraLives < 0)
-                    {
-                        extraLives = 0;
-                    }
                     int lives;
                     if (_addDeath)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats[1] = (deaths + 1).ToString();
+                        stats[1] = (deaths + 1).ToString();
+                        PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;
                         PersistentContainer.DataChange = true;
-                        lives = Max_Deaths + extraLives - (deaths + 1);
+                        lives = Max_Deaths - (deaths + 1) + extraLives;
                     }
                     else
                     {
-                        lives = Max_Deaths + extraLives - deaths;
+                        lives = Max_Deaths - deaths + extraLives;
                     }
                     if (lives > 0)
                     {
@@ -345,7 +342,7 @@ namespace ServerTools
                 string filepath2 = string.Format("{0}/Player/{1}.ttp", GameIO.GetSaveGameDir(), _cInfo.CrossplatformId.CombinedString);
                 if (!File.Exists(filepath1))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Could not find file {0}.map", _cInfo.CrossplatformId.CombinedString));
+                    SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _cInfo.CrossplatformId.CombinedString));
                 }
                 else
                 {
@@ -353,7 +350,7 @@ namespace ServerTools
                 }
                 if (!File.Exists(filepath2))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Could not find file {0}.ttp", _cInfo.CrossplatformId.CombinedString));
+                    SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _cInfo.CrossplatformId.CombinedString));
                 }
                 else
                 {
@@ -399,7 +396,7 @@ namespace ServerTools
                 if (player != null)
                 {
                     Phrases.Dict.TryGetValue("Hardcore14", out string phrase);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} {1}", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} {1}", _cInfo.CrossplatformId.CombinedString, phrase), null);
                 }
                 GeneralOperations.SavePersistentPlayerDataXML();
                 GeneralOperations.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);

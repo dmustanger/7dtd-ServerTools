@@ -284,7 +284,7 @@ namespace ServerTools
                     }
                     Phrases.Dict.TryGetValue("Reserved1", out string phrase);
                     phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", normal[0].CrossplatformId.CombinedString, phrase), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", normal[0].CrossplatformId.CombinedString, phrase), null);
                     return true;
                 }
                 else if (reserved.Count > 0)
@@ -295,7 +295,7 @@ namespace ServerTools
                     }
                     Phrases.Dict.TryGetValue("Reserved1", out string phrase);
                     phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", reserved[0].CrossplatformId.CombinedString, phrase), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", reserved[0].CrossplatformId.CombinedString, phrase), null);
                     return true;
                 }
             }

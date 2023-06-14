@@ -31,13 +31,13 @@ namespace ServerTools
             {
                 if (_params.Count != 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                     return;
                 }
                 ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                 if (cInfo == null)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid player id or name '{0}'", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid player id or name '{0}'", _params[1]));
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
@@ -47,12 +47,12 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ReducedDelay = true;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added reduced command delay for '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added reduced command delay for '{0}'", _params[1]));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reduced command delay already exists for '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reduced command delay already exists for '{0}'", _params[1]));
                         return;
                     }
                 }
@@ -63,18 +63,18 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].ReducedDelay = false;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed reduced command delay for '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed reduced command delay for '{0}'", _params[1]));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Reduced command delay does not exist for '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Reduced command delay does not exist for '{0}'", _params[1]));
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

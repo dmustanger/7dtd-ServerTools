@@ -40,7 +40,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (Vault.IsEnabled)
@@ -48,12 +48,12 @@ namespace ServerTools
                         Vault.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vault has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vault has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vault is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vault is already off"));
                         return;
                     }
                 }
@@ -61,7 +61,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (!Vault.IsEnabled)
@@ -69,12 +69,12 @@ namespace ServerTools
                         Vault.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vault has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vault has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vault is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vault is already on"));
                         return;
                     }
                 }
@@ -82,7 +82,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 4)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -93,16 +93,16 @@ namespace ServerTools
                         {
                             if (!int.TryParse(_params[2], out int slots))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for slots. '{0}'", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for slots. '{0}'", _params[2]));
                                 return;
                             }
                             if (!int.TryParse(_params[3], out int lines))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for lines. '{0}'", _params[3]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for lines. '{0}'", _params[3]));
                                 return;
                             }
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize = new int[] { slots, lines };
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been set to '{3}' slots '{4}' lines", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, slots, lines));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been set to '{3}' slots '{4}' lines", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, slots, lines));
                             PersistentContainer.DataChange = true;
                             return;
                         }
@@ -114,16 +114,16 @@ namespace ServerTools
                         {
                             if (!int.TryParse(_params[2], out int slots))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for slots. '{0}'", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for slots. '{0}'", _params[2]));
                                 return;
                             }
                             if (!int.TryParse(_params[3], out int lines))
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for lines. '{0}'", _params[3]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer provided for lines. '{0}'", _params[3]));
                                 return;
                             }
                             PersistentContainer.Instance.Players[_params[1]].VaultSize = new int[] { slots, lines };
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been set to '{2}' slots '{3}' lines", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, slots, lines));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been set to '{2}' slots '{3}' lines", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, slots, lines));
                             PersistentContainer.DataChange = true;
                             return;
                         }
@@ -133,21 +133,21 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
                     if (cInfo != null)
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize = new int[] { Vault.Slots, Vault.Lines };
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been reset to '{3}' slots '{4}' lines", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, Vault.Slots, Vault.Lines));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been reset to '{3}' slots '{4}' lines", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, Vault.Slots, Vault.Lines));
                         PersistentContainer.DataChange = true;
                         return;
                     }
                     else if (_params[1].Contains("_") && PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].VaultSize = new int[] { Vault.Slots, Vault.Lines };
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been reset to '{2}' slots '{3}' lines", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, Vault.Slots, Vault.Lines));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been reset to '{2}' slots '{3}' lines", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, Vault.Slots, Vault.Lines));
                         PersistentContainer.DataChange = true;
                         return;
                     }
@@ -158,14 +158,14 @@ namespace ServerTools
                     if (cInfo != null)
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].VaultSize = new int[] { 8, 6 };
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been set to the maximum size. 8 x 6", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been set to the maximum size. 8 x 6", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                         PersistentContainer.DataChange = true;
                         return;
                     }
                     else if (_params[1].Contains("_") && PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].VaultSize = new int[] { 8, 6 };
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been set to the maximum size. 8 x 6", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been set to the maximum size. 8 x 6", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                         PersistentContainer.DataChange = true;
                         return;
                     }
@@ -176,19 +176,19 @@ namespace ServerTools
                     if (cInfo != null)
                     {
                         PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Vault = new ItemDataSerializable[48];
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been cleared out", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' '{1}' named '{2}' has been cleared out", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     }
                     else if (_params[1].Contains("_") && PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].Vault = new ItemDataSerializable[48];
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been cleared out", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The vault for '{0}' named '{1}' has been cleared out", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                     }
                     PersistentContainer.DataChange = true;
                     return;
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

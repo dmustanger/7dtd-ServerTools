@@ -29,7 +29,7 @@ namespace ServerTools
             {
                 if (_params.Count != 0 && _params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 0 or 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 0 or 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params.Count == 0)
@@ -80,22 +80,22 @@ namespace ServerTools
                                 _supplyCrates++;
                             }
                         }
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Server FPS '{0}'", GameManager.Instance.fps.Counter));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server FPS '{0}'", GameManager.Instance.fps.Counter));
                         if (_daysRemaining == 0 && !GameManager.Instance.World.aiDirector.BloodMoonComponent.BloodMoonActive)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Next horde night is today");
+                            SdtdConsole.Instance.Output("Next horde night is today");
                         }
                         else if (GameManager.Instance.World.aiDirector.BloodMoonComponent.BloodMoonActive)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("The horde is here!");
+                            SdtdConsole.Instance.Output("The horde is here!");
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Next horde night in '{0}' days", _daysRemaining));
+                            SdtdConsole.Instance.Output(string.Format("Next horde night in '{0}' days", _daysRemaining));
                         }
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Players '{0}' Zombies '{1}' Animals '{2}'", ConnectionManager.Instance.ClientCount(), _zombies, _animals));
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bicycles '{0}' Minibikes '{1}' Motorcycles '{2}' 4x4 '{3}' Gyros '{4}'", _bicycles, _miniBikes, _motorcycles, _4x4, _gyros));
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Supply crates '{0}'", _supplyCrates));
+                        SdtdConsole.Instance.Output(string.Format("Players '{0}' Zombies '{1}' Animals '{2}'", ConnectionManager.Instance.ClientCount(), _zombies, _animals));
+                        SdtdConsole.Instance.Output(string.Format("Bicycles '{0}' Minibikes '{1}' Motorcycles '{2}' 4x4 '{3}' Gyros '{4}'", _bicycles, _miniBikes, _motorcycles, _4x4, _gyros));
+                        SdtdConsole.Instance.Output(string.Format("Supply crates '{0}'", _supplyCrates));
                     }
                 }
                 else
@@ -107,12 +107,12 @@ namespace ServerTools
                             Day7.IsEnabled = false;
                             Config.WriteXml();
                             Config.LoadXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to off"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to off"));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Day7 is already off"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 is already off"));
                             return;
                         }
                     }
@@ -123,18 +123,18 @@ namespace ServerTools
                             Day7.IsEnabled = true;
                             Config.WriteXml();
                             Config.LoadXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to on"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to on"));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Day7 is already on"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 is already on"));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                     }
                 }
             }

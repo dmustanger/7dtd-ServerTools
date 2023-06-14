@@ -31,12 +31,12 @@ namespace ServerTools
                 if (!File.Exists(Phrases.FilePath))
                 {
                     Phrases.ResetXml();
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Phrase file has been reset to default");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Phrase file has been reset to default");
                     return;
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Phrase file was not found. Unable to reset");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Phrase file was not found. Unable to reset");
                     return;
                 }
             }

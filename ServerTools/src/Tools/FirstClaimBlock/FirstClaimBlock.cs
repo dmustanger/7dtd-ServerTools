@@ -19,7 +19,7 @@ namespace ServerTools
 
                 if (Equals(itemValue, ItemValue.None))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Unable to find block {0} for /{1} command", claimBlock, Command_claim));
+                    SdtdConsole.Instance.Output(string.Format("Unable to find block {0} for /{1} command", claimBlock, Command_claim));
                 }
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {

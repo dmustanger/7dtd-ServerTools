@@ -31,14 +31,14 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params[0] == "cancel")
                 {
                     if (!Shutdown.ShuttingDown)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver is not running");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver is not running");
                     }
                     else
                     {
@@ -68,11 +68,11 @@ namespace ServerTools
                         if (Shutdown.IsEnabled)
                         {
                             Shutdown.SetDelay(true, false);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled and the next shutdown has been reset");
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
                         }
                     }
                 }
@@ -80,7 +80,7 @@ namespace ServerTools
                 {
                     if (Shutdown.ShuttingDown)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown. Cancel it if you wish to set a new countdown"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown. Cancel it if you wish to set a new countdown"));
                     }
                     else
                     {
@@ -90,7 +90,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified '{0}'", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified '{0}'", _params[0]));
                         }
                     }                   
                 }

@@ -29,7 +29,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (_params.Count == 1)
@@ -42,25 +42,25 @@ namespace ServerTools
                         if ((int)player2.position.y < 13)
                         {
                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player2.position.x, 0, (int)player2.position.z), null, false));
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
                             return;
                         }
                         else
                         {
                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player2.position.x, (int)player2.position.y - 10, (int)player2.position.z), null, false));
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' not found", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id '{0}' not found", _params[0]));
                         return;
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                     return;
                 }
             }

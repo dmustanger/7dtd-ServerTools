@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count != 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                     return;
                 }
                 ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
@@ -36,17 +36,17 @@ namespace ServerTools
                 {
                     if (!int.TryParse(_params[1], out int experience))
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
                         return;
                     }
                     NetPackageEntityAddExpClient package = NetPackageManager.GetPackage<NetPackageEntityAddExpClient>().Setup(cInfo.entityId, experience, Progression.XPTypes.Kill);
                     SingletonMonoBehaviour<ConnectionManager>.Instance.SendPackage(package, false, cInfo.entityId, -1, -1, -1);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' experience to player '{1}' '{2}' named {3}", experience, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' experience to player '{1}' '{2}' named {3}", experience, cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
                     return;
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate online player: {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate online player: {0}", _params[0]));
                     return;
                 }
             }

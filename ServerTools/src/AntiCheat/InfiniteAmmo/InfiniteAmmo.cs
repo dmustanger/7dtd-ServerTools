@@ -61,7 +61,7 @@ namespace ServerTools
                             {
                                 Flags.Remove(__instance.Sender.entityId);
                                 Phrases.Dict.TryGetValue("InfiniteAmmo1", out string phrase);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", __instance.Sender.CrossplatformId.CombinedString, phrase), null);
+                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", __instance.Sender.CrossplatformId.CombinedString, phrase), null);
                                 using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
                                 {
                                     sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' using infinite ammo", __instance.Sender.PlatformId.CombinedString, __instance.Sender.CrossplatformId.CombinedString, __instance.Sender.playerName));

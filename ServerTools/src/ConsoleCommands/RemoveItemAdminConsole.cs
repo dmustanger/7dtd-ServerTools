@@ -27,7 +27,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[0]);
@@ -40,19 +40,19 @@ namespace ServerTools
                         {
                             GameEventManager.Current.HandleAction("action_admin", null, player, false, "");
                             cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_admin", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed all items tagged admin from inventory and backpack of player '{0}'", cInfo.CrossplatformId.CombinedString));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed all items tagged admin from inventory and backpack of player '{0}'", cInfo.CrossplatformId.CombinedString));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate action_admin in the game events list"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate action_admin in the game events list"));
                             return;
                         }
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' online", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate '{0}' online", _params[0]));
                     return;
                 }
             }

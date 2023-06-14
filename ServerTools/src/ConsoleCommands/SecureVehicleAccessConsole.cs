@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                     return;
                 }
                 if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
@@ -52,7 +52,7 @@ namespace ServerTools
                         }
                     }
                 }
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Vehicle access set for '{0}' in loaded areas. Unloaded areas are unchanged", _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle access set for '{0}' in loaded areas. Unloaded areas are unchanged", _senderInfo.RemoteClientInfo.CrossplatformId.CombinedString));
             }
             catch (Exception e)
             {

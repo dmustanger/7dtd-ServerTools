@@ -616,16 +616,16 @@ namespace ServerTools
                         else if (_command.ToLower().StartsWith("tp"))
                         {
                             _command = _command.Replace("tp", "teleportplayer");
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                            SdtdConsole.Instance.ExecuteSync(_command, null);
                         }
                         else if (_command.ToLower().StartsWith("tele"))
                         {
                             _command = _command.Replace("tele", "teleportplayer");
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                            SdtdConsole.Instance.ExecuteSync(_command, null);
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(_command, null);
+                            SdtdConsole.Instance.ExecuteSync(_command, null);
                         }
                     }
                 }

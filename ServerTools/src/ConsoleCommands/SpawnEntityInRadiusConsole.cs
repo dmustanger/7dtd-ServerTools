@@ -35,13 +35,13 @@ namespace ServerTools
             {
                 if (_params.Count < 3)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or more, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or more, found '{0}'", _params.Count));
                     return;
                 }
                 float x1, y1, z1, radius;
                 if (!_params[1].Contains("r.") && !_params[3].Contains("r."))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Invalid format for radius. Missing r.");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid format for radius. Missing r.");
                     return;
                 }
                 if (_params[1].Contains("r."))
@@ -80,14 +80,14 @@ namespace ServerTools
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[1]));
                                 return;
                             }
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player name, Entity id or EOS id not found online for '{0}'", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player name, Entity id or EOS id not found online for '{0}'", _params[0]));
                         return;
                     }
                 }
@@ -122,25 +122,25 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[3]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[3]));
                                     return;
                                 }
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
                                 return;
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[0]));
                         return;
                     }
                 }
@@ -167,11 +167,11 @@ namespace ServerTools
                     {
                         Entity entity = EntityFactory.CreateEntity(entityId, new Vector3(_x, _y, _z));
                         GameManager.Instance.World.SpawnEntityInWorld(entity);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Spawned a {0} at {1} x, {2} y, {3} z", entity.EntityClass.entityClassName, _x, _y, _z));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Spawned a {0} at {1} x, {2} y, {3} z", entity.EntityClass.entityClassName, _x, _y, _z));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No spawn points were found near {0} x, {1} y, {2} z", _pos.x, _pos.y, _pos.z));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No spawn points were found near {0} x, {1} y, {2} z", _pos.x, _pos.y, _pos.z));
                     }
                 }
             }

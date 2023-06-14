@@ -38,15 +38,15 @@ namespace ServerTools
                     }
                     if (remainingTime <= 10 && Event.Open)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] A event is currently active. The server can not shutdown until it completes"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] A event is currently active. The server can not shutdown until it completes"));
                         return;
                     }
                     string timeLeft = string.Format("{0:00} H : {1:00} M", remainingTime / 60, remainingTime % 60);
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The next auto shutdown is in '{0}'", timeLeft));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The next auto shutdown is in '{0}'", timeLeft));
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Shutdown is not enabled");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Shutdown is not enabled");
                     return;
                 }
             }

@@ -31,7 +31,7 @@ namespace ServerTools
             {
                 if (GameManager.Instance.World == null)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] The world is not loaded. Unable to run command");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] The world is not loaded. Unable to run command");
                     return;
                 }
             }

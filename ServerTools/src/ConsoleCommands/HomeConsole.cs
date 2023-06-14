@@ -37,7 +37,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (Homes.IsEnabled)
@@ -45,12 +45,12 @@ namespace ServerTools
                         Homes.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes is already off"));
                         return;
                     }
                 }
@@ -58,7 +58,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (!Homes.IsEnabled)
@@ -66,12 +66,12 @@ namespace ServerTools
                         Homes.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Homes is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Homes is already on"));
                         return;
                     }
                 }
@@ -79,7 +79,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -89,25 +89,25 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].LastHome = DateTime.Now.AddYears(-1);
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Home tool delay reset for '{0}' named '{1}'", _params[1], cInfo.playerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home tool delay reset for '{0}' named '{1}'", _params[1], cInfo.playerName));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[1]].LastHome = DateTime.Now.AddYears(-1);
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Home tool delay reset for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home tool delay reset for '{0}' named '{1}'", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player with EOS id '{0}' does not have a Home tool delay to reset", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with EOS id '{0}' does not have a Home tool delay to reset", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("add") && _params[1].ToLower().Equals("spot"))
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[2]);
@@ -117,25 +117,25 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].HomeSpots += 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Home spot for '{0}' named '{1}'", _params[2], cInfo.playerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added a Home spot for '{0}' named '{1}'", _params[2], cInfo.playerName));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[2]] != null)
                     {
                         PersistentContainer.Instance.Players[_params[2]].HomeSpots += 1;
                         PersistentContainer.DataChange = true;
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added a Home spot for '{0}' named '{1}'", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added a Home spot for '{0}' named '{1}'", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Home spot", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to add a Home spot", _params[2]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("remove") && _params[1].ToLower().Equals("spot"))
                 {
                     if (_params.Count != 3)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[2]);
@@ -147,11 +147,11 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].HomeSpots -= 1;
                                 PersistentContainer.DataChange = true;
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Home spot for '{0}' named '{1}'", _params[2], cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed a Home spot for '{0}' named '{1}'", _params[2], cInfo.playerName));
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Home spots to remove", _params[2], cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Home spots to remove", _params[2], cInfo.playerName));
                             }
                         }
                     }
@@ -161,23 +161,23 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_params[2]].HomeSpots -= 1;
                             PersistentContainer.DataChange = true;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed a Home spot for '{0}' named '{1}'", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed a Home spot for '{0}' named '{1}'", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Home spots to remove", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has no Home spots to remove", _params[2], PersistentContainer.Instance.Players[_params[2]].PlayerName));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a Home spot", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to remove a Home spot", _params[2]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("show"))
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_params[1]);
@@ -185,21 +185,21 @@ namespace ServerTools
                     {
                         if (PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString] != null)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Home spots", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].HomeSpots));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Home spots", _params[1], cInfo.playerName, PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].HomeSpots));
                         }
                     }
                     else if (PersistentContainer.Instance.Players[_params[1]] != null)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Home spots", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].HomeSpots));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' named '{1}' has '{2}' Home spots", _params[1], PersistentContainer.Instance.Players[_params[1]].PlayerName, PersistentContainer.Instance.Players[_params[1]].HomeSpots));
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show Home spots", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player '{0}' could not be found. Unable to show Home spots", _params[1]));
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

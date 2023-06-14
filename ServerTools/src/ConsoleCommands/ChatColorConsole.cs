@@ -46,7 +46,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1 && _params.Count != 2 && _params.Count != 3 && _params.Count != 5 && _params.Count != 6)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2, 3, 5 or 6, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2, 3, 5 or 6, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -56,12 +56,12 @@ namespace ServerTools
                         ChatColor.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix is already off"));
                         return;
                     }
                 }
@@ -72,12 +72,12 @@ namespace ServerTools
                         ChatColor.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix is already on"));
                         return;
                     }
                 }
@@ -100,7 +100,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
                             return;
                         }
                     }
@@ -108,7 +108,7 @@ namespace ServerTools
                     {
                         if (!double.TryParse(_params[2], out double daysToExpire))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[2]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[2]));
                             return;
                         }
                         DateTime expiryDate;
@@ -134,14 +134,14 @@ namespace ServerTools
                             }
                             ChatColor.Players[id] = c;
                             ChatColor.ExpireDate[id] = oldDate;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using no colors or prefix. Expiration set to '{2}'", id, playerName, expiryDate.ToString()));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using no colors or prefix. Expiration set to '{2}'", id, playerName, expiryDate.ToString()));
                             ChatColor.UpdateXml();
                         }
                         else
                         {
                             ChatColor.Players.Add(id, c);
                             ChatColor.ExpireDate.Add(id, expiryDate);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using no colors or prefix. Expiration set to '{2}'", id, playerName, expiryDate.ToString()));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using no colors or prefix. Expiration set to '{2}'", id, playerName, expiryDate.ToString()));
                             ChatColor.UpdateXml();
                         }
                         return;
@@ -178,7 +178,7 @@ namespace ServerTools
                         }
                         if (!double.TryParse(_params[5], out double daysToExpire))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[5]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to add player. Invalid days to expire: '{0}'", _params[5]));
                             return;
                         }
                         DateTime expiryDate;
@@ -204,21 +204,21 @@ namespace ServerTools
                             }
                             ChatColor.Players[id] = c;
                             ChatColor.ExpireDate[id] = oldDate;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}'", id, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}'", id, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
                             ChatColor.UpdateXml();
                         }
                         else
                         {
                             ChatColor.Players.Add(id, c);
                             ChatColor.ExpireDate.Add(id, expiryDate);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}'", id, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added player id '{0}' with name '{1}' using color '{2}' and prefix '{3}' using color '{4}'. Expiration set to '{5}'", id, playerName, colorTag1, _params[3], colorTag2, expiryDate.ToString()));
                             ChatColor.UpdateXml();
                         }
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2, 3, 5 or 6, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2, 3, 5 or 6, found {0}", _params.Count));
                         return;
                     }
                     
@@ -242,7 +242,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
                             return;
                         }
                     }
@@ -256,17 +256,17 @@ namespace ServerTools
                                 string[] c = new string[] { tags[0], tags[1], _params[2], tags[3] };
                                 ChatColor.Players[id] = c;
                                 ChatColor.UpdateXml();
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Prefix set to '{1}'", id, _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Prefix set to '{1}'", id, _params[2]));
                                 return;
                             }
                             ChatColor.ExpireDate[id] = DateTime.Now.AddDays(daysToExpire);
                             ChatColor.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Expiry date set to '{1}'", id, DateTime.Now.AddDays(daysToExpire)));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Expiry date set to '{1}'", id, DateTime.Now.AddDays(daysToExpire)));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player id '{0}'. They are not on the chat color prefix list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player id '{0}'. They are not on the chat color prefix list", _params[1]));
                             return;
                         }
                     }
@@ -305,18 +305,18 @@ namespace ServerTools
                             string[] c = new string[] { playerName, colorTag1, _params[3], colorTag2 };
                             ChatColor.Players[id] = c;
                             ChatColor.UpdateXml();
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Name color set to '{1}' and prefix set to '{2}' using color '{3}'", id, colorTag1, _params[3], colorTag2));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Edited chat color prefix for player id '{0}'. Name color set to '{1}' and prefix set to '{2}' using color '{3}'", id, colorTag1, _params[3], colorTag2));
                             return;
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player id '{0}'. They are not on the chat color prefix list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to edit player id '{0}'. They are not on the chat color prefix list", _params[1]));
                             return;
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 5, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 5, found '{0}'", _params.Count));
                         return;
                     }
                 }
@@ -324,7 +324,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
                         return;
                     }
                     string id = "";
@@ -342,7 +342,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to locate player '{0}' online or offline", _params[1]));
                             return;
                         }
                     }
@@ -351,12 +351,12 @@ namespace ServerTools
                         ChatColor.Players.Remove(id);
                         ChatColor.ExpireDate.Remove(id);
                         ChatColor.UpdateXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed player id '{0}' from the chat color prefix list", _params[1]));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to remove player id '{0}'. They are not on the chat color prefix list", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to remove player id '{0}'. They are not on the chat color prefix list", _params[1]));
                         return;
                     }
                 }
@@ -367,17 +367,17 @@ namespace ServerTools
                         foreach (var player in ChatColor.Players)
                         {
                             ChatColor.ExpireDate.TryGetValue(player.Key, out DateTime expiry);
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Player id '{0}' named '{1}' using color '{2}' and prefix '{3}' using color '{4}' expires '{5}'", player.Key, player.Value[0], player.Value[1], player.Value[2], player.Value[3], expiry));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id '{0}' named '{1}' using color '{2}' and prefix '{3}' using color '{4}' expires '{5}'", player.Key, player.Value[0], player.Value[1], player.Value[2], player.Value[3], expiry));
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] No players on the chat color list");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] No players on the chat color list");
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

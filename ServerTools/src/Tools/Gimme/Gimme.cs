@@ -462,7 +462,7 @@ namespace ServerTools
                         string zId = zombieIds[count];
                         if (int.TryParse(zId, out int zombieId))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
@@ -482,7 +482,7 @@ namespace ServerTools
                     {
                         if (int.TryParse(Zombie_Id, out int _zombieId))
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {

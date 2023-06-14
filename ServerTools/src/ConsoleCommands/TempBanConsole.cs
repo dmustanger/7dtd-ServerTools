@@ -31,7 +31,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found '{0}'", _params.Count));
                     return;
                 }
                 if (!int.TryParse(_params[1], out int _time))
@@ -46,22 +46,22 @@ namespace ServerTools
                     {
                         if (_time > 60)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", cInfo.CrossplatformId.CombinedString, _time, _time), cInfo);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", cInfo.CrossplatformId.CombinedString, _time, _time), cInfo);
 
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", cInfo.CrossplatformId.CombinedString, _params[1], _params[1]), cInfo);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", cInfo.CrossplatformId.CombinedString, _params[1], _params[1]), cInfo);
                         }
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Can not ban Id '{0}'. The Id belongs to an Admin", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not ban Id '{0}'. The Id belongs to an Admin", _params[1]));
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] No Id '{0}' found online", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No Id '{0}' found online", _params[0]));
                 }
             }
             catch (Exception e)

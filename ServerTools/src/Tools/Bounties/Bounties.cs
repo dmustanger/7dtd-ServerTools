@@ -273,7 +273,7 @@ namespace ServerTools
                 int newBounty = oldBounty + _value;
                 PersistentContainer.Instance.Players[_id].Bounty = newBounty;
                 PersistentContainer.DataChange = true;
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is set to '{1}'", _id, newBounty));
+                SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is set to '{1}'", _id, newBounty));
             }
             else
             {
@@ -282,13 +282,13 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_id].Bounty = 0;
                     PersistentContainer.DataChange = true;
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is '{1}'", _id, 0));
+                    SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is '{1}'", _id, 0));
                 }
                 else
                 {
                     PersistentContainer.Instance.Players[_id].Bounty = newBounty;
                     PersistentContainer.DataChange = true;
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is '{1}'", _id, newBounty));
+                    SdtdConsole.Instance.Output(string.Format("Bounty edit was successful for '{0}'. The new value is '{1}'", _id, newBounty));
                 }
             }
         }
@@ -300,7 +300,7 @@ namespace ServerTools
             {
                 p.Bounty = 0;
                 PersistentContainer.DataChange = true;
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Bounty was removed successfully for '{0}'", _id));
+                SdtdConsole.Instance.Output(string.Format("Bounty was removed successfully for '{0}'", _id));
             }
         }
 
@@ -317,7 +317,7 @@ namespace ServerTools
                         int currentbounty = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bounty;
                         if (currentbounty > 0)
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("Entity Id: '{0}' named '{1}'. Bounty total '{2}'", cInfo.entityId, cInfo.playerName, currentbounty));
+                            SdtdConsole.Instance.Output(string.Format("Entity Id: '{0}' named '{1}'. Bounty total '{2}'", cInfo.entityId, cInfo.playerName, currentbounty));
                         }
                     }
                 }

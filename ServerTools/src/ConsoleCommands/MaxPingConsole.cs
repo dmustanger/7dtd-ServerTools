@@ -23,15 +23,15 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Wrong number of arguments");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Wrong number of arguments");
                     return;
                 }
                 if (!int.TryParse(_params[0], out HighPingKicker.Max_Ping))
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output("[SERVERTOOLS] Maxping is not an integer");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Maxping is not an integer");
                     return;
                 }
-                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Max ping limit set to '{0}'", HighPingKicker.Max_Ping));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Max ping limit set to '{0}'", HighPingKicker.Max_Ping));
                 Config.WriteXml();
             }
             catch (Exception e)

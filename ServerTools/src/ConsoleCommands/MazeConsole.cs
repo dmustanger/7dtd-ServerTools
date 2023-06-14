@@ -25,6 +25,7 @@ namespace ServerTools
                    "3. Revert the maze last generated to the original blocks" +
                    "*Note*" +
                    "Undo command is limited to the user that spawned the maze. Server shutdown will clear the undo data" +
+                   "Size is limited to 6 floors and 80 blocks max. It will auto adjust based on the overall size" +
                    "Use wood, cobblestone, steel, brick or glass for the block name. It will default to concrete if the block can not be found";
         }
 
@@ -39,423 +40,362 @@ namespace ServerTools
             {
                 if (_params.Count != 1 && _params.Count != 3 && _params.Count != 4)
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 3 or 4, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Wrong number of arguments, expected 1, 3 or 4, found '{0}'", _params.Count);
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
                 {
-                    ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _info)
+                    if (_params.Count != 3 && _params.Count != 4)
                     {
-                        if (_params.Count != 3 && _params.Count != 4)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found {0}", _params.Count));
-                            return;
-                        }
-                        if (!int.TryParse(_params[1], out int blocks))
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid width of blocks: {0}", _params[1]));
-                            return;
-                        }
-                        if (!int.TryParse(_params[2], out int floors))
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid number of floors: {0}", _params[2]));
-                            return;
-                        }
-                        if (_senderInfo.RemoteClientInfo == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info for world position. Join the game first or check for errors"));
-                            return;
-                        }
-                        if (blocks < 30)
-                        {
-                            blocks = 30;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too small. Maze size increased to 30x30"));
-                        }
-                        else if (blocks > 120)
-                        {
-                            blocks = 120;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze size is too big. Maze size decreased to 120x120"));
-                        }
-                        if (floors < 1)
-                        {
-                            floors = 1;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too low. Floor count set to 1"));
-                        }
-                        else if (floors > 11)
-                        {
-                            floors = 11;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Floor count is too high. Floor count decreased to 11"));
-                        }
-                        if (floors >= 2 && blocks > 110)
-                        {
-                            floors = 1;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 1"));
-                        }
-                        else if (floors >= 3 && blocks > 90)
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found {0}", _params.Count));
+                        return;
+                    }
+                    if (!int.TryParse(_params[1], out int blocks))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid width of blocks: {0}", _params[1]));
+                        return;
+                    }
+                    if (!int.TryParse(_params[2], out int floors))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid number of floors: {0}", _params[2]));
+                        return;
+                    }
+                    if (_senderInfo.RemoteClientInfo == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info for world position. Join the game first or check for errors"));
+                        return;
+                    }
+                    if (blocks < 30)
+                    {
+                        blocks = 30;
+                    }
+                    if (floors < 1)
+                    {
+                        floors = 1;
+                    }
+                    if (blocks > 80)
+                    {
+                        blocks = 80;
+                        if (floors >= 3)
                         {
                             floors = 2;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 2"));
                         }
-                        else if (floors >= 4 && blocks > 80)
+                    }
+                    else if (blocks > 70)
+                    {
+                        blocks = 70;
+                        if (floors >= 3)
+                        {
+                            floors = 2;
+                        }
+                    }
+                    else if (blocks > 60)
+                    {
+                        blocks = 60;
+                        if (floors >= 4)
                         {
                             floors = 3;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 3"));
                         }
-                        else if (floors >= 5 && blocks > 70)
+                    }
+                    else if (blocks > 50)
+                    {
+                        blocks = 50;
+                        if (floors >= 5)
                         {
                             floors = 4;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 4"));
                         }
-                        else if (floors >= 6 && blocks > 65)
+                    }
+                    else if (blocks > 40)
+                    {
+                        blocks = 40;
+                        if (floors >= 6)
                         {
                             floors = 5;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 5"));
                         }
-                        else if (floors >= 7 && blocks > 60)
+                    }
+                    else if (blocks > 30)
+                    {
+                        blocks = 30;
+                        if (floors >= 7)
                         {
                             floors = 6;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 6"));
                         }
-                        else if (floors >= 8 && blocks > 55)
+                    }
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Maze size set for {0} floors and {1}x{1}", floors, blocks);
+                    World world = GameManager.Instance.World;
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_senderInfo.RemoteClientInfo.entityId);
+                    if (player == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form player info for world position. Join the game first or check for errors"));
+                        return;
+                    }
+                    if (player.position.y < 3)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Your position is too low. Unable to generate maze at this world height"));
+                        return;
+                    }
+                    BlockValue groundBlockValue = world.GetBlock(new Vector3i(player.position.x, player.position.y - 1, player.position.z));
+                    if (groundBlockValue.Equals(BlockValue.Air))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Air block detected under you. Unable to generate a maze at this position"));
+                        return;
+                    }
+                    Block steelFloors = Block.GetBlockByName("steelShapes:cube");
+                    if (steelFloors == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: steelShapes"));
+                        return;
+                    }
+                    Block concreteWalls = Block.GetBlockByName("concreteShapes:cube");
+                    if (concreteWalls == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: concreteShapes"));
+                        return;
+                    }
+                    Block stoneFiller = Block.GetBlockByName("terrStone");
+                    if (stoneFiller == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: terrStone"));
+                        return;
+                    }
+                    Block glassCeiling = Block.GetBlockByName("glassBusinessBlock");
+                    if (glassCeiling == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBusinessBlock"));
+                        return;
+                    }
+                    Block glassBlock = Block.GetBlockByName("glassBulletproofBlock");
+                    if (glassBlock == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBulletproofBlock"));
+                        return;
+                    }
+                    Block ladder = Block.GetBlockByName("ladderMetal");
+                    if (ladder == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: ladderMetal"));
+                        return;
+                    }
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Maze generator started at position '{0}'. Please be patient", player.position);
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Inspect the maze for potential collapse after it spawns");
+                    BlockValue steelBlockValue = Block.GetBlockValue("steelShapes:cube");
+                    BlockValue concreteBlockValue = Block.GetBlockValue("concreteShapes:cube");
+                    BlockValue stoneBlockValue = Block.GetBlockValue("terrStone");
+                    BlockValue glassCeilingBlockValue = Block.GetBlockValue("glassBusinessBlock");
+                    BlockValue glassBlockValue = Block.GetBlockValue("glassBulletproofBlock");
+                    BlockValue ladderValue = Block.GetBlockValue("ladderMetal");
+                    if (_params.Count == 4)
+                    {
+                        switch (_params[3].ToLower())
                         {
-                            floors = 7;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 7"));
-                        }
-                        else if (floors >= 9 && blocks > 50)
-                        {
-                            floors = 8;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 8"));
-                        }
-                        else if (floors >= 10 && blocks > 45)
-                        {
-                            floors = 9;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 9"));
-                        }
-                        else if (floors == 11 && blocks > 35)
-                        {
-                            floors = 10;
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Total block count is too high. Floor count decreased to 10"));
-                        }
-                        World world = GameManager.Instance.World;
-                        EntityPlayer player = world.Players.dict[_senderInfo.RemoteClientInfo.entityId];
-                        if (player == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form player info for world position. Join the game first or check for errors"));
-                            return;
-                        }
-                        if (player.position.y < 3)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Your position is too low. Unable to generate maze at this world height"));
-                            return;
-                        }
-                        BlockValue groundBlockValue = world.GetBlock(new Vector3i(player.position.x, player.position.y - 1, player.position.z));
-                        if (groundBlockValue.Equals(BlockValue.Air))
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Air block detected under you. Unable to generate a maze at this position"));
-                            return;
-                        }
-                        Block steelFloors = Block.GetBlockByName("steelShapes:cube");
-                        if (steelFloors == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: steelShapes"));
-                            return;
-                        }
-                        Block concreteWalls = Block.GetBlockByName("concreteShapes:cube");
-                        if (concreteWalls == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: concreteShapes"));
-                            return;
-                        }
-                        Block stoneFiller = Block.GetBlockByName("terrStone");
-                        if (stoneFiller == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: terrStone"));
-                            return;
-                        }
-                        Block glassCeiling = Block.GetBlockByName("glassBusinessBlock");
-                        if (glassCeiling == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBusinessBlock"));
-                            return;
-                        }
-                        Block glassBlock = Block.GetBlockByName("glassBulletproofBlock");
-                        if (glassBlock == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: glassBulletproofBlock"));
-                            return;
-                        }
-                        Block ladder = Block.GetBlockByName("ladderMetal");
-                        if (ladder == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to find block name: ladderMetal"));
-                            return;
-                        }
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Maze generator started at position '{0}'. Please be patient", player.position));
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Inspect the maze for potential collapse after it spawns"));
-                        BlockValue steelBlockValue = Block.GetBlockValue("steelShapes:cube");
-                        BlockValue concreteBlockValue = Block.GetBlockValue("concreteShapes:cube");
-                        BlockValue stoneBlockValue = Block.GetBlockValue("terrStone");
-                        BlockValue glassCeilingBlockValue = Block.GetBlockValue("glassBusinessBlock");
-                        BlockValue glassBlockValue = Block.GetBlockValue("glassBulletproofBlock");
-                        BlockValue ladderValue = Block.GetBlockValue("ladderMetal");
-                        if (_params.Count == 4)
-                        {
-                            switch (_params[3].ToLower())
-                            {
-                                case "wood":
-                                    Block customBlock = Block.GetBlockByName("woodShapes:cube");
-                                    if (customBlock != null)
-                                    {
-                                        concreteBlockValue = Block.GetBlockValue("woodShapes:cube");
-                                    }
-                                    break;
-                                case "cobblestone":
-                                    customBlock = Block.GetBlockByName("cobblestoneShapes:cube");
-                                    if (customBlock != null)
-                                    {
-                                        concreteBlockValue = Block.GetBlockValue("cobblestoneShapes:cube");
-                                    }
-                                    break;
-                                case "steel":
-                                    customBlock = Block.GetBlockByName("steelShapes:cube");
-                                    if (customBlock != null)
-                                    {
-                                        concreteBlockValue = Block.GetBlockValue("steelShapes:cube");
-                                    }
-                                    break;
-                                case "brick":
-                                    customBlock = Block.GetBlockByName("brickShapes:cube");
-                                    if (customBlock != null)
-                                    {
-                                        concreteBlockValue = Block.GetBlockValue("brickShapes:cube");
-                                    }
-                                    break;
-                                case "glass":
-                                    concreteBlockValue = Block.GetBlockValue("glassBusinessBlock");
-                                    break;
-                            }
-                        }
-                        Vector3i vectors = new Vector3i();
-                        vectors.x = (int)player.position.x - blocks / 2;
-                        vectors.y = (int)player.position.y - 1;
-                        vectors.z = (int)player.position.z - blocks / 2;
-                        Vector3i pathStart = new Vector3i(vectors.x + 1, (int)player.position.y, vectors.z + 1);
-                        Dictionary<Vector3i, int[]> template = new Dictionary<Vector3i, int[]>();
-                        Dictionary<Vector3i, string> blockValues = new Dictionary<Vector3i, string>();
-                        Dictionary<Vector3i, BlockValue> undo = new Dictionary<Vector3i, BlockValue>();
-                        List<Chunk> chunks = new List<Chunk>();
-                        BlockValue oldBlockValue = BlockValue.Air;
-                        for (int i = 0; i < blocks; i++)
-                        {
-                            for (int j = 0; j < blocks; j++)
-                            {
-                                if (world.IsChunkAreaLoaded(vectors.x, vectors.y, vectors.z))
+                            case "wood":
+                                Block customBlock = Block.GetBlockByName("woodShapes:cube");
+                                if (customBlock != null)
                                 {
-                                    Chunk chunk = (Chunk)world.GetChunkFromWorldPos(vectors.x, vectors.y, vectors.z);
-                                    if (!chunks.Contains(chunk))
-                                    {
-                                        chunks.Add(chunk);
-                                    }
-                                    template.Add(vectors, new int[] { i, j });
-                                    blockValues.Add(vectors, "steel");
+                                    concreteBlockValue = Block.GetBlockValue("woodShapes:cube");
+                                }
+                                break;
+                            case "cobblestone":
+                                customBlock = Block.GetBlockByName("cobblestoneShapes:cube");
+                                if (customBlock != null)
+                                {
+                                    concreteBlockValue = Block.GetBlockValue("cobblestoneShapes:cube");
+                                }
+                                break;
+                            case "steel":
+                                customBlock = Block.GetBlockByName("steelShapes:cube");
+                                if (customBlock != null)
+                                {
+                                    concreteBlockValue = Block.GetBlockValue("steelShapes:cube");
+                                }
+                                break;
+                            case "brick":
+                                customBlock = Block.GetBlockByName("brickShapes:cube");
+                                if (customBlock != null)
+                                {
+                                    concreteBlockValue = Block.GetBlockValue("brickShapes:cube");
+                                }
+                                break;
+                            case "glass":
+                                concreteBlockValue = Block.GetBlockValue("glassBusinessBlock");
+                                break;
+                        }
+                    }
+                    Vector3i vectors = new Vector3i();
+                    vectors.x = (int)player.position.x - blocks / 2;
+                    vectors.y = (int)player.position.y - 1;
+                    vectors.z = (int)player.position.z - blocks / 2;
+                    Vector3i pathStart = new Vector3i(vectors.x + 1, (int)player.position.y, vectors.z + 1);
+                    Dictionary<Vector3i, int[]> template = new Dictionary<Vector3i, int[]>();
+                    Dictionary<Vector3i, string> blockValues = new Dictionary<Vector3i, string>();
+                    Dictionary<Vector3i, BlockValue> undo = new Dictionary<Vector3i, BlockValue>();
+                    List<Chunk> chunks = new List<Chunk>();
+                    BlockValue oldBlockValue = BlockValue.Air;
+                    for (int i = 0; i < blocks; i++)
+                    {
+                        for (int j = 0; j < blocks; j++)
+                        {
+                            if (world.IsChunkAreaLoaded(vectors.x, vectors.y, vectors.z))
+                            {
+                                Chunk chunk = (Chunk)world.GetChunkFromWorldPos(vectors.x, vectors.y, vectors.z);
+                                if (!chunks.Contains(chunk))
+                                {
+                                    chunks.Add(chunk);
+                                }
+                                template.Add(vectors, new int[] { i, j });
+                                blockValues.Add(vectors, "steel");
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output("[SERVERTOOLS] Part of the maze is outside of a loaded chunk area. Reduce the size of the maze");
+                                return;
+                            }
+                            vectors.z++;
+                        }
+                        vectors.z -= blocks;
+                        vectors.x++;
+                    }
+                    vectors.x -= blocks;
+                    vectors.z -= blocks;
+                    int levels = floors * 3;
+                    for (int i = 1; i <= levels; i++)
+                    {
+                        foreach (var vector in template)
+                        {
+                            if (vector.Value[0] == 0 || vector.Value[1] == 0 || vector.Value[0] == blocks - 1 || vector.Value[1] == blocks - 1)
+                            {
+                                blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
+                            }
+                            else if (i % 3 == 0)
+                            {
+                                if (i == levels)
+                                {
+                                    blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glass");
                                 }
                                 else
-                                {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Part of the maze is outside of a loaded chunk area. Reduce the size of the maze"));
-                                    return;
-                                }
-                                vectors.z++;
-                            }
-                            vectors.z -= blocks;
-                            vectors.x++;
-                        }
-                        vectors.x -= blocks;
-                        vectors.z -= blocks;
-                        int levels = floors * 3;
-                        for (int i = 1; i <= levels; i++)
-                        {
-                            foreach (var vector in template)
-                            {
-                                if (vector.Value[0] == 0 || vector.Value[1] == 0 || vector.Value[0] == blocks - 1 || vector.Value[1] == blocks - 1)
                                 {
                                     blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
                                 }
-                                else if (i % 3 == 0)
-                                {
-                                    if (i == levels)
-                                    {
-                                        blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glass");
-                                    }
-                                    else
-                                    {
-                                        blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "glassWall");
-                                    }
-                                }
-                                else
-                                {
-                                    blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "...");
-                                }
+                            }
+                            else
+                            {
+                                blockValues.Add(new Vector3i(vector.Key.x, vector.Key.y + i, vector.Key.z), "...");
                             }
                         }
-                        blockValues[new Vector3i(pathStart.x - 1, pathStart.y, pathStart.z)] = "air";
-                        blockValues[new Vector3i(pathStart.x - 1, pathStart.y + 1, pathStart.z)] = "air";
-                        blockValues = FormPath(blockValues, pathStart, blocks, floors);
-                        if (blockValues == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
-                            return;
-                        }
-                        List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
-                        foreach (var blockValue in blockValues)
-                        {
-                            oldBlockValue = world.GetBlock(blockValue.Key);
-                            undo.Add(blockValue.Key, oldBlockValue);
-                            switch (blockValue.Value)
-                            {
-                                case "...":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
-                                    break;
-                                case "steel":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
-                                    break;
-                                case "glassWall":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
-                                    break;
-                                case "wall":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
-                                    break;
-                                case "wallPassage":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
-                                    break;
-                                case "air":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                    break;
-                                case "path":
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
-                                    break;
-                                case "ladder1":
-                                    ladderValue.rotation = 1;
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                    break;
-                                case "ladder2":
-                                    ladderValue.rotation = 2;
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                    break;
-                                case "ladder3":
-                                    ladderValue.rotation = 3;
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                    break;
-                                case "ladder4":
-                                    ladderValue.rotation = 4;
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
-                                    break;
-                                case "glass":
-                                    ladderValue.rotation = 4;
-                                    blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
-                                    break;
-                            }
-                        }
-                        if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
-                        {
-                            Undo[_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString] = undo;
-                        }
-                        else
-                        {
-                            Undo.Add(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, undo);
-                        }
-                        if (blockList.Count >= 3600)
-                        {
-                            List<BlockChangeInfo> reducedforPacket = blockList.GetRange(3600, blockList.Count - 1);
-                            blockList.RemoveRange(3600, blockList.Count - 1);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                            {
-                                ThreadManager.StartCoroutine(SetBlocks(blockList));
-                            }, null);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                            {
-                                ThreadManager.StartCoroutine(SetBlocks(reducedforPacket));
-                            }, null);
-                        }
-                        else
-                        {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                            {
-                                ThreadManager.StartCoroutine(SetBlocks(blockList));
-                            }, null);
-                        }
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Maze has been formed. One entrance/exit is on top and the other is in the south west corner"));
-                        Timers.MazeGenerationDelayTimer(blockList);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Use command maze undo to reset the blocks to their prior state"));
+                    }
+                    blockValues[new Vector3i(pathStart.x - 1, pathStart.y, pathStart.z)] = "air";
+                    blockValues[new Vector3i(pathStart.x - 1, pathStart.y + 1, pathStart.z)] = "air";
+                    blockValues = FormPath(blockValues, pathStart, blocks, floors);
+                    if (blockValues == null)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to form the maze. Try again"));
                         return;
-                    }, null, null, true);
+                    }
+                    List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
+                    foreach (var blockValue in blockValues)
+                    {
+                        oldBlockValue = world.GetBlock(blockValue.Key);
+                        undo.Add(blockValue.Key, oldBlockValue);
+                        switch (blockValue.Value)
+                        {
+                            case "...":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, stoneBlockValue));
+                                break;
+                            case "steel":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, steelBlockValue));
+                                break;
+                            case "glassWall":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassBlockValue));
+                                break;
+                            case "wall":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
+                                break;
+                            case "wallPassage":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, concreteBlockValue));
+                                break;
+                            case "air":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
+                                break;
+                            case "path":
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, BlockValue.Air));
+                                break;
+                            case "ladder1":
+                                ladderValue.rotation = 1;
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                break;
+                            case "ladder2":
+                                ladderValue.rotation = 2;
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                break;
+                            case "ladder3":
+                                ladderValue.rotation = 3;
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                break;
+                            case "ladder4":
+                                ladderValue.rotation = 4;
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, ladderValue));
+                                break;
+                            case "glass":
+                                ladderValue.rotation = 4;
+                                blockList.Add(new BlockChangeInfo(0, blockValue.Key, glassCeilingBlockValue));
+                                break;
+                        }
+                    }
+                    if (Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
+                    {
+                        Undo[_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString] = undo;
+                    }
+                    else
+                    {
+                        Undo.Add(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, undo);
+                    }
+                    SetBlocks(blockList);
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Maze has been formed. One entrance/exit is on top and the other is in the south west corner");
+                    Timers.MazeGenerationDelayTimer(blockList);
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Use command maze undo to reset the blocks to their prior state");
+                    return;
                 }
                 else if (_params[0].ToLower().Equals("undo"))
                 {
-                    ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _info)
+                    if (_params.Count != 1)
                     {
-                        if (_params.Count != 1)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
-                            return;
-                        }
-                        if (_senderInfo.RemoteClientInfo == null)
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Unable to form client info to run undo command"));
-                            return;
-                        }
-                        if (!Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
-                        {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] You have not spawned a maze. Unable to undo"));
-                            return;
-                        }
-                        Undo.TryGetValue(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, out Dictionary<Vector3i, BlockValue> undo);
-                        World world = GameManager.Instance.World;
-                        foreach (var block in undo)
-                        {
-                            if (!world.IsChunkAreaLoaded(block.Key.x, block.Key.y, block.Key.z))
-                            {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Area is not loaded @ {0}. Unable to undo maze blocks", block.Key));
-                                return;
-                            }
-                        }
-                        List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
-                        foreach (var block in undo)
-                        {
-                            blockList.Add(new BlockChangeInfo(0, block.Key, block.Value));
-                        }
-                        if (blockList.Count >= 3600)
-                        {
-                            List<BlockChangeInfo> reducedforPacket = blockList.GetRange(3600, blockList.Count - 1);
-                            blockList.RemoveRange(3600, blockList.Count - 1);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                            {
-                                ThreadManager.StartCoroutine(SetBlocks(blockList));
-                            }, null);
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                            {
-                                ThreadManager.StartCoroutine(SetBlocks(reducedforPacket));
-                            }, null);
-                        }
-                        else
-                        {
-                            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                            {
-                                ThreadManager.StartCoroutine(SetBlocks(blockList));
-                            }, null);
-                        }
-                        Undo.Remove(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString);
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] The maze you last spawned has been undone"));
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count);
                         return;
-                    }, null, null, true);
+                    }
+                    if (_senderInfo.RemoteClientInfo == null)
+                    {
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Unable to form client info to run undo command");
+                        return;
+                    }
+                    if (!Undo.ContainsKey(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString))
+                    {
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] You have not spawned a maze. Unable to undo");
+                        return;
+                    }
+                    Undo.TryGetValue(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString, out Dictionary<Vector3i, BlockValue> undo);
+                    World world = GameManager.Instance.World;
+                    foreach (var block in undo)
+                    {
+                        if (!world.IsChunkAreaLoaded(block.Key.x, block.Key.y, block.Key.z))
+                        {
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Area is not loaded @ {0}. Unable to undo maze blocks", block.Key);
+                            return;
+                        }
+                    }
+                    List<BlockChangeInfo> blockList = new List<BlockChangeInfo>();
+                    SetBlocks(blockList);
+                    Undo.Remove(_senderInfo.RemoteClientInfo.CrossplatformId.CombinedString);
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] The maze you last spawned has been undone");
+                    return;
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid argument {0}", _params[0]);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in MazeConsole.Execute: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in MazeConsole.Execute: {0}", e.Message);
             }
         }
 

@@ -34,7 +34,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (NewSpawnTele.IsEnabled)
@@ -42,12 +42,12 @@ namespace ServerTools
                         NewSpawnTele.IsEnabled = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele has been set to off"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele is already off"));
                         return;
                     }
                 }
@@ -55,7 +55,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found '{0}'", _params.Count));
                         return;
                     }
                     if (!NewSpawnTele.IsEnabled)
@@ -63,12 +63,12 @@ namespace ServerTools
                         NewSpawnTele.IsEnabled = true;
                         Config.WriteXml();
                         Config.LoadXml();
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele has been set to on"));
                         return;
                     }
                     else
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] New spawn tele is already on"));
                         return;
                     }
                 }
@@ -76,7 +76,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 1 && _params.Count != 4)
                     {
-                        SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 4, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 4, found '{0}'", _params.Count));
                         return;
                     }
                     else if (_params.Count == 1)
@@ -97,7 +97,7 @@ namespace ServerTools
                                 Config.LoadXml();
                                 Phrases.Dict.TryGetValue("NewSpawnTele1", out string phrase);
                                 phrase = phrase.Replace("{Position}", sposition);
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
                                 return;
                             }
                         }
@@ -116,28 +116,28 @@ namespace ServerTools
                                     Config.LoadXml();
                                     Phrases.Dict.TryGetValue("NewSpawnTele1", out string phrase);
                                     phrase = phrase.Replace("{Position}", sposition);
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] '{0}'", phrase));
                                     return;
                                 }
                                 else
                                 {
-                                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[3]));
                                 }
                             }
                             else
                             {
-                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
                             }
                         }
                         else
                         {
-                            SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
                         }
                     }
                 }
                 else
                 {
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
                 }
             }
             catch (Exception e)

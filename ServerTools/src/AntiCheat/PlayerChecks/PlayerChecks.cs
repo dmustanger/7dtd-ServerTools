@@ -38,7 +38,7 @@ namespace ServerTools
                                     if (player.IsSpectator)
                                     {
                                         Phrases.Dict.TryGetValue("Spectator2", out string phrase);
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", cInfo.CrossplatformId.CombinedString, phrase), null);
                                         using (StreamWriter sw = new StreamWriter(filepath, true, Encoding.UTF8))
                                         {
                                             sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' using spectator mode @ '{3}'", cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, player.position));

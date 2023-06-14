@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEngine;
 
 public static class Injections
 {
@@ -53,7 +52,7 @@ public static class Injections
         }
     }
 
-    public static void GameManager_ChangeBlocks_Postfix(GameManager __instance, PlatformUserIdentifierAbs persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
+    public static void GameManager_ChangeBlocks_Prefix(GameManager __instance, PlatformUserIdentifierAbs persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
     {
         try
         {
@@ -61,7 +60,7 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ChangeBlocks_Postfix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ChangeBlocks_Prefix: {0}", e.Message));
         }
     }
 
@@ -585,90 +584,6 @@ public static class Injections
         {
             DupeLog.Exec(_cInfo, _playerDataFile);
         }
-    }
-
-    public static bool ConsoleCmdChunkReset_Execute_Prefix(List<string> _params)
-    {
-        try
-        {
-            World world = GameManager.Instance.World;
-            if (_params.Count >= 2)
-            {
-                if (!int.TryParse(_params[0], out int num))
-                {
-                    SdtdConsole.Instance.Output("x1 is not a valid integer");
-                    return false;
-                }
-                if (!int.TryParse(_params[1], out int num2))
-                {
-                    SdtdConsole.Instance.Output("z1 is not a valid integer");
-                    return false;
-                }
-                int num3 = num;
-                int num4 = num2;
-                if (_params.Count >= 3 && !int.TryParse(_params[2], out num3))
-                {
-                    SdtdConsole.Instance.Output("x2 is not a valid integer");
-                    return false;
-                }
-                if (_params.Count >= 4 && !int.TryParse(_params[3], out num4))
-                {
-                    SdtdConsole.Instance.Output("z2 is not a valid integer");
-                    return false;
-                }
-                Vector2i vector2i = new Vector2i((num <= num3) ? num : num3, (num2 <= num4) ? num2 : num4);
-                Vector2i vector2i2 = new Vector2i((num <= num3) ? num3 : num, (num2 <= num4) ? num4 : num2);
-                if (vector2i2.x - vector2i.x > 16384 || vector2i2.y - vector2i.y > 16384)
-                {
-                    SdtdConsole.Instance.Output("area too big");
-                    return false;
-                }
-                int num5 = World.toChunkXZ(vector2i.x);
-                int num6 = World.toChunkXZ(vector2i.y);
-                int num7 = World.toChunkXZ(vector2i2.x);
-                int num8 = World.toChunkXZ(vector2i2.y);
-
-                HashSetLong hashSetLong = new HashSetLong();
-                for (int i = num5; i <= num7; i++)
-                {
-                    for (int j = num6; j <= num8; j++)
-                    {
-                        hashSetLong.Add(WorldChunkCache.MakeChunkKey(i, j));
-                    }
-                }
-                ChunkCluster chunkCache = world.ChunkCache;
-                ChunkProviderGenerateWorld chunkProviderGenerateWorld = world.ChunkCache.ChunkProvider as ChunkProviderGenerateWorld;
-                if (chunkProviderGenerateWorld != null)
-                {
-                    //chunkProviderGenerateWorld.RemoveChunks(hashSetLong);
-                    foreach (long key in hashSetLong)
-                    {
-                        if (!chunkProviderGenerateWorld.GenerateSingleChunk(chunkCache, key, true))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Failed regenerating chunk at position {0}/{1}", WorldChunkCache.extractX(key) << 4, WorldChunkCache.extractZ(key) << 4));
-                        }
-                    }
-                    world.m_ChunkManager.ResendChunksToClients(hashSetLong);
-                    SdtdConsole.Instance.Output(string.Format("Reset chunks covering area {0}/{1} to {2}/{3} (chunk coordinates {4} to {5}).", new object[]
-                    {
-                    num,
-                    num2,
-                    num3,
-                    num4,
-                    vector2i,
-                    vector2i2
-                    }));
-                    return false;
-                }
-                SdtdConsole.Instance.Output(string.Format("Can not reset chunks on this game"));
-                return false;
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ConsoleCmdChunkReset_Execute_Prefix: {0}", e.Message));
-        }
-        return true;
     }
 
     public static bool BlockLandClaim_HandleDeactivatingCurrentLandClaims_Prefix()
