@@ -1,5 +1,25 @@
 ﻿CHANGELOG
 
+21.0.3
+Built using Alpha 21 experimental assets
+Functioning with Alpha 21 experimental. Untested with other versions
+
+-Fixed currency exchange system
+-Changed /commands response to only show commands marked reserved to
+actively reserved players
+-Changed currency exchange to check for inventory state due to lag.
+Players with high pings may experience a small delay in response
+to receiving owed currency when using commands
+-Changed api triggers to force ServerTools to dedicated servers only
+*delete your existing gameevents.xml from .../mods/ServerTools/Config
+and restart twice after updating installation files*
+
+Known issues:
+-Vaultbox tool does not work consistently for all
+servers. Recommend keeping it disabled
+-Shop panel does not recognize two players using the same ip
+-RIO is not functioning as intended
+
 21.0.2
 Built using Alpha 21 experimental assets
 Functioning with Alpha 21 experimental. Untested with other versions

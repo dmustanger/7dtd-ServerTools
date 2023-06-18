@@ -200,6 +200,15 @@ namespace ServerTools
                                     if (DateTime.Now < dt)
                                     {
                                         string c = kvp.Key;
+                                        if (GameManager.Instance.adminTools.Commands.GetCommands().ContainsKey(c))
+                                        {
+                                            string[] commandPermission = { c };
+                                            int tier = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId);
+                                            if (tier == 0 || tier == GameManager.Instance.adminTools.Commands.GetCommandPermissionLevel(commandPermission))
+                                            {
+                                                continue;
+                                            }
+                                        }
                                         commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
                                         if (commands.Length >= 100)
                                         {
@@ -213,6 +222,15 @@ namespace ServerTools
                                     if (DateTime.Now < dt)
                                     {
                                         string c = kvp.Key;
+                                        if (GameManager.Instance.adminTools.Commands.GetCommands().ContainsKey(c))
+                                        {
+                                            string[] commandPermission = { c };
+                                            int tier = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId);
+                                            if (tier == 0 || tier == GameManager.Instance.adminTools.Commands.GetCommandPermissionLevel(commandPermission))
+                                            {
+                                                continue;
+                                            }
+                                        }
                                         commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, c);
                                         if (commands.Length >= 100)
                                         {
@@ -224,6 +242,15 @@ namespace ServerTools
                                 continue;
                             }
                             string d = kvp.Key;
+                            if (GameManager.Instance.adminTools.Commands.GetCommands().ContainsKey(d))
+                            {
+                                string[] commandPermission = { d };
+                                int tier = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId);
+                                if (tier == 0 || tier == GameManager.Instance.adminTools.Commands.GetCommandPermissionLevel(commandPermission))
+                                {
+                                    continue;
+                                }
+                            }
                             commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, d);
                             if (commands.Length >= 100)
                             {

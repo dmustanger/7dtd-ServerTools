@@ -223,7 +223,7 @@ namespace ServerTools
         public static void RemoveCurrency(string _steamid, int _amount)
         {
             ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(_steamid);
-            if (cInfo == null || _amount < 1)
+            if (cInfo == null || _amount < 1 || !GameEventManager.GameEventSequences.ContainsKey("action_currency"))
             {
                 return;
             }
@@ -234,26 +234,44 @@ namespace ServerTools
             }
             List<string[]> otherCurrency = new List<string[]>();
             otherCurrency = GetOtherCurrency(cInfo.CrossplatformId.CombinedString, otherCurrency);
-            int count = GetCurrency(cInfo.CrossplatformId.CombinedString);
+            int currency = GetCurrency(cInfo.CrossplatformId.CombinedString);
             if (!player.IsSpawned())
             {
-                Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, count);
+                Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount);
             }
-            if (!GameEventManager.GameEventSequences.ContainsKey("action_currency"))
+            int balance = currency - _amount;
+            if (balance >= 0)
             {
-                return;
-            }
-            GameEventManager.Current.HandleAction("action_currency", null, player, false, "");
-            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
-            if (count >= _amount)
-            {
-                count -= _amount;
-                if (count > 0)
+                GameEventManager.Current.HandleAction("action_currency", null, player, false);
+                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                if (!UpdateMainCurrency.ContainsKey(cInfo.entityId))
                 {
-                    UpdateMainCurrency.Add(cInfo.entityId, count);
+                    UpdateMainCurrency.Add(cInfo.entityId, balance);
                     if (otherCurrency.Count > 0)
                     {
-                        UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
+                        if (!UpdateAltCurrency.ContainsKey(cInfo.entityId))
+                        {
+                            UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
+                        }
+                        else
+                        {
+                            UpdateAltCurrency[cInfo.entityId] = otherCurrency;
+                        }
+                    }
+                }
+                else
+                {
+                    UpdateMainCurrency[cInfo.entityId] = balance;
+                    if (otherCurrency.Count > 0)
+                    {
+                        if (!UpdateAltCurrency.ContainsKey(cInfo.entityId))
+                        {
+                            UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
+                        }
+                        else
+                        {
+                            UpdateAltCurrency[cInfo.entityId] = otherCurrency;
+                        }
                     }
                 }
             }

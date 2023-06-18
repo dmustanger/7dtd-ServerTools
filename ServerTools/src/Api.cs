@@ -32,56 +32,64 @@ namespace ServerTools
             ModEvents.GameAwake.RegisterHandler(GameAwake);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
             ModEvents.GameShutdown.RegisterHandler(GameShutdown);
-
             ModEvents.PlayerLogin.RegisterHandler(PlayerLogin);
-            ModEvents.PlayerSpawning.RegisterHandler(PlayerSpawning);
             ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
-            ModEvents.GameMessage.RegisterHandler(GameMessage);
-            ModEvents.SavePlayerData.RegisterHandler(SavePlayerData);
             ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
 
+            //ModEvents.SavePlayerData.RegisterHandler(SavePlayerData);
+            //ModEvents.PlayerSpawning.RegisterHandler(PlayerSpawning);
+            //ModEvents.GameMessage.RegisterHandler(GameMessage);
             //ModEvents.EntityKilled.RegisterHandler(EntityKilled);
         }
 
         private void GameAwake()
         {
-            OutputLog.Exec();
+            if (GameManager.IsDedicatedServer)
+            {
+                OutputLog.Exec();
+            }
         }
 
         private static void GameStartDone()
         {
-            Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
-            if (!Directory.Exists(ConfigPath))
+            if (GameManager.IsDedicatedServer)
             {
-                Directory.CreateDirectory(ConfigPath);
-                Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
+                Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
+                if (!Directory.Exists(ConfigPath))
+                {
+                    Directory.CreateDirectory(ConfigPath);
+                    Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
+                }
+                LoadProcess.Load();
             }
-            LoadProcess.Load();
         }
 
         private static void GameShutdown()
         {
-            GeneralOperations.Shutdown_Initiated = true;
-            if (WebAPI.IsEnabled && WebAPI.IsRunning)
+            if (GameManager.IsDedicatedServer)
             {
-                WebAPI.Unload();
-            }
-            Timers.CoreTimerStop();
-            Phrases.Unload();
-            CommandList.Unload();
-            OutputLog.Shutdown();
-            if (AutoRestart.IsEnabled)
-            {
-                AutoRestart.Exec();
+                GeneralOperations.Shutdown_Initiated = true;
+                if (WebAPI.IsEnabled && WebAPI.IsRunning)
+                {
+                    WebAPI.Unload();
+                }
+                Timers.CoreTimerStop();
+                Phrases.Unload();
+                CommandList.Unload();
+                OutputLog.Shutdown();
+                if (AutoRestart.IsEnabled)
+                {
+                    AutoRestart.Exec();
+                }
             }
         }
 
         private static bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)//Initiating player login
         {
-            try
+            if (GameManager.IsDedicatedServer && _cInfo != null)
             {
-                if (_cInfo != null)
+                try
                 {
                     if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
                     {
@@ -119,24 +127,19 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Player connected with ID '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}", e.Message));
+                catch (Exception e)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}", e.Message));
+                }
             }
             return true;
         }
 
-        private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)//Setting player view and profile
-        {
-            
-        }
-
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
         {
-            try
+            if (GameManager.IsDedicatedServer && _cInfo != null && _pos != null)
             {
-                if (_cInfo != null && _pos != null)
+                try
                 {
                     if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
                     {
@@ -155,7 +158,7 @@ namespace ServerTools
                         }
                         else if (_respawnReason == RespawnType.LoadedGame)
                         {
-                    
+
                         }
                         else if (_respawnReason == RespawnType.EnterMultiplayer)
                         {
@@ -266,55 +269,27 @@ namespace ServerTools
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawnedInWorld: {0}", e.Message));
+                catch (Exception e)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawnedInWorld: {0}", e.Message));
+                }
             }
         }
 
         private static bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
-        }
-
-        private static bool GameMessage(ClientInfo _cInfo, EnumGameMessages _type, string _msg, string _mainName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
-        {
-            try
+            if (GameManager.IsDedicatedServer)
             {
-                
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.GameMessage: {0}", e.Message));
+                return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
             }
             return true;
         }
 
-        private static void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
-        {
-            try
-            {
-                if (_cInfo != null && _playerDataFile != null)
-                {
-                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
-                    {
-                        _cInfo.CrossplatformId = _cInfo.PlatformId;
-                    }
-        
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.SavePlayerData: {0}", e.Message));
-            }
-        }
-
         public static void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
-            try
+            if (GameManager.IsDedicatedServer && _cInfo != null)
             {
-                if (_cInfo != null)
+                try
                 {
                     if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
                     {
@@ -410,14 +385,10 @@ namespace ServerTools
                     }
                     EventSchedule.Expired.Add("Bonus_" + id);
                 }
-                else
+                catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Player disconnected"));
+                    Log.Out("[SERVERTOOLS] Error in API.PlayerDisconnected: {0}", e.Message);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerDisconnected: {0}", e.Message));
             }
         }
 

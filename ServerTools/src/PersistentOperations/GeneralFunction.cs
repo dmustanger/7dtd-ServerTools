@@ -81,10 +81,9 @@ namespace ServerTools
                         sw.WriteLine("<append xpath=\"/gameevents\">");
                         sw.WriteLine();
                         sw.WriteLine("  <action_sequence name=\"action_admin\">");
-                        sw.WriteLine();
                         sw.WriteLine("      <action class=\"RemoveItems\">");
                         sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
-                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"admin\" />");
+                        sw.WriteLine("          <property name=\"items_tags\" value=\"admin\" />");
                         sw.WriteLine("      </action>");
                         sw.WriteLine();
                         sw.WriteLine("      <action class=\"PlaySound\">");
@@ -95,10 +94,9 @@ namespace ServerTools
                         sw.WriteLine("  </action_sequence>");
                         sw.WriteLine();
                         sw.WriteLine("  <action_sequence name=\"action_dukes\">");
-                        sw.WriteLine();
                         sw.WriteLine("      <action class=\"RemoveItems\">");
                         sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
-                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"dukes\" />");
+                        sw.WriteLine("          <property name=\"items_tags\" value=\"dukes\" />");
                         sw.WriteLine("      </action>");
                         sw.WriteLine();
                         sw.WriteLine("      <action class=\"PlaySound\">");
@@ -109,10 +107,9 @@ namespace ServerTools
                         sw.WriteLine("  </action_sequence>");
                         sw.WriteLine();
                         sw.WriteLine("  <action_sequence name=\"action_currency\">");
-                        sw.WriteLine();
                         sw.WriteLine("      <action class=\"RemoveItems\">");
                         sw.WriteLine("          <property name=\"items_location\" value=\"Backpack\" />");
-                        sw.WriteLine("          <property name=\"remove_item_tag\" value=\"currency\" />");
+                        sw.WriteLine("          <property name=\"items_tags\" value=\"currency\" />");
                         sw.WriteLine("      </action>");
                         sw.WriteLine();
                         sw.WriteLine("      <action class=\"PlaySound\">");
@@ -123,7 +120,6 @@ namespace ServerTools
                         sw.WriteLine("  </action_sequence>");
                         sw.WriteLine();
                         sw.WriteLine("  <action_sequence name=\"action_eject\">");
-                        sw.WriteLine();
                         sw.WriteLine("      <action class=\"EjectFromVehicle\">");
                         sw.WriteLine("      </action>");
                         sw.WriteLine();
@@ -449,10 +445,6 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<append xpath=\"/xui/ruleset\">");
                         sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserMap\">");
-                        sw.WriteLine("      <window name=\"browserMap\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserDiscord\">");
                         sw.WriteLine("      <window name=\"browserDiscord\" />");
                         sw.WriteLine("  </window_group>");
@@ -471,10 +463,6 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserAuction\">");
                         sw.WriteLine("      <window name=\"browserAuction\" />");
-                        sw.WriteLine("  </window_group>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window_group name=\"browserIMap\">");
-                        sw.WriteLine("      <window name=\"browserIMap\" />");
                         sw.WriteLine("  </window_group>");
                         sw.WriteLine();
                         sw.WriteLine("  <window_group name=\"browserDonation\">");
@@ -1168,6 +1156,10 @@ namespace ServerTools
             {
                 string commands = "";
                 EntityPlayer player = GetEntityPlayer(_cInfo.entityId);
+                if (player == null)
+                {
+                    return;
+                }
                 if (AdminList.IsEnabled && AdminList.Command_adminlist != "")
                 {
                     if (CommandList.Dict.TryGetValue(AdminList.Command_adminlist, out string[] values))
@@ -2584,7 +2576,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.CustomCommandList: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.CommandsList: {0}", e.Message));
             }
         }
 

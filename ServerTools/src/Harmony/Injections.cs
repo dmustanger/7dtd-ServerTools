@@ -395,14 +395,22 @@ public static class Injections
 
     public static void NetPackagePlayerInventory_ProcessPackage_Postfix(NetPackagePlayerInventory __instance)
     {
-        if (Wallet.IsEnabled && Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId))
+        if (__instance.Sender != null && Wallet.IsEnabled && (Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId) || Wallet.UpdateAltCurrency.ContainsKey(__instance.Sender.entityId)))
         {
-            if (Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId) && Wallet.UpdateMainCurrency.TryGetValue(__instance.Sender.entityId, out int mainCurrencyCount))
+            ItemStack[] stacks = __instance.Sender.latestPlayerData.bag;
+            for (int i = 0; i < stacks.Length; i++)
+            {
+                if (!stacks[i].IsEmpty() && stacks[i].itemValue.ItemClass.Name == GeneralOperations.Currency_Item)
+                {
+                    return;
+                }
+            }
+            if (Wallet.UpdateMainCurrency.TryGetValue(__instance.Sender.entityId, out int balance))
             {
                 Wallet.UpdateMainCurrency.Remove(__instance.Sender.entityId);
-                Wallet.AddCurrency(__instance.Sender.CrossplatformId.CombinedString, mainCurrencyCount, false);
+                Wallet.AddCurrency(__instance.Sender.CrossplatformId.CombinedString, balance, false);
             }
-            if (Wallet.UpdateAltCurrency.ContainsKey(__instance.Sender.entityId) && Wallet.UpdateAltCurrency.TryGetValue(__instance.Sender.entityId, out List<string[]> altCurrency))
+            if (Wallet.UpdateAltCurrency.TryGetValue(__instance.Sender.entityId, out List<string[]> altCurrency))
             {
                 Wallet.UpdateAltCurrency.Remove(__instance.Sender.entityId);
                 Wallet.AddAltCurrency(__instance.Sender.CrossplatformId.CombinedString, altCurrency);

@@ -48,6 +48,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
 - [Tools](#tools)
   - [AdminChatCommands](#adminchatcommands)
   - [Admin_List](#admin_list)
+  - [Allocs_Map](#allocs_map)
   - [Animal_Tracking](#animal_tracking)
   - [Auction](#auction)
   - [Auto_Backup](#auto_backup)
@@ -528,6 +529,22 @@ Type /admins or !admins in chat to get a response showing the currently online a
 
 Setting Admin_Level to 2 would show all online administrators
 tier 0-2 as admin in the chat response.
+
+## Allocs_Map
+```xml
+<Tool Name="Allocs_Map" Enable="False" Link="" />
+```
+
+### Attributes
+* __Enable__  
+Set True or False to enable
+* __Link__  
+Set a numeric value for Admin_Level
+
+### Description
+Type /map in game for a pop up window with a clickable link that takes the player to allocs map via steam browser/overlay. 
+
+The Link provided is what players will be taken to when they click the link. 
 
 ## Animal_Tracking
 ```xml
