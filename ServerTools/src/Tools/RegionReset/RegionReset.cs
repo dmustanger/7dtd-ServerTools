@@ -137,6 +137,7 @@ namespace ServerTools
         //            if (nodeList != null)
         //            {
         //                File.Delete(FilePath);
+        //                Timers.UpgradeRegionResetXml(nodeList);
         //                UpgradeXml(nodeList);
         //                return;
         //            }
@@ -168,10 +169,10 @@ namespace ServerTools
         //        {
         //            sw.WriteLine("<RegionReset>");
         //            sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+        //            sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
         //            sw.WriteLine("    <!-- Possible time: day, week, month -->");
         //            sw.WriteLine("    <!-- <Region Name=\"r.0.0.7rg\" Time=\"day\" /> -->");
         //            sw.WriteLine("    <!-- <Region Name=\"r.-1.-1.7rg\" Time=\"week\" /> -->");
-        //            sw.WriteLine("    <Region Name=\"\" Time=\"\" />");
         //            if (Regions.Count > 0)
         //            {
         //                foreach (KeyValuePair<string, string> kvp in Regions)
@@ -295,7 +296,7 @@ namespace ServerTools
         //    }
         //}
         //
-        //private static void UpgradeXml(XmlNodeList nodeList)
+        //public static void UpgradeXml(XmlNodeList nodeList)
         //{
         //    try
         //    {
@@ -304,20 +305,23 @@ namespace ServerTools
         //        {
         //            sw.WriteLine("<RegionReset>");
         //            sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+        //            sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
         //            sw.WriteLine("    <!-- Possible time: day, week, month -->");
         //            sw.WriteLine("    <!-- <Region Name=\"r.0.0.7rg\" Time=\"day\" /> -->");
         //            sw.WriteLine("    <!-- <Region Name=\"r.-1.-1.7rg\" Time=\"week\" /> -->");
         //            for (int i = 0; i < nodeList.Count; i++)
         //            {
-        //                if (!nodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.0.0.7rg\"") &&
+        //                if (nodeList[i].NodeType == XmlNodeType.Comment)
+        //              {
+        //                if (!nodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.0.0.7rg\"") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
         //                    !nodeList[i].OuterXml.Contains("<!-- <Region Name=\"r.-1.-1.7rg\"") &&
         //                    !nodeList[i].OuterXml.Contains("<!-- Possible time") && !nodeList[i].OuterXml.Contains("<Region Name=\"\"") &&
         //                    !nodeList[i].OuterXml.Contains("<!-- <Version"))
         //                {
         //                    sw.WriteLine(nodeList[i].OuterXml);
         //                }
+        //               }
         //            }
-        //            sw.WriteLine("    <Region Name=\"\" Time=\"\" />");
         //            for (int i = 0; i < nodeList.Count; i++)
         //            {
         //                if (nodeList[i].NodeType != XmlNodeType.Comment)

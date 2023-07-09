@@ -79,7 +79,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeMotdXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -110,9 +111,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Motds>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
-                    sw.WriteLine("    <Server Message=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (string message in Dict)
@@ -173,7 +174,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -182,18 +183,21 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Motds>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Server Message=\"Welcome to the server\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") &&
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Server Message=\"Welcome") && !nodeList[i].OuterXml.Contains("<!-- <Server Message=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
-                        {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Server Message=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

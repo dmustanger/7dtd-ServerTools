@@ -19,7 +19,7 @@ namespace ServerTools
         private static AccessTools.FieldRef<NetPackagePlayerInventory, ItemStack[]> ToolBelt = AccessTools.FieldRefAccess<NetPackagePlayerInventory, ItemStack[]>("toolbelt");
 
 
-        public static void Exec(ClientInfo _cInfo, EntityPlayer _player, int slot, ItemValue _itemValue)
+        public static void Exec(ClientInfo _cInfo, int slot, ItemValue _itemValue)
         {
             if (_itemValue.ItemClass.DisplayType == "rangedRepairTool" || _itemValue.ItemClass.DisplayType == "rangedBow" || _itemValue.ItemClass.DisplayType == "adminRanged")
             {

@@ -89,7 +89,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeInvalidItemsXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -120,8 +121,8 @@ namespace ServerTools
                 {
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Item Name=\"air\" /> -->");
-                    sw.WriteLine("    <Item Name=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (string _item in Dict)
@@ -617,7 +618,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList _nodeList)
         {
             try
             {
@@ -626,21 +627,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<InvalidItems>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Item Name=\"air\" /> -->");
-                    for (int i = 0; i < nodeList.Count; i++)
+                    for (int i = 0; i < _nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- <Item Name=\"air") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Item Name=\"\""))
+                        if (_nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (!_nodeList[i].OuterXml.Contains("<!-- <Item Name=\"air") &&
+                            !_nodeList[i].OuterXml.Contains("<!-- <Version") && !_nodeList[i].OuterXml.Contains("<Item Name=\"\""))
+                            {
+                                sw.WriteLine(_nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Item Name=\"\" />");
-                    for (int i = 0; i < nodeList.Count; i++)
+                    for (int i = 0; i < _nodeList.Count; i++)
                     {
-                        if (nodeList[i].NodeType != XmlNodeType.Comment)
+                        if (_nodeList[i].NodeType != XmlNodeType.Comment)
                         {
-                            XmlElement line = (XmlElement)nodeList[i];
+                            XmlElement line = (XmlElement)_nodeList[i];
                             if (line.HasAttributes && line.Name == "Item")
                             {
                                 string name = "";

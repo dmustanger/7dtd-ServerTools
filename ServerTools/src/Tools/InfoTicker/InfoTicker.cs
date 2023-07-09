@@ -14,6 +14,7 @@ namespace ServerTools
         public static List<string> ExemptionList = new List<string>();
 
         private static string EventDelay = "";
+        private static DateTime time;
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
         private static List<string> MsgList = new List<string>();
 
@@ -86,7 +87,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeInfoTickerXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -122,10 +124,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
                     sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
-                    sw.WriteLine("    <Ticker Message=\"\" />");
                     if (Dict.Count > 0)
                     {
                         foreach (KeyValuePair<string, string> kvp in Dict)
@@ -162,68 +164,68 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay(bool _reset, bool _first)
+        public static void SetDelay(bool _loading)
         {
-            if (EventDelay != Delay)
+            if (EventDelay != Delay || _loading)
             {
                 if (!EventSchedule.Expired.Contains("InfoTicker"))
                 {
-                    EventSchedule.Expired.Add("InfoTicker");
+                    EventSchedule.RemoveFromSchedule("InfoTicker");
                 }
                 EventDelay = Delay;
-                _reset = true;
             }
-            if (_reset || _first)
+            if (Delay.Contains(",") && Delay.Contains(":"))
             {
-                if (Delay.Contains(",") && Delay.Contains(":"))
+                string[] times = Delay.Split(',');
+                for (int i = 0; i < times.Length; i++)
                 {
-                    string[] times = Delay.Split(',');
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        string[] timeSplit = times[i].Split(':');
-                        int.TryParse(timeSplit[0], out int hours);
-                        int.TryParse(timeSplit[1], out int minutes);
-                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.AddToSchedule("InfoTicker_" + time, time);
-                        }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                            EventSchedule.AddToSchedule("InfoTicker_" + time, time);
-                        }
-                    }
-                }
-                else if (Delay.Contains(":"))
-                {
-                    string[] timeSplit = Delay.Split(':');
-                    int.TryParse(timeSplit[0], out int hours);
-                    int.TryParse(timeSplit[1], out int minutes);
-                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    string[] timeSplit1 = times[i].Split(':');
+                    int.TryParse(timeSplit1[0], out int hours1);
+                    int.TryParse(timeSplit1[1], out int minutes1);
+                    time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
                     if (DateTime.Now < time)
                     {
-                        EventSchedule.AddToSchedule("InfoTicker_" + time, time);
+                        EventSchedule.AddToSchedule("InfoTicker", time);
+                        return;
                     }
-                    else
-                    {
-                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.AddToSchedule("InfoTicker_" + time, time);
-                    }
+                }
+                string[] timeSplit2 = times[0].Split(':');
+                int.TryParse(timeSplit2[0], out int hours2);
+                int.TryParse(timeSplit2[1], out int minutes2);
+                time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                EventSchedule.AddToSchedule("InfoTicker", time);
+                return;
+            }
+            else if (Delay.Contains(":"))
+            {
+                string[] timeSplit3 = Delay.Split(':');
+                int.TryParse(timeSplit3[0], out int hours3);
+                int.TryParse(timeSplit3[1], out int minutes3);
+                time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
+                if (DateTime.Now < time)
+                {
+                    EventSchedule.AddToSchedule("InfoTicker", time);
                 }
                 else
                 {
-                    if (int.TryParse(Delay, out int delay))
-                    {
-                        DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.AddToSchedule("InfoTicker_" + time, time);
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid Info_Ticker Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
-                    }
+                    time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                    EventSchedule.AddToSchedule("InfoTicker", time);
                 }
+                return;
+            }
+            else
+            {
+                if (int.TryParse(Delay, out int delay))
+                {
+                    time = DateTime.Now.AddMinutes(delay);
+                    EventSchedule.AddToSchedule("InfoTicker", time);
+                }
+                else
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Invalid Info_Ticker Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
+                    Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
+                }
+                return;
             }
         }
 
@@ -298,7 +300,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -307,19 +309,22 @@ namespace ServerTools
                 {
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName} -->");
                     sw.WriteLine("    <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know\" /> -->");
                     sw.WriteLine("    <!-- <Ticker Message=\"Type /commands for a list of the chat commands\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") &&
-                            !nodeList[i].OuterXml.Contains("<Ticker Message=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (!nodeList[i].OuterXml.Contains("<!-- Possible variables") && !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Have a suggestion") &&
+                            !nodeList[i].OuterXml.Contains("<Ticker Message=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Ticker Message=\"Type /commands") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<!-- Do not forget"))
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Ticker Message=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

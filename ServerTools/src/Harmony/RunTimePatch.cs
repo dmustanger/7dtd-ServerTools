@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
-using KinematicCharacterController;
+using Platform.XBL;
 using System;
 using System.Reflection;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -51,17 +50,17 @@ namespace ServerTools
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
-                original = AccessTools.Method(typeof(GameManager), "ChangeBlocks");
+                original = AccessTools.Method(typeof(NetPackageSetBlock), "ProcessPackage");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageSetBlock.ProcessPackage Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("GameManager_ChangeBlocks_Prefix");
+                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageSetBlock_ProcessPackage_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager_ChangeBlocks_Prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageSetBlock_ProcessPackage_Prefix"));
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
@@ -307,19 +306,19 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(NetPackageTileEntity), "Setup", new Type[] { typeof(TileEntity), typeof(TileEntity.StreamModeWrite), typeof(byte) });
+                original = AccessTools.Method(typeof(NetPackageTileEntity), "ProcessPackage");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity.Setup Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity.ProcessPackage Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("NetPackageTileEntity_Setup_Prefix");
-                    if (prefix == null)
+                    MethodInfo postfix = typeof(Injections).GetMethod("NetPackageTileEntity_ProcessPackage_Postfix");
+                    if (postfix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_Setup_Prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_ProcessPackage_Postfix"));
                     }
-                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }
 
                 original = AccessTools.Method(typeof(GameManager), "DropContentOfLootContainerServer", new Type[] { typeof(BlockValue), typeof(Vector3i), typeof(int) });
@@ -397,22 +396,20 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(TileEntity), "setModified");
+                original = AccessTools.Method(typeof(UserIdentifierXbl), "WriteCustomData");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: TileEntity.setModified Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: UserIdentifierXbl.WriteCustomData Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("TileEntity_setModified_Prefix");
+                    MethodInfo prefix = typeof(Injections).GetMethod("UserIdentifierXbl_WriteCustomData_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: TileEntity_setModified_Prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: UserIdentifierXbl_WriteCustomData_Prefix"));
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
-
-                
 
                 Log.Out(string.Format("[SERVERTOOLS] Runtime patching complete"));
             }

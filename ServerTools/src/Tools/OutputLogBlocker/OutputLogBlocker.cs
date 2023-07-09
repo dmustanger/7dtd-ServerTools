@@ -6,15 +6,14 @@ using System.Xml;
 
 namespace ServerTools
 {
-    class InvalidBuffs
+
+    class OutputLogBlocker
     {
         public static bool IsEnabled = false, IsRunning = false;
 
-        public static List<string> InvalidBuffList = new List<string>();
+        public static List<string> Ommitted = new List<string>();
 
-        private static string detectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string detectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, detectionFile);
-        private const string file = "InvalidBuffs.xml";
+        private const string file = "OutputBlocker.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
@@ -26,7 +25,7 @@ namespace ServerTools
 
         public static void Unload()
         {
-            InvalidBuffList.Clear();
+            Ommitted.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
         }
@@ -50,7 +49,7 @@ namespace ServerTools
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
-                InvalidBuffList.Clear();
+                Ommitted.Clear();
                 if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
                     for (int i = 0; i < childNodes.Count; i++)
@@ -60,18 +59,18 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement line = (XmlElement)childNodes[i];
-                        if (!line.HasAttributes)
+                        if (!line.HasAttributes || !line.HasAttribute("Message"))
                         {
                             continue;
                         }
-                        if (line.HasAttribute("Buff"))
+                        string message = line.GetAttribute("Message");
+                        if (message == "")
                         {
-                            string buff = line.GetAttribute("Buff");
-
-                            if (!InvalidBuffList.Contains(buff))
-                            {
-                                InvalidBuffList.Add(buff);
-                            }
+                            continue;
+                        }
+                        if (!Ommitted.Contains(message))
+                        {
+                            Ommitted.Add(message);
                         }
                     }
                 }
@@ -81,7 +80,7 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        Timers.UpgradeInvalidBuffsXml(nodeList);
+                        Timers.UpgradeOutputBlockerXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
                     }
@@ -99,7 +98,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in InvalidBuffs.LoadXml: {0}", e.Message));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in OutputLog.LoadXml: {0}", e.Message));
                 }
             }
         }
@@ -111,28 +110,27 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<InvalidBuffs>");
+                    sw.WriteLine("<OutputLog>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"godmode\" /> -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"twitch_immortal\" /> -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"twitch_tough1\" /> -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"buffVolatileAura\" /> -->");
-                    if (InvalidBuffList.Count > 0)
+                    sw.WriteLine("    <!-- Be very careful with your additions. Do not block entries you may need -->");
+                    sw.WriteLine("    <!-- <Output Message=\"EntityBackpack\" /> -->");
+                    sw.WriteLine("    <!-- <Output Message=\"Started thread\" /> -->");
+                    sw.WriteLine("    <!-- <Output Message=\"Exited thread\" /> -->");
+                    if (Ommitted.Count > 0)
                     {
-                        for (int i = 0; i < InvalidBuffList.Count; i++)
+                        for (int i = 0; i < Ommitted.Count; i++)
                         {
-                            sw.WriteLine(string.Format("    <Invalid Buff=\"{0}\" />", InvalidBuffList[i]));
+                            sw.WriteLine("    <Output Message=\"{0}\" />", Ommitted[i]);
                         }
                     }
-                    sw.WriteLine("</InvalidBuffs>");
+                    sw.WriteLine("</OutputLog>");
                     sw.Flush();
                     sw.Close();
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidBuffs.UpdateXml: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in OutputLog.UpdateXml: {0}", e.Message));
             }
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -155,30 +153,6 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void CheckForInvalidBuffs(ClientInfo _cInfo, EntityPlayer _player)
-        {
-            if (InvalidBuffList.Count < 1)
-            {
-                return;
-            }
-            for (int i = 0; i < InvalidBuffList.Count; i++)
-            {
-                if (_player.Buffs.HasBuff(InvalidBuffList[i]))
-                {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("debuffPlayer {0} {1}", _cInfo.CrossplatformId.CombinedString, InvalidBuffList[i]), null);
-                    
-                    using (StreamWriter sw = new StreamWriter(detectionFilepath, true, Encoding.UTF8))
-                    {
-                        sw.WriteLine(string.Format("Detected id '{0}' '{1}' named '{2}' using '{3}' buff @ '{4}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, InvalidBuffList[i], _player.position));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
-                    }
-                    Log.Warning(string.Format("[SERVERTOOLS] Detected id '{0}' '{1}' named '{2}' using '{3}' buff @ '{4}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, InvalidBuffList[i], _player.position));
-                }
-            }
-        }
-
         public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
@@ -186,22 +160,19 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
-                    sw.WriteLine("<InvalidBuffs>");
+                    sw.WriteLine("<OutputLog>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"godmode\" /> -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"twitch_immortal\" /> -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"twitch_tough1\" /> -->");
-                    sw.WriteLine("    <!-- <Invalid Buff=\"buffVolatileAura\" /> -->");
-                    sw.WriteLine("    <Invalid Buff=\"\" />");
+                    sw.WriteLine("    <!-- Be very careful with your additions. Do not block entries you may need -->");
+                    sw.WriteLine("    <!-- <Output Message=\"EntityBackpack\" /> -->");
+                    sw.WriteLine("    <!-- <Output Message=\"Started thread\" /> -->");
+                    sw.WriteLine("    <!-- <Output Message=\"Exited thread\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            if (!nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"godmode\"") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"twitch_immortal\"") && !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"twitch_tough1\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"buffVolatileAura\"") && !nodeList[i].OuterXml.Contains("<!-- <Invalid Buff=\"\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<!-- Do not forget"))
+                            if (!nodeList[i].OuterXml.Contains("Be very careful") && !nodeList[i].OuterXml.Contains("<Output Message=\"EntityBackpack\"") &&
+                            !nodeList[i].OuterXml.Contains("<Output Message=\"Started thread\"") && !nodeList[i].OuterXml.Contains("<Output Message=\"Exited thread\"") &&
+                            !nodeList[i].OuterXml.Contains("<Output Message=\"\""))
                             {
                                 sw.WriteLine(nodeList[i].OuterXml);
                             }
@@ -212,25 +183,25 @@ namespace ServerTools
                         if (nodeList[i].NodeType != XmlNodeType.Comment)
                         {
                             XmlElement line = (XmlElement)nodeList[i];
-                            if (line.HasAttributes && line.Name == "Invalid")
+                            if (line.HasAttributes && line.Name == "Output")
                             {
-                                string buff = "";
-                                if (line.HasAttribute("Buff"))
+                                string message = "";
+                                if (line.HasAttribute("Message"))
                                 {
-                                    buff = line.GetAttribute("Buff");
+                                    message = line.GetAttribute("Message");
                                 }
-                                sw.WriteLine(string.Format("    <Invalid Buff=\"{0}\" />", buff));
+                                sw.WriteLine(string.Format("    <Output Message=\"{0}\" />", message));
                             }
                         }
                     }
-                    sw.WriteLine("</InvalidBuffs>");
+                    sw.WriteLine("</OutputLog>");
                     sw.Flush();
                     sw.Close();
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InvalidBuffs.UpgradeXml: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in OutputLog.UpgradeXml: {0}", e.Message));
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

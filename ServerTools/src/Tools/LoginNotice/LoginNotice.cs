@@ -94,7 +94,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeLoginNoticeXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -125,8 +126,8 @@ namespace ServerTools
                 {
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
-                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Message=\"\" Expiry=\"\" />");
                     if (Dict1.Count > 0)
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict1)
@@ -222,7 +223,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -231,16 +232,19 @@ namespace ServerTools
                 {
                     sw.WriteLine("<LoginNotice>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Macaroni\" Message=\"Time to kick ass and chew bubble gum\" Expiry=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (!nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_76561191234567891\"") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Player Id=\"\" Name=\"\" Message=\"\" Expiry=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

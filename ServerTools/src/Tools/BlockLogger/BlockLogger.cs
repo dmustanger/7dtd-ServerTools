@@ -44,18 +44,25 @@ namespace ServerTools
             }
         }
 
-        public static void BrokeBlock(ClientInfo _cInfo, Block _oldBlock, Vector3i _position)
+        public static void UpgradedBlock(ClientInfo _cInfo, Block _oldBlock, Block _newBlock, Vector3i _position)
         {
-            EntityPlayer _player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-            if (_player != null)
+            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
             {
-                using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
-                {
-                    sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' broke '{4}' @ '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _oldBlock.GetBlockName(), _position));
-                    sw.WriteLine();
-                    sw.Flush();
-                    sw.Close();
-                }
+                sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' upgraded '{4}' @ '{5}' to '{6}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _oldBlock.GetBlockName(), _position, _newBlock.GetBlockName()));
+                sw.WriteLine();
+                sw.Flush();
+                sw.Close();
+            }
+        }
+
+        public static void DoorOpenClose(ClientInfo _cInfo, Block _oldBlock, Vector3i _position)
+        {
+            using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+            {
+                sw.WriteLine(string.Format("{0}: Id '{1}' '{2}' named '{3}' opened or closed '{4}' @ '{5}'", DateTime.Now, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _oldBlock.GetBlockName(), _position));
+                sw.WriteLine();
+                sw.Flush();
+                sw.Close();
             }
         }
     }

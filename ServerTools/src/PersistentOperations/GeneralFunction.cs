@@ -11,10 +11,10 @@ namespace ServerTools
     {
         public static bool Running = false, Shutdown_Initiated = false, No_Vehicle_Pickup = false, ThirtySeconds = false, 
             No_Currency = false, Debug = false, Allow_Bicycle = false, Encryption_Off = false;
-        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0, 
-            MeleeHandPlayer = 0;
+        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
         public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
-
+        public static string lastOutput = "";
+        public static List<string> ActiveLog = new List<string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
@@ -26,6 +26,22 @@ namespace ServerTools
         public static readonly char[] InvalidPrefix = new char[] { '!', '@', '#', '$', '%', '&', '/', '\\' };
 
         public static DateTime StartTime;
+
+        private static ClientInfo cInfo, cInfoTwo;
+        private static EntityPlayer player;
+        private static Entity entity;
+        private static PlatformUserIdentifierAbs uId;
+        private static PersistentPlayerList persistentPlayerList, persistentPlayerListTwo, persistentPlayerListThree, persistentPlayerListFour;
+        private static PersistentPlayerData persistentPlayerData, persistentPlayerDataTwo, ppdThree, ppdFour;
+        private static PlayerDataFile playerDatafile, playerDatafileTwo, playerDatafileThree;
+        private static Chunk chunk;
+        private static ItemValue itemValue;
+
+        private static List<ClientInfo> clientList;
+        private static List<Entity> entityList;
+
+        //private static string Debug = string.Format("{0}/{1}", API.ConfigPath, DebugFile);
+        //private const string DebugFile = "Debug.txt";
 
         public static void CreateCustomXUi()
         {
@@ -62,12 +78,13 @@ namespace ServerTools
                     for (int i = 0; i < eventContent.Count; i++)
                     {
                         string line = eventContent[i];
-                        if (line.Contains("action_admin") || line.Contains("action_dukes") || line.Contains("action_currency") || line.Contains("action_eject"))
+                        if (line.Contains("action_admin") || line.Contains("action_dukes") || line.Contains("action_currency") || 
+                            line.Contains("action_eject") || line.Contains("action_remove_bedrolls"))
                         {
                             count += 1;
                         }
                     }
-                    if (count != 4)
+                    if (count != 5)
                     {
                         File.Delete(XPathDir + "gameevents.xml");
                     }
@@ -126,6 +143,18 @@ namespace ServerTools
                         sw.WriteLine("      <action class=\"PlaySound\">");
                         sw.WriteLine("          <property name=\"sound\" value=\"twitch_vehicle_overlay\" />");
                         sw.WriteLine("          <property name=\"inside_head\" value=\"true\" />");
+                        sw.WriteLine("      </action>");
+                        sw.WriteLine();
+                        sw.WriteLine("  </action_sequence>");
+                        sw.WriteLine();
+                        sw.WriteLine("  <action_sequence name=\"action_remove_bedrolls\">");
+                        sw.WriteLine("      <action class=\"ResetPlayerData\">");
+                        sw.WriteLine("          <property name=\"reset_levels\" value=\"false\" />");
+                        sw.WriteLine("          <property name=\"reset_books\" value=\"false\" />");
+                        sw.WriteLine("          <property name=\"reset_crafting\" value=\"false\" />");
+                        sw.WriteLine("          <property name=\"reset_skills\" value=\"false\" />");
+                        sw.WriteLine("          <property name=\"remove_landclaims\" value=\"false\" />");
+                        sw.WriteLine("          <property name=\"remove_bedroll\" value=\"true\" />");
                         sw.WriteLine("      </action>");
                         sw.WriteLine();
                         sw.WriteLine("  </action_sequence>");
@@ -488,25 +517,33 @@ namespace ServerTools
                         sw.WriteLine();
                         sw.WriteLine("<block name=\"VaultBox\">");
                         sw.WriteLine("  <property name=\"CreativeMode\" value=\"Dev\"/>");
-                        sw.WriteLine("  <property name=\"Tags\" value=\"storage\"/>");
+                        sw.WriteLine("  <property name=\"Tags\" value=\"timecharge\"/>");
                         sw.WriteLine("  <property name=\"Class\" value=\"SecureLoot\"/>");
-                        sw.WriteLine("  <property name=\"CustomIcon\" value=\"cntChest02\"/>");
+                        sw.WriteLine("  <property name=\"CustomIcon\" value=\"cntSecureStorageChest\"/>");
+                        sw.WriteLine("  <property name=\"LootList\" value=\"playerStorage\"/>");
                         sw.WriteLine("  <property name=\"Material\" value=\"MwoodReinforced\"/>");
                         sw.WriteLine("  <property name=\"Shape\" value=\"ModelEntity\"/>");
-                        sw.WriteLine("  <property name=\"Model\" value=\"@:Entities/LootContainers/woodWritableCratePrefab.prefab\"/>");
+                        sw.WriteLine("  <property name=\"Model\" value=\"@:Entities/LootContainers/woodenChestRotten_01Prefab Variant.prefab\"/>");
+                        sw.WriteLine("  <property name=\"ImposterExchange\" value=\"imposterQuarter\" param1=\"154\"/>");
                         sw.WriteLine("  <property name=\"WaterFlow\" value=\"permitted\"/>");
-                        sw.WriteLine("  <property name=\"Path\" value=\"solid\"/>");
-                        sw.WriteLine("  <property name=\"Place\" value=\"TowardsPlacerInverted\"/>");
+                        sw.WriteLine("  <property name=\"HandleFace\" value=\"Bottom\"/>");
+                        sw.WriteLine("  <property name=\"Collide\" value=\"movement,melee,bullet,arrow,rocket\"/>");
+                        sw.WriteLine("  <property name=\"IsTerrainDecoration\" value=\"true\"/>");
+                        sw.WriteLine("  <property name=\"StabilitySupport\" value=\"false\"/>");
                         sw.WriteLine("  <property name=\"FuelValue\" value=\"300\"/>");
-                        sw.WriteLine("  <property name=\"ShowModelOnFall\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"LootList\" value=\"playerWoodWritableStorage\"/>");
-                        sw.WriteLine("  <property class=\"RepairItems\">");
-                        sw.WriteLine("      <property name=\"resourceWood\" value=\"10\"/>");
+                        sw.WriteLine("  <property name=\"LPHardnessScale\" value=\"8\"/>");
+                        sw.WriteLine("  <property name=\"RepairItems\">");
+                        sw.WriteLine("    <property name=\"resourceWood\" value=\"10\"/>");
                         sw.WriteLine("  </property>");
-                        sw.WriteLine("  <drop event=\"Destroy\" name=\"resourceWood\" count=\"1,3\"/>");
-                        sw.WriteLine("  <drop event=\"Fall\" name=\"terrDestroyedWoodDebris\" count=\"1\" prob=\"1\"/>");
-                        sw.WriteLine("  <property name=\"CanPickup\" value=\"false\"/>");
+                        sw.WriteLine("  <property name=\"Destroy\" count=\"1,3\"/>");
+                        sw.WriteLine("  <property name=\"Fall\" count=\"1\" prob=\"0.75\" stick_chance=\"1\"/>");
+                        sw.WriteLine("  <property name=\"SortOrder1\" value=\"B106\"/>");
+                        sw.WriteLine("  <property name=\"SortOrder2\" value=\"0012\"/>");
+                        sw.WriteLine("  <property name=\"Group\" value=\"advBuilding\"/>");
+                        sw.WriteLine("  <property name=\"ShowModelOnFall\" value=\"false\"/>");
+                        sw.WriteLine("  <property name=\"CanPickup\" value=\"true\"/>");
                         sw.WriteLine("  <property name=\"SellableToTrader\" value=\"false\"/>");
+                        sw.WriteLine("  <property name=\"FilterTags\" value=\"MC_playerBlocks\"/>");
                         sw.WriteLine("</block>");
                         sw.WriteLine();
                         sw.WriteLine("</append>");
@@ -570,9 +607,7 @@ namespace ServerTools
             if (!Running)
             {
                 Running = true;
-                ClientInfo cInfo;
-                EntityPlayer player;
-                List<ClientInfo> clientList = ClientList();
+                clientList = ClientList();
                 if (clientList == null || clientList.Count < 1)
                 {
                     Running = false;
@@ -603,7 +638,7 @@ namespace ServerTools
                     //    ChunkReset.IsResetChunk(cInfo, player);
                     //}
                 }
-                List<Entity> entityList = GameManager.Instance.World.Entities.list;
+                entityList = GameManager.Instance.World.Entities.list;
                 if (entityList == null || entityList.Count < 1)
                 {
                     Running = false;
@@ -611,7 +646,7 @@ namespace ServerTools
                 }
                 for (int i = 0; i < entityList.Count; i++)
                 {
-                    Entity entity = entityList[i];
+                    entity = entityList[i];
                     if (entity == null || !entity.IsSpawned() || entity.IsDead() || entity.IsMarkedForUnload())
                     {
                         continue;
@@ -660,17 +695,17 @@ namespace ServerTools
 
         public static ClientInfo GetClientInfoFromNameOrId(string _id)
         {
-            ClientInfo cInfo = ConnectionManager.Instance.Clients.GetForNameOrId(_id);
-            if (cInfo != null)
+            cInfoTwo = ConnectionManager.Instance.Clients.GetForNameOrId(_id);
+            if (cInfoTwo != null)
             {
-                return cInfo;
+                return cInfoTwo;
             }
             else if (int.TryParse(_id, out int entityId))
             {
-                cInfo = ConnectionManager.Instance.Clients.ForEntityId(entityId);
-                if (cInfo != null)
+                cInfoTwo = ConnectionManager.Instance.Clients.ForEntityId(entityId);
+                if (cInfoTwo != null)
                 {
-                    return cInfo;
+                    return cInfoTwo;
                 }
             }
             return null;
@@ -735,16 +770,16 @@ namespace ServerTools
 
         public static PersistentPlayerData GetPersistentPlayerDataFromId(string _id)
         {
-            PlatformUserIdentifierAbs uId = GetPlatformUserFromNameOrId(_id);
+            uId = GetPlatformUserFromNameOrId(_id);
             if (uId != null)
             {
-                PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
+                persistentPlayerList = GetPersistentPlayerList();
                 if (persistentPlayerList != null)
                 {
-                    PersistentPlayerData ppd = persistentPlayerList.GetPlayerData(uId);
-                    if (ppd != null)
+                    ppdThree = persistentPlayerList.GetPlayerData(uId);
+                    if (ppdThree != null)
                     {
-                        return ppd;
+                        return ppdThree;
                     }
                 }
             }
@@ -753,13 +788,13 @@ namespace ServerTools
 
         public static PersistentPlayerData GetPersistentPlayerDataFromUId(PlatformUserIdentifierAbs _uId)
         {
-            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-            if (persistentPlayerList != null)
+            persistentPlayerListTwo = GetPersistentPlayerList();
+            if (persistentPlayerListTwo != null)
             {
-                PersistentPlayerData ppd = persistentPlayerList.GetPlayerData(_uId);
-                if (ppd != null)
+                ppdFour = persistentPlayerList.GetPlayerData(_uId);
+                if (ppdFour != null)
                 {
-                    return ppd;
+                    return ppdFour;
                 }
             }
             return null;
@@ -767,10 +802,10 @@ namespace ServerTools
 
         public static PersistentPlayerData GetPersistentPlayerDataFromEntityId(int _entityId)
         {
-            PersistentPlayerList persistentPlayerList = GameManager.Instance.persistentPlayers;
-            if (persistentPlayerList != null)
+            persistentPlayerListThree = GetPersistentPlayerList();
+            if (persistentPlayerListThree != null)
             {
-                PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerDataFromEntityID(_entityId);
+                persistentPlayerData = persistentPlayerList.GetPlayerDataFromEntityID(_entityId);
                 if (persistentPlayerData != null)
                 {
                     return persistentPlayerData;
@@ -781,7 +816,7 @@ namespace ServerTools
 
         public static PlayerDataFile GetPlayerDataFileFromUId(PlatformUserIdentifierAbs _uId)
         {
-            PlayerDataFile playerDatafile = new PlayerDataFile();
+            playerDatafile = new PlayerDataFile();
             playerDatafile.Load(GameIO.GetPlayerDataDir(), _uId.CombinedString);
             if (playerDatafile != null)
             {
@@ -792,14 +827,14 @@ namespace ServerTools
 
         public static PlayerDataFile GetPlayerDataFileFromEntityId(int _entityId)
         {
-            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromEntityId(_entityId);
-            if (persistentPlayerData != null)
+            persistentPlayerDataTwo = GetPersistentPlayerDataFromEntityId(_entityId);
+            if (persistentPlayerDataTwo != null)
             {
-                PlayerDataFile playerDatafile = new PlayerDataFile();
-                playerDatafile.Load(GameIO.GetPlayerDataDir(), persistentPlayerData.UserIdentifier.CombinedString.Trim());
-                if (playerDatafile != null)
+                playerDatafileTwo = new PlayerDataFile();
+                playerDatafileTwo.Load(GameIO.GetPlayerDataDir(), persistentPlayerDataTwo.UserIdentifier.CombinedString.Trim());
+                if (playerDatafileTwo != null)
                 {
-                    return playerDatafile;
+                    return playerDatafileTwo;
                 }
             }
             return null;
@@ -809,10 +844,10 @@ namespace ServerTools
         {
             if (ConsoleHelper.ParseParamPartialNameOrId(_id, out PlatformUserIdentifierAbs platformUserIdentifierAbs, out ClientInfo clientInfo, true) == 1 && platformUserIdentifierAbs != null)
             {
-                PlayerDataFile playerDatafile = GetPlayerDataFileFromUId(platformUserIdentifierAbs);
-                if (playerDatafile != null)
+                playerDatafileThree = GetPlayerDataFileFromUId(platformUserIdentifierAbs);
+                if (playerDatafileThree != null)
                 {
-                    return playerDatafile;
+                    return playerDatafileThree;
                 }
             }
             return null;
@@ -827,96 +862,20 @@ namespace ServerTools
             return null;
         }
 
-        public static void RemoveAllClaims(string _id)
-        {
-            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromId(_id);
-            if (persistentPlayerData != null)
-            {
-                List<Vector3i> landProtectionBlocks = persistentPlayerData.LPBlocks;
-                if (landProtectionBlocks != null)
-                {
-                    for (int i = 0; i < landProtectionBlocks.Count; i++)
-                    {
-                        Vector3i position = landProtectionBlocks[i];
-                        World world = GameManager.Instance.World;
-                        BlockValue blockValue = world.GetBlock(position);
-                        Block block = blockValue.Block;
-                        if (block != null && block is BlockLandClaim)
-                        {
-                            world.SetBlockRPC(0, position, BlockValue.Air);
-                            SingletonMonoBehaviour<ConnectionManager>.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, position.ToVector3()), false, -1, -1, -1, -1);
-                            world.ObjectOnMapRemove(EnumMapObjectType.LandClaim, position.ToVector3());
-                            LandClaimBoundsHelper.RemoveBoundsHelper(position.ToVector3());
-                        }
-                        GameManager.Instance.persistentPlayers.m_lpBlockMap.Remove(position);
-                        persistentPlayerData.LPBlocks.Remove(position);
-                    }
-                    SavePersistentPlayerDataXML();
-                }
-            }
-        }
-
-        public static void RemoveOneClaim(string _playerId, Vector3i _position)
-        {
-            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromId(_playerId);
-            if (persistentPlayerData != null)
-            {
-                World world = GameManager.Instance.World;
-                BlockValue blockValue = world.GetBlock(_position);
-                Block block = blockValue.Block;
-                if (block != null && block is BlockLandClaim)
-                {
-                    world.SetBlockRPC(0, _position, BlockValue.Air);
-                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.LandClaim, _position.ToVector3()), false, -1, -1, -1, -1);
-                    world.ObjectOnMapRemove(EnumMapObjectType.LandClaim, _position.ToVector3());
-                    LandClaimBoundsHelper.RemoveBoundsHelper(_position.ToVector3());
-                }
-                GameManager.Instance.persistentPlayers.m_lpBlockMap.Remove(_position);
-                persistentPlayerData.LPBlocks.Remove(_position);
-                SavePersistentPlayerDataXML();
-            }
-        }
-
         public static void RemovePersistentPlayerData(string _id)
         {
-            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-            if (persistentPlayerList != null)
+            persistentPlayerListFour = GetPersistentPlayerList();
+            if (persistentPlayerListFour != null)
             {
                 PlatformUserIdentifierAbs uId = GetPlatformUserFromNameOrId(_id);
                 if (uId != null)
                 {
-                    if (persistentPlayerList.Players.ContainsKey(uId))
+                    if (persistentPlayerListFour.Players.ContainsKey(uId))
                     {
-                        persistentPlayerList.Players.Remove(uId);
+                        persistentPlayerListFour.Players.Remove(uId);
                         SavePersistentPlayerDataXML();
                     }
                 }
-            }
-        }
-
-        public static void RemoveAllACL(string _playerId)
-        {
-            PersistentPlayerData persistentPlayerData = GetPersistentPlayerDataFromId(_playerId);
-            if (persistentPlayerData != null)
-            {
-                PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-                foreach (KeyValuePair<PlatformUserIdentifierAbs, PersistentPlayerData> persistentPlayerData2 in persistentPlayerList.Players)
-                {
-                    if (persistentPlayerData2.Key != persistentPlayerData.UserIdentifier)
-                    {
-                        if (persistentPlayerData2.Value.ACL != null && persistentPlayerData2.Value.ACL.Contains(persistentPlayerData.UserIdentifier))
-                        {
-                            persistentPlayerData2.Value.RemovePlayerFromACL(persistentPlayerData.UserIdentifier);
-                            persistentPlayerData2.Value.Dispatch(persistentPlayerData, EnumPersistentPlayerDataReason.ACL_Removed);
-                        }
-                        if (persistentPlayerData.ACL != null && persistentPlayerData.ACL.Contains(persistentPlayerData2.Value.UserIdentifier))
-                        {
-                            persistentPlayerData.RemovePlayerFromACL(persistentPlayerData2.Key);
-                            persistentPlayerData.Dispatch(persistentPlayerData2.Value, EnumPersistentPlayerDataReason.ACL_Removed);
-                        }
-                    }
-                }
-                SavePersistentPlayerDataXML();
             }
         }
 
@@ -940,7 +899,7 @@ namespace ServerTools
 
         public static bool ClaimedByNone(Vector3i _position)
         {
-            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
             if (chunk != null)
             {
                 PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
@@ -1059,7 +1018,7 @@ namespace ServerTools
 
         public static bool IsValidItem(string itemName)
         {
-            ItemValue itemValue = ItemClass.GetItem(itemName, false);
+            itemValue = ItemClass.GetItem(itemName, false);
             if (itemValue.type != ItemValue.None.type)
             {
                 return true;
@@ -1104,15 +1063,6 @@ namespace ServerTools
             {
                 No_Currency = true;
                 Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Bank and Wallet tools have been disabled. Anything relying on the Wallet for exchange will also not work. If this is the first time running ServerTools or it was recently updated, you may need to restart one more time"));
-            }
-        }
-
-        public static void GetMeleeHandPlayer()
-        {
-            ItemValue meleeHand = ItemClass.GetItem("meleeHandPlayer");
-            if (meleeHand != null)
-            {
-                MeleeHandPlayer = meleeHand.GetItemId();
             }
         }
 
@@ -2596,7 +2546,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.AdminCommandList: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.AdminCommandList: {0}", e.Message));
             }
         }
 
@@ -2639,6 +2589,50 @@ namespace ServerTools
                 return true;
             }
             return false;
+        }
+
+        public static void StartLog()
+        {
+            try
+            {
+                Log.LogCallbacks += LogAction;
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.StartLog: {0}", e.Message));
+            }
+        }
+
+        public static void CloseLog()
+        {
+            try
+            {
+                Log.LogCallbacks -= LogAction;
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.CloseLog: {0}", e.Message));
+            }
+        }
+
+        private static void LogAction(string msg, string trace, LogType type)
+        {
+            try
+            {
+                ActiveLog.Add(msg);
+                //using (StreamWriter sw = new StreamWriter(Debug, true, Encoding.UTF8))
+                //{
+                //    sw.WriteLine(string.Format("msg: {0} / trace {1} / type {2}", msg, trace, type));
+                //    sw.WriteLine();
+                //    sw.Flush();
+                //    sw.Close();
+                //    sw.Dispose();
+                //}
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.LogAction: {0}", e.Message));
+            }
         }
     }
 }

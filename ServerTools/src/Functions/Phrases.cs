@@ -2195,7 +2195,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Homes4\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Homes5", out phrase))
                     {
-                        phrase = "You can only teleport to a home that is inside of a claimed space";
+                        phrase = "This saved home is no longer inside a claimed space. Home point removed";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Homes5\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Homes6", out phrase))
@@ -2765,19 +2765,14 @@ namespace ServerTools
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("DamageDetector1", out phrase))
                     {
-                        phrase = "[FF0000]{PlayerName} has been banned for exceeding the damage limit";
+                        phrase = "[FF0000]{PlayerName} has been banned for damage manipulation";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"DamageDetector1\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("DamageDetector2", out phrase))
                     {
-                        phrase = "Auto detection has banned you for exceeding the damage limit. Damage recorded: {Value}";
+                        phrase = "Auto detection has banned you for damage manipulation";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"DamageDetector2\" Message=\"{0}\" />", phrase));
-                    if (!Dict.TryGetValue("DamageDetector3", out phrase))
-                    {
-                        phrase = "Auto detection has banned you for exceeding the block damage limit. Damage recorded: {Value}";
-                    }
-                    sw.WriteLine(string.Format("    <Phrase Name=\"DamageDetector3\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************** Spectator *********************** -->");

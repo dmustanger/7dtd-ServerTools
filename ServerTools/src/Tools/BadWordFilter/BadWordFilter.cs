@@ -78,7 +78,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeBadWordFilterXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -109,8 +110,8 @@ namespace ServerTools
                 {
                     sw.WriteLine("<BadWordFilter>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Bad Word=\"penis\" /> -->");
-                    sw.WriteLine("    <Bad Word=\"\" />");
                     if (Dict.Count > 0)
                     {
                         for (int i = 0; i < Dict.Count; i++)
@@ -148,7 +149,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -157,16 +158,19 @@ namespace ServerTools
                 {
                     sw.WriteLine("<BadWordFilter>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Bad Word=\"penis\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- <Bad Word=\"penis") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Bad Word=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (!nodeList[i].OuterXml.Contains("<!-- <Bad Word=\"penis") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<Bad Word=\"\""))
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Bad Word=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

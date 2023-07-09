@@ -9,7 +9,6 @@ namespace ServerTools
 
         public static void ReturnBed(ClientInfo _cInfo, Vector3i _position, string _name)
         {
-            GameManager.Instance.World.SetBlockRPC(_position, BlockValue.Air);
             GeneralOperations.ReturnBlock(_cInfo, _name, 1, "GiveItem1");
             Phrases.Dict.TryGetValue("POI1", out string phrase);
             phrase = phrase.Replace("{Distance}", POIProtection.Extra_Distance.ToString());
@@ -18,7 +17,6 @@ namespace ServerTools
 
         public static void ReturnClaim(ClientInfo _cInfo, Vector3i _position, string _name)
         {
-            GameManager.Instance.World.SetBlockRPC(_position, BlockValue.Air);
             GeneralOperations.ReturnBlock(_cInfo, _name, 1, "GiveItem1");
             Phrases.Dict.TryGetValue("POI2", out string phrase);
             phrase = phrase.Replace("{Distance}", POIProtection.Extra_Distance.ToString());

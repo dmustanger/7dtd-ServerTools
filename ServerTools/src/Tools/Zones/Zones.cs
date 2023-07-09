@@ -19,6 +19,7 @@ namespace ServerTools
         public static List<float[]> ZoneBounds = new List<float[]>();
         public static Dictionary<int, string[]> ZoneSetup = new Dictionary<int, string[]>();
 
+        private static DateTime time;
         private static string EventDelay = "";
         private const string file = "Zones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -196,7 +197,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeZonesXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -227,13 +229,13 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Zones>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
                     sw.WriteLine("    <!-- EntryCommand and ExitCommand trigger console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include {PlayerName}, {EntityId}, {Id}, {EOS}, {Delay}, whisper, global -->");
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
-                    sw.WriteLine("    <Zone Name=\"\" Corner1=\"\" Corner2=\"\" Circle=\"\" EntryMessage=\"\" ExitMessage=\"\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"\" PvPvE=\"\" NoZombie=\"\" />");
                     if (ZoneList.Count > 0)
                     {
                         for (int i = 0; i < ZoneList.Count; i++)
@@ -248,7 +250,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.UpdateXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.UpdateXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -271,68 +273,68 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SetDelay(bool _reset, bool _first)
+        public static void SetDelay(bool _loading)
         {
-            if (EventDelay != Reminder_Delay)
+            if (EventDelay != Reminder_Delay || _loading)
             {
                 if (!EventSchedule.Expired.Contains("Zones"))
                 {
-                    EventSchedule.Expired.Add("Zones");
+                    EventSchedule.RemoveFromSchedule("Zones");
                 }
                 EventDelay = Reminder_Delay;
-                _reset = true;
             }
-            if (_reset || _first)
+            if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
             {
-                if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
+                string[] times = Reminder_Delay.Split(',');
+                for (int i = 0; i < times.Length; i++)
                 {
-                    string[] times = Reminder_Delay.Split(',');
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        string[] timeSplit = times[i].Split(':');
-                        int.TryParse(timeSplit[0], out int hours);
-                        int.TryParse(timeSplit[1], out int minutes);
-                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.AddToSchedule("Zones_" + time, time);
-                        }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                            EventSchedule.AddToSchedule("Zones_" + time, time);
-                        }
-                    }
-                }
-                else if (Reminder_Delay.Contains(":"))
-                {
-                    string[] timeSplit = Reminder_Delay.Split(':');
-                    int.TryParse(timeSplit[0], out int hours);
-                    int.TryParse(timeSplit[1], out int minutes);
-                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    string[] timeSplit1 = times[i].Split(':');
+                    int.TryParse(timeSplit1[0], out int hours1);
+                    int.TryParse(timeSplit1[1], out int minutes1);
+                    time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
                     if (DateTime.Now < time)
                     {
-                        EventSchedule.AddToSchedule("Zones_" + time, time);
+                        EventSchedule.AddToSchedule("Zones", time);
+                        return;
                     }
-                    else
-                    {
-                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.AddToSchedule("Zones_" + time, time);
-                    }
+                }
+                string[] timeSplit2 = times[0].Split(':');
+                int.TryParse(timeSplit2[0], out int hours2);
+                int.TryParse(timeSplit2[1], out int minutes2);
+                time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                EventSchedule.AddToSchedule("Zones", time);
+                return;
+            }
+            else if (Reminder_Delay.Contains(":"))
+            {
+                string[] timeSplit = Reminder_Delay.Split(':');
+                int.TryParse(timeSplit[0], out int hours3);
+                int.TryParse(timeSplit[1], out int minutes3);
+                time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
+                if (DateTime.Now < time)
+                {
+                    EventSchedule.AddToSchedule("Zones", time);
                 }
                 else
                 {
-                    if (int.TryParse(Reminder_Delay, out int delay))
-                    {
-                        DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.AddToSchedule("Zones_" + time, time);
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 20 or 40"));
-                    }
+                    time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                    EventSchedule.AddToSchedule("Zones", time);
                 }
+                return;
+            }
+            else
+            {
+                if (int.TryParse(Reminder_Delay, out int delay))
+                {
+                    time = DateTime.Now.AddMinutes(delay);
+                    EventSchedule.AddToSchedule("Zones", time);
+                }
+                else
+                {
+                    Log.Out("[SERVERTOOLS] Invalid Zones Reminder_Delay detected. Use a single integer");
+                    Log.Out("[SERVERTOOLS] Example: 20 or 40");
+                }
+                return;
             }
         }
 
@@ -374,7 +376,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ZoneCheck: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.ZoneCheck: {0}", e.Message);
             }
         }
 
@@ -464,7 +466,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Zone command error. Unable to commit delay with improper integer: {0}", _command));
+                                Log.Out("[SERVERTOOLS] Zone command error. Unable to commit delay with improper integer: {0}", _command);
                             }
                         }
                         else
@@ -480,7 +482,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ProcessCommand: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.ProcessCommand: {0}", e.Message);
             }
         }
 
@@ -505,7 +507,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Zone command error. Unable to commit delay with improper integer: {0}", _commands));
+                                Log.Out("[SERVERTOOLS] Zone command error. Unable to commit delay with improper integer: {0}", _commands);
                             }
                         }
                         else
@@ -592,7 +594,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Command: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.Command: {0}", e.Message);
             }
         }
 
@@ -666,7 +668,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.HostileCheck: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.HostileCheck: {0}", e.Message);
             }
         }
 
@@ -698,11 +700,11 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ReminderExec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.ReminderExec: {0}", e.Message);
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -711,6 +713,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Zones>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Do not use decimals in the corner positions -->");
                     sw.WriteLine("    <!-- Overlapping zones: the first zone listed that is overlapping will take priority -->");
                     sw.WriteLine("    <!-- PvPvE: 0 = No Killing, 1 = Kill Allies Only, 2 = Kill Strangers Only, 3 = Kill Everyone -->");
@@ -719,16 +722,18 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Zone Name=\"Example\" Corner1=\"1,2,3\" Corner2=\"-3,4,-5\" Circle=\"false\" EntryMessage=\"You have entered example\" ExitMessage=\"You have exited example\" EntryCommand=\"whisper This is a pve space\" ExitCommand=\"\" ReminderNotice=\"You are still in example\" PvPvE=\"0\" NoZombie=\"True\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- Do not use") &&
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            if (!nodeList[i].OuterXml.Contains("<!-- Do not use") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
                             !nodeList[i].OuterXml.Contains("<!-- Overlapping zones") && !nodeList[i].OuterXml.Contains("<!-- PvPvE") &&
                             !nodeList[i].OuterXml.Contains("<!-- EntryCommand") && !nodeList[i].OuterXml.Contains("<!-- Possible") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Zone Name=\"Example\"") && !nodeList[i].OuterXml.Contains("<Zone Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
-                        {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Zone Name=\"\" Corner1=\"\" Corner2=\"\" Circle=\"\" EntryMessage=\"\" ExitMessage=\"\" EntryCommand=\"\" ExitCommand=\"\" ReminderNotice=\"\" PvPvE=\"\" NoZombie=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)
@@ -793,7 +798,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.UpgradeXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Zones.UpgradeXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

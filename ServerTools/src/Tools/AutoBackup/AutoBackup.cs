@@ -9,72 +9,72 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Backup_Count = 5, Compression_Level = 0;
-        public static string Save_Destination = "", Target_Directory = "", Delay = "240";
+        public static string Save_Destination = "", Target_Directory = "", Delay = "240", EventDelay = "";
 
-        public static string EventDelay = "";
+        private static DateTime time;
 
-        public static void SetDelay(bool _reset, bool _first)
+        public static void SetDelay(bool _loading)
         {
-            if (EventDelay != Delay)
+            if (EventDelay != Delay || _loading)
             {
                 if (!EventSchedule.Expired.Contains("AutoBackup"))
                 {
-                    EventSchedule.Expired.Add("AutoBackup");
+                    EventSchedule.RemoveFromSchedule("AutoBackup");
                 }
                 EventDelay = Delay;
-                _reset = true;
             }
-            if (_reset || _first)
+            if (Delay.Contains(",") && Delay.Contains(":"))
             {
-                if (Delay.Contains(",") && Delay.Contains(":"))
+                string[] times = Delay.Split(',');
+                for (int i = 0; i < times.Length; i++)
                 {
-                    string[] times = Delay.Split(',');
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        string[] timeSplit = times[i].Split(':');
-                        int.TryParse(timeSplit[0], out int hours);
-                        int.TryParse(timeSplit[1], out int minutes);
-                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.AddToSchedule("AutoBackup_" + time, time);
-                        }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                            EventSchedule.AddToSchedule("AutoBackup_" + time, time);
-                        }
-                    }
-                }
-                else if (Delay.Contains(":"))
-                {
-                    string[] timeSplit = Delay.Split(':');
-                    int.TryParse(timeSplit[0], out int hours);
-                    int.TryParse(timeSplit[1], out int minutes);
-                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    string[] timeSplit1 = times[i].Split(':');
+                    int.TryParse(timeSplit1[0], out int hours1);
+                    int.TryParse(timeSplit1[1], out int minutes1);
+                    time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
                     if (DateTime.Now < time)
                     {
-                        EventSchedule.AddToSchedule("AutoBackup_" + time, time);
+                        EventSchedule.AddToSchedule("AutoBackup", time);
+                        return;
                     }
-                    else
-                    {
-                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.AddToSchedule("AutoBackup_" + time, time);
-                    }
+                }
+                string[] timeSplit2 = times[0].Split(':');
+                int.TryParse(timeSplit2[0], out int hours2);
+                int.TryParse(timeSplit2[1], out int minutes2);
+                time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                EventSchedule.AddToSchedule("AutoBackup", time);
+                return;
+            }
+            else if (Delay.Contains(":"))
+            {
+                string[] timeSplit3 = Delay.Split(':');
+                int.TryParse(timeSplit3[0], out int hours3);
+                int.TryParse(timeSplit3[1], out int minutes3);
+                time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
+                if (DateTime.Now < time)
+                {
+                    EventSchedule.AddToSchedule("AutoBackup", time);
                 }
                 else
                 {
-                    if (int.TryParse(Delay, out int delay))
-                    {
-                        DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.AddToSchedule("AutoBackup_" + time, time);
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid AutoBackup Delay_Between_Saves detected. Use a single integer, 24h time or multiple 24h time entries"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
-                    }
+                    time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                    EventSchedule.AddToSchedule("AutoBackup", time);
                 }
+                return;
+            }
+            else
+            {
+                if (int.TryParse(Delay, out int delay))
+                {
+                    time = DateTime.Now.AddMinutes(delay);
+                    EventSchedule.AddToSchedule("AutoBackup", time);
+                }
+                else
+                {
+                    Log.Out("[SERVERTOOLS] Invalid AutoBackup Delay detected. Use a single integer, 24h time or multiple 24h time entries");
+                    Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                }
+                return;
             }
         }
 
@@ -117,7 +117,7 @@ namespace ServerTools
                 saveDirectory = GameIO.GetSaveGameDir();
                 if (string.IsNullOrEmpty(saveDirectory))
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Auto backup can not locate a working directory to save. Provide a Save_Directory in your config file and try again."));
+                    Log.Out(string.Format("[SERVERTOOLS] Auto backup can not locate a working directory to save. Provide a Target_Directory in your ServerToolsConfig.xml file and try again."));
                     return;
                 }
             }
@@ -237,19 +237,26 @@ namespace ServerTools
                             for (int j = 0; j < fileNames.Length; j++)
                             {
                                 string file = fileNames[j];
-                                ZipEntry entry = new ZipEntry(file);
-
-                                entry.DateTime = DateTime.Now;
-                                OutputStream.PutNextEntry(entry);
-                                using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                try
                                 {
-                                    int sourceBytes;
-                                    do
+                                    ZipEntry entry = new ZipEntry(file);
+
+                                    entry.DateTime = DateTime.Now;
+                                    OutputStream.PutNextEntry(entry);
+                                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                     {
-                                        sourceBytes = fs.Read(buffer, 0, buffer.Length);
-                                        OutputStream.Write(buffer, 0, sourceBytes);
+                                        int sourceBytes;
+                                        do
+                                        {
+                                            sourceBytes = fs.Read(buffer, 0, buffer.Length);
+                                            OutputStream.Write(buffer, 0, sourceBytes);
+                                        }
+                                        while (sourceBytes > 0);
                                     }
-                                    while (sourceBytes > 0);
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Out("[SERVERTOOLS] Auto backup skipped file '{0}' due to '{1}'", file, e.Message);
                                 }
                             }
                             fileNames = Directory.GetFiles(API.ConfigPath, "ServerTools.bin", SearchOption.AllDirectories);

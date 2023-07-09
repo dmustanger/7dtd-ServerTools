@@ -45,91 +45,87 @@ namespace ServerTools
 
         private void GameAwake()
         {
-            if (GameManager.IsDedicatedServer)
-            {
-                OutputLog.Exec();
-            }
+            GeneralOperations.StartLog();
         }
 
         private static void GameStartDone()
         {
-            if (GameManager.IsDedicatedServer)
+            Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
+            if (!Directory.Exists(ConfigPath))
             {
-                Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
-                if (!Directory.Exists(ConfigPath))
-                {
-                    Directory.CreateDirectory(ConfigPath);
-                    Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
-                }
-                LoadProcess.Load();
+                Directory.CreateDirectory(ConfigPath);
+                Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
             }
+            LoadProcess.Load();
         }
 
         private static void GameShutdown()
         {
-            if (GameManager.IsDedicatedServer)
+            GeneralOperations.Shutdown_Initiated = true;
+            if (WebAPI.IsEnabled && WebAPI.IsRunning)
             {
-                GeneralOperations.Shutdown_Initiated = true;
-                if (WebAPI.IsEnabled && WebAPI.IsRunning)
-                {
-                    WebAPI.Unload();
-                }
-                Timers.CoreTimerStop();
-                Phrases.Unload();
-                CommandList.Unload();
-                OutputLog.Shutdown();
-                if (AutoRestart.IsEnabled)
-                {
-                    AutoRestart.Exec();
-                }
+                WebAPI.Unload();
+            }
+            Timers.CoreTimerStop();
+            Phrases.Unload();
+            CommandList.Unload();
+            GeneralOperations.CloseLog();
+            if (AutoRestart.IsEnabled)
+            {
+                AutoRestart.Exec();
             }
         }
 
         private static bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)//Initiating player login
         {
-            if (GameManager.IsDedicatedServer && _cInfo != null)
+            if (_cInfo != null && _cInfo.CrossplatformId != null)
             {
                 try
                 {
-                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
+                    string id = _cInfo.CrossplatformId.CombinedString;
+                    string ip = "";
+                    if (_cInfo.ip != null)
                     {
-                        _cInfo.CrossplatformId = _cInfo.PlatformId;
+                        ip = _cInfo.ip;
                     }
                     if (Hardcore.IsEnabled && Hardcore.NoEntry.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         Phrases.Dict.TryGetValue("Hardcore13", out string phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", id, phrase), null);
                     }
                     else if (LoadProcess.ResettingChunks)
                     {
                         Phrases.Dict.TryGetValue("RegionChunkReset1", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", id, phrase), null);
                     }
                     else if (Shutdown.NoEntry)
                     {
                         Phrases.Dict.TryGetValue("Shutdown4", out string phrase);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", id, phrase), null);
                     }
                     else if (NewPlayer.Block_During_Bloodmoon && GeneralOperations.IsBloodmoon() && ConnectionManager.Instance.ClientCount() > 1 &&
                         _cInfo.latestPlayerData.totalTimePlayed < 20)
                     {
                         Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", id, phrase), null);
                     }
-                    if (!string.IsNullOrEmpty(_cInfo.ip))
+                    if (ip != "")
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Player connected with ID '{0}' '{1}' and IP '{2}' named '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.ip, _cInfo.playerName));
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Player connected with ID '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                        if (_cInfo.PlatformId != null)
+                        {
+                            Log.Out("[SERVERTOOLS] Player connected named '{0}' with ID '{1}' '{2}' and IP '{3}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, id, ip);
+                        }
+                        else
+                        {
+                            Log.Out("[SERVERTOOLS] Player connected named '{0}' with ID '{1}' and IP '{2}' ", _cInfo.playerName, id, ip);
+                        }
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}", e.Message));
+                    Log.Out("[SERVERTOOLS] Error in API.PlayerLogin: {0}", e.Message);
                 }
             }
             return true;
@@ -137,14 +133,10 @@ namespace ServerTools
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
         {
-            if (GameManager.IsDedicatedServer && _cInfo != null && _pos != null)
+            if (_cInfo != null && _pos != null)
             {
                 try
                 {
-                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
-                    {
-                        _cInfo.CrossplatformId = _cInfo.PlatformId;
-                    }
                     string id = _cInfo.CrossplatformId.CombinedString;
                     EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
@@ -278,25 +270,24 @@ namespace ServerTools
 
         private static bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            if (GameManager.IsDedicatedServer)
-            {
-                return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
-            }
-            return true;
+            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _recipientEntityIds);
         }
 
         public static void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
-            if (GameManager.IsDedicatedServer && _cInfo != null)
+            if (_cInfo != null)
             {
                 try
                 {
-                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
-                    {
-                        _cInfo.CrossplatformId = _cInfo.PlatformId;
-                    }
                     string id = _cInfo.CrossplatformId.CombinedString;
-                    Log.Out(string.Format("[SERVERTOOLS] Player with id '{0}' '{1}' disconnected", _cInfo.PlatformId.CombinedString, id));
+                    if (_cInfo.PlatformId != null)
+                    {
+                        Log.Out("[SERVERTOOLS] Player with ID '{0}' '{1}' disconnected", _cInfo.PlatformId.CombinedString, id);
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Player with ID '{0}' disconnected", id);
+                    }
                     if (ExitCommand.IsEnabled && ExitCommand.Players.ContainsKey(_cInfo.entityId) && !_bShutdown)
                     {
                         Timers.ExitWithoutCommand(_cInfo, _cInfo.ip);
@@ -396,33 +387,34 @@ namespace ServerTools
         {
             try
             {
-                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
+                if (_cInfo == null)
                 {
-                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
+                    return;
+                }
+                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player == null)
+                {
+                    return;
+                }
+                if (player.IsSpawned() && player.IsAlive())
+                {
+                    if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position != "0,0,0")
                     {
-                        _cInfo.CrossplatformId = _cInfo.PlatformId;
-                    }
-                    if (player.IsSpawned() && player.IsAlive())
-                    {
-                        if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position != "0,0,0")
+                        NewSpawnTele.TeleNewSpawn(_cInfo, player);
+                        if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
                         {
-                            NewSpawnTele.TeleNewSpawn(_cInfo, player);
-                            if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
-                            {
-                                Timers.StartingItemsTimer(_cInfo);
-                            }
+                            Timers.StartingItemsTimer(_cInfo);
                         }
-                        else if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
-                        {
-                            StartingItems.Exec(_cInfo, null);
-                        }
-                        ProcessNewPlayer(_cInfo, player);
                     }
-                    else
+                    else if (StartingItems.IsEnabled && StartingItems.Dict.Count > 0)
                     {
-                        GeneralOperations.NewPlayerQue.Add(_cInfo);
+                        StartingItems.Exec(_cInfo, null);
                     }
+                    ProcessNewPlayer(_cInfo, player);
+                }
+                else
+                {
+                    GeneralOperations.NewPlayerQue.Add(_cInfo);
                 }
             }
             catch (Exception e)
@@ -435,7 +427,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo.CrossplatformId != null)
+                if (_cInfo != null && _cInfo.CrossplatformId != null)
                 {
                     string id = _cInfo.CrossplatformId.CombinedString;
                     if (!PersistentContainer.Instance.Players.Players.ContainsKey(id))
@@ -494,7 +486,7 @@ namespace ServerTools
         {
             try
             {
-                if (_cInfo.CrossplatformId != null)
+                if (_cInfo != null && _cInfo.CrossplatformId != null)
                 {
                     string id = _cInfo.CrossplatformId.CombinedString;
                     if (PersistentContainer.Instance.Players[id] == null)
@@ -601,12 +593,8 @@ namespace ServerTools
         public static void PlayerDied(EntityAlive __instance)
         {
             ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(__instance.entityId);
-            if (cInfo != null)
+            if (cInfo != null && cInfo.CrossplatformId != null)
             {
-                if (cInfo.CrossplatformId == null && cInfo.PlatformId != null)
-                {
-                    cInfo.CrossplatformId = cInfo.PlatformId;
-                }
                 string id = cInfo.CrossplatformId.CombinedString;
                 if (__instance.AttachedToEntity != null)
                 {

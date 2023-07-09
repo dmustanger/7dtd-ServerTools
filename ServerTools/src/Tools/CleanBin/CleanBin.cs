@@ -6,7 +6,7 @@ namespace ServerTools
     class CleanBin
     {
         public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Chunk_Reset = false, Delays = false,
-            Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, Poll = false,
+            Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, POI_Reset = false, Poll = false,
             Protected_Zones = false, Region_Reset = false, Shop_Log = false, Waypoints = false;
 
         public static void Exec()

@@ -74,6 +74,7 @@
     <Compile Include="src\ConsoleCommands\ProtectedZonesConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\ReduceDelayConsole.cs" />
+    <Compile Include="src\ConsoleCommands\RemoveBedrolls.cs" />
     <Compile Include="src\ConsoleCommands\RemoveItemDukesConsole.cs" />
     <Compile Include="src\ConsoleCommands\RemoveItemAdminConsole.cs" />
     <Compile Include="src\ConsoleCommands\RunGameEventConsole.cs" />
@@ -127,7 +128,7 @@
     <Compile Include="src\Tools\LevelUp\LevelUp.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\NewPlayerProtection\NewPlayerProtection.cs" />
-    <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
+    <Compile Include="src\Tools\OutputLogBlocker\OutputLogBlocker.cs" />
     <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
     <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
@@ -323,7 +324,7 @@
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Deobfuscation\Deobfuscated projects\7DaysToDie\21.0 Experimental\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\7DaysToDieServers\DedicatedStable\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AstarPathfindingProject, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -337,6 +338,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.3.11, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="LogLibrary, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

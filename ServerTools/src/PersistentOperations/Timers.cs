@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
+using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -385,6 +386,502 @@ namespace ServerTools
             };
         }
 
+        public static void UpgradeInvalidItemsXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init20(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeDupeLogXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init21(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeInvalidBuffsXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init22(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeProtectedZonesXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init23(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeCommandListXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init24(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeBadWordFilterXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init25(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeBloodmoonWarriorXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init26(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeBotResponseXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init27(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeChatColorXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init28(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeColorListXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init29(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeChunkResetXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init30(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeCustomCommandsXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init31(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeGimmeXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init32(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeHighPingKickerXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init33(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeInfoTickerXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init34(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeInteractiveMapXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init35(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeKillNoticeXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init36(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeLandClaimCountXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init37(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeLevelUpXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init38(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeLoginNoticeXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init39(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeMotdXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init40(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradePrayerXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init41(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeRegionResetXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init42(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeReservedSlotsXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init43(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeShopXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init44(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeStartingItemsXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init45(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeTravelXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init46(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeWatchListXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init47(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeWaypointsXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init48(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeZonesXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init49(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
+        public static void UpgradeOutputBlockerXml(XmlNodeList _nodeList)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init50(_nodeList);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
         public static void PersistentDataSave()
         {
             System.Timers.Timer saveDelay = new System.Timers.Timer(60000)
@@ -423,6 +920,10 @@ namespace ServerTools
                 if (PlayerStats.IsEnabled)
                 {
                     PlayerStats.Exec();
+                }
+                if (DamageDetector.IsEnabled && DamageDetector.LogEnabled)
+                {
+                    DamageDetector.WriteQueue();
                 }
             }
             if (tenSecondTick >= 10)
@@ -704,6 +1205,161 @@ namespace ServerTools
         private static void Init19(ClientInfo _cInfo)
         {
             Hardcore.ResetHardcoreProfile(_cInfo);
+        }
+
+        private static void Init20(XmlNodeList _nodeList)
+        {
+            InvalidItems.UpgradeXml(_nodeList);
+        }
+
+        private static void Init21(XmlNodeList _nodeList)
+        {
+            DupeLog.UpgradeXml(_nodeList);
+        }
+
+        private static void Init22(XmlNodeList _nodeList)
+        {
+            InvalidBuffs.UpgradeXml(_nodeList);
+        }
+
+        private static void Init23(XmlNodeList _nodeList)
+        {
+            ProtectedZones.UpgradeXml(_nodeList);
+        }
+
+        private static void Init24(XmlNodeList _nodeList)
+        {
+            CommandList.UpgradeXml(_nodeList);
+        }
+
+        private static void Init25(XmlNodeList _nodeList)
+        {
+            Badwords.UpgradeXml(_nodeList);
+        }
+
+        private static void Init26(XmlNodeList _nodeList)
+        {
+            BloodmoonWarrior.UpgradeXml(_nodeList);
+        }
+
+        private static void Init27(XmlNodeList _nodeList)
+        {
+            BotResponse.UpgradeXml(_nodeList);
+        }
+
+        private static void Init28(XmlNodeList _nodeList)
+        {
+            ChatColor.UpgradeXml(_nodeList);
+        }
+
+        private static void Init29(XmlNodeList _nodeList)
+        {
+            ColorList.UpgradeXml(_nodeList);
+        }
+
+        private static void Init30(XmlNodeList _nodeList)
+        {
+            //ChunkReset.UpgradeXml(_nodeList);
+        }
+
+        private static void Init31(XmlNodeList _nodeList)
+        {
+            CustomCommands.UpgradeXml(_nodeList);
+        }
+
+        private static void Init32(XmlNodeList _nodeList)
+        {
+            Gimme.UpgradeXml(_nodeList);
+        }
+
+        private static void Init33(XmlNodeList _nodeList)
+        {
+            HighPingKicker.UpgradeXml(_nodeList);
+        }
+
+        private static void Init34(XmlNodeList _nodeList)
+        {
+            InfoTicker.UpgradeXml(_nodeList);
+        }
+
+        private static void Init35(XmlNodeList _nodeList)
+        {
+            InteractiveMap.UpgradeXml(_nodeList);
+        }
+
+        private static void Init36(XmlNodeList _nodeList)
+        {
+            KillNotice.UpgradeXml(_nodeList);
+        }
+
+        private static void Init37(XmlNodeList _nodeList)
+        {
+            LandClaimCount.UpgradeXml(_nodeList);
+        }
+
+        private static void Init38(XmlNodeList _nodeList)
+        {
+            LevelUp.UpgradeXml(_nodeList);
+        }
+
+        private static void Init39(XmlNodeList _nodeList)
+        {
+            LoginNotice.UpgradeXml(_nodeList);
+        }
+
+        private static void Init40(XmlNodeList _nodeList)
+        {
+            Motd.UpgradeXml(_nodeList);
+        }
+
+        private static void Init41(XmlNodeList _nodeList)
+        {
+            Prayer.UpgradeXml(_nodeList);
+        }
+
+        private static void Init42(XmlNodeList _nodeList)
+        {
+            //RegionReset.UpgradeXml(_nodeList);
+        }
+
+        private static void Init43(XmlNodeList _nodeList)
+        {
+            ReservedSlots.UpgradeXml(_nodeList);
+        }
+
+        private static void Init44(XmlNodeList _nodeList)
+        {
+            Shop.UpgradeXml(_nodeList);
+        }
+
+        private static void Init45(XmlNodeList _nodeList)
+        {
+            StartingItems.UpgradeXml(_nodeList);
+        }
+
+        private static void Init46(XmlNodeList _nodeList)
+        {
+            Travel.UpgradeXml(_nodeList);
+        }
+
+        private static void Init47(XmlNodeList _nodeList)
+        {
+            WatchList.UpgradeXml(_nodeList);
+        }
+
+        private static void Init48(XmlNodeList _nodeList)
+        {
+            Waypoints.UpgradeXml(_nodeList);
+        }
+
+        private static void Init49(XmlNodeList _nodeList)
+        {
+            Zones.UpgradeXml(_nodeList);
+        }
+
+        private static void Init50(XmlNodeList _nodeList)
+        {
+            OutputLogBlocker.UpgradeXml(_nodeList);
         }
     }
 }

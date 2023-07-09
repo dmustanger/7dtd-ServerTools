@@ -84,7 +84,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeColorListXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -115,9 +116,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Colors>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Color Name=\"Red\" Tags=\"[FF0000]\" /> -->");
                     sw.WriteLine("    <!-- <Color Name=\"Rainbow\" Tags=\"[FF0000],[FF9933],[FFFF00],[009933],[0000CC],[9900CC],[FF33CC]\" /> -->");
-                    sw.WriteLine("    <Color Name=\"\" Tags=\"\" />");
                     if (Colors.Count > 0)
                     {
                         foreach (KeyValuePair<string, string> kvp in Colors)
@@ -154,7 +155,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -163,18 +164,21 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Colors>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Color Name=\"Red\" Tags=\"[FF0000]\" /> -->");
                     sw.WriteLine("    <!-- <Color Name=\"Rainbow\" Tags=\"[FF0000],[FF9933],[FFFF00],[009933],[0000CC],[9900CC],[FF33CC]\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Red\"") &&
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            if (!nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Red\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Color Name=\"Rainbow\"") && !nodeList[i].OuterXml.Contains("<!-- <Color Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
-                        {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Color Name=\"\" Tags=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

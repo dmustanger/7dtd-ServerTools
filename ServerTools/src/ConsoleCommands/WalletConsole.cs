@@ -108,14 +108,14 @@ namespace ServerTools
                                     if (negative)
                                     {
                                         Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins);
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                        return;
+                                        SdtdConsole.Instance.Output("[SERVERTOOLS] Removed '{0}' '{1}' from Id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName);
+                                        continue;
                                     }
                                     else
                                     {
                                         Wallet.AddCurrency(cInfo.CrossplatformId.CombinedString, adjustCoins, false);
-                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added '{0}' '{1}' to id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName));
-                                        return;
+                                        SdtdConsole.Instance.Output("[SERVERTOOLS] Added '{0}' '{1}' to id '{2}' named '{3}'", _params[1], Wallet.Currency_Name, cInfo.CrossplatformId.CombinedString, cInfo.playerName);
+                                        continue;
                                     }
                                 }
                             }

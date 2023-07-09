@@ -13,68 +13,64 @@ namespace ServerTools
         public static string Command_shutdown = "shutdown", Time = "240";
 
         private static string EventDelay = "";
+        private static DateTime time;
 
-        public static void SetDelay(bool _reset, bool _first)
+        public static void SetDelay(bool _loading)
         {
-            if (EventDelay != Time)
+            if (EventDelay != Time || _loading)
             {
-                if (!EventSchedule.Expired.Contains("Shutdown"))
-                {
-                    EventSchedule.Expired.Add("Shutdown");
-                }
+                EventSchedule.RemoveFromSchedule("Shutdown");
                 EventDelay = Time;
-                _reset = true;
             }
-            if (_reset || _first)
+            if (Time.Contains(",") && Time.Contains(":"))
             {
-                if (Time.Contains(",") && Time.Contains(":"))
+                string[] times = Time.Split(',');
+                for (int i = 0; i < times.Length; i++)
                 {
-                    string[] times = Time.Split(',');
-                    for (int i = 0; i < times.Length; i++)
-                    {
-                        string[] timeSplit = times[i].Split(':');
-                        int.TryParse(timeSplit[0], out int hours);
-                        int.TryParse(timeSplit[1], out int minutes);
-                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
-                        if (DateTime.Now < time)
-                        {
-                            EventSchedule.AddToSchedule("Shutdown_" + time, time);
-                        }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                            EventSchedule.AddToSchedule("Shutdown_" + time, time);
-                        }
-                    }
-                }
-                else if (Time.Contains(":"))
-                {
-                    string[] timeSplit = Time.Split(':');
-                    int.TryParse(timeSplit[0], out int hours);
-                    int.TryParse(timeSplit[1], out int minutes);
-                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    string[] timeSplit1 = times[i].Split(':');
+                    int.TryParse(timeSplit1[0], out int hours1);
+                    int.TryParse(timeSplit1[1], out int minutes1);
+                    time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
                     if (DateTime.Now < time)
                     {
-                        EventSchedule.AddToSchedule("Shutdown_" + time, time);
+                        EventSchedule.AddToSchedule("Shutdown", time);
+                        return;
                     }
-                    else
-                    {
-                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.AddToSchedule("Shutdown_" + time, time);
-                    }
+                }
+                string[] timeSplit2 = times[0].Split(':');
+                int.TryParse(timeSplit2[0], out int hours2);
+                int.TryParse(timeSplit2[1], out int minutes2);
+                time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                EventSchedule.AddToSchedule("Shutdown", time);
+                return;
+            }
+            else if (Time.Contains(":"))
+            {
+                string[] timeSplit = Time.Split(':');
+                int.TryParse(timeSplit[0], out int hours);
+                int.TryParse(timeSplit[1], out int minutes);
+                time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                if (DateTime.Now < time)
+                {
+                    EventSchedule.AddToSchedule("Shutdown", time);
                 }
                 else
                 {
-                    if (int.TryParse(Time, out int delay))
-                    {
-                        DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.AddToSchedule("Shutdown_" + time, time);
-                    }
-                    else
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
-                    }
+                    time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
+                    EventSchedule.AddToSchedule("Shutdown", time);
+                }
+            }
+            else
+            {
+                if (int.TryParse(Time, out int delay))
+                {
+                    time = DateTime.Now.AddMinutes(delay);
+                    EventSchedule.AddToSchedule("Shutdown", time);
+                }
+                else
+                {
+                    Log.Out("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries");
+                    Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
                 }
             }
         }

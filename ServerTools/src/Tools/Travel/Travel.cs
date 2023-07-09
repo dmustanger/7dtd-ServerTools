@@ -120,12 +120,15 @@ namespace ServerTools
                 }
                 else
                 {
-                    File.Delete(FilePath);
-                    if (childNodes != null && childNodes[0] != null)
+                    XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
+                    if (nodeList != null)
                     {
-                        UpgradeXml(childNodes);
+                        File.Delete(FilePath);
+                        Timers.UpgradeTravelXml(nodeList);
+                        //UpgradeXml(childNodes);
                         return;
                     }
+                    File.Delete(FilePath);
                     UpdateXml();
                     return;
                 }
@@ -378,7 +381,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -391,14 +394,16 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            if (!nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone1\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Location Name=\"Zone2\"") && !nodeList[i].OuterXml.Contains("<Location Name=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
-                        {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Location Name=\"\" Corner1=\"\" Corner2=\"\" Destination=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

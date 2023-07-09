@@ -124,7 +124,6 @@ namespace ServerTools
                     RunTimePatch.PatchAll();
                     Config.Load();
                     GeneralOperations.CreateCustomXUi();
-                    GeneralOperations.GetMeleeHandPlayer();
                     GeneralOperations.EntityIdList();
                     GeneralOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
                     GeneralOperations.StartTime = DateTime.Now;
@@ -135,7 +134,8 @@ namespace ServerTools
                     ModularLoader.Load();
                     Phrases.Load();
                     HowToSetup.Load();
-                    GameManager.Instance.waitForTargetFPS.TargetFPS = 80;
+                    GameManager.Instance.waitForTargetFPS.TargetFPS = 60;
+                    DamageDetector.SetProtection();
                     if (SleeperRespawn.IsEnabled)
                     {
                         try
@@ -144,7 +144,7 @@ namespace ServerTools
                         }
                         catch (XmlException e)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message));
+                            Log.Out("[SERVERTOOLS] Failed to reset sleeper spawn points. Error = {0}", e.Message);
                         }
                     }
                     try
@@ -233,7 +233,7 @@ namespace ServerTools
                         CleanBin.Waypoints = false;
                         Config.WriteXml();
                         Config.LoadXml();
-                        Log.Out(string.Format("[SERVERTOOLS] ServerTools.bin has been cleaned. The Clean_Bin tool and all of its options are now disabled"));
+                        Log.Out("[SERVERTOOLS] ServerTools.bin has been cleaned. The Clean_Bin tool and all of its options are now disabled");
                     }
                     Track.Cleanup();
                     Timers.Currency_Tag_Timer();

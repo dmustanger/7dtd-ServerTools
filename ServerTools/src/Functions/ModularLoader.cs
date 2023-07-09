@@ -255,6 +255,14 @@ namespace ServerTools
             {
                 InvalidBuffs.Load();
             }
+            if (OutputLogBlocker.IsRunning && !OutputLogBlocker.IsEnabled)
+            {
+                OutputLogBlocker.Unload();
+            }
+            else if (!OutputLogBlocker.IsRunning && OutputLogBlocker.IsEnabled)
+            {
+                OutputLogBlocker.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();

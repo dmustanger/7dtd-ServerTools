@@ -256,7 +256,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeProtectedZonesXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -285,8 +286,8 @@ namespace ServerTools
             {
                 sw.WriteLine("<Protected>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                 sw.WriteLine("    <!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
-                sw.WriteLine("    <Protected Corner1=\"\" Corner2=\"\" Active=\"\" />");
                 if (ProtectedList.Count > 0)
                 {
                     for (int i = 0; i < ProtectedList.Count; i++)
@@ -448,7 +449,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -457,17 +458,20 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Protected>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Protected Corner1=\"-30,-20\" Corner2=\"10,50\" Active=\"True\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"-30,-20\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (!nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"-30,-20\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Protected Corner1=\"\"") &&
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<!-- Do not forget"))
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Protected Corner1=\"\" Corner2=\"\" Active=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

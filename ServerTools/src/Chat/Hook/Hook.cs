@@ -22,10 +22,6 @@ namespace ServerTools
             {
                 if (!string.IsNullOrEmpty(_message) && _cInfo != null && _mainName != Config.Server_Response_Name)
                 {
-                    if (_cInfo.CrossplatformId == null && _cInfo.PlatformId != null)
-                    {
-                        _cInfo.CrossplatformId = _cInfo.PlatformId;
-                    }
                     if (Mute.IsEnabled && Mute.Mutes.Contains(_cInfo.PlatformId.CombinedString) || Mute.Mutes.Contains(_cInfo.CrossplatformId.CombinedString))
                     {
                         if (Mute.Block_Commands && (_message.StartsWith(Chat_Command_Prefix1) || _message.StartsWith(Chat_Command_Prefix2)))
@@ -1344,10 +1340,7 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            //if (messageLowerCase == "test")
-                            //{
-                            //    
-                            //}
+                            
                             if (!Passthrough)
                             {
                                 return false;
@@ -1443,20 +1436,20 @@ namespace ServerTools
                                     {
                                         DiscordBot.LastPlayer = _cInfo.entityId;
                                         DiscordBot.LastEntry = _message;
-                                        DiscordBot.Queue.Add("[Game] **" + _name + "** : " + DiscordBot.LastEntry);
+                                        DiscordBot.Queue.Add("[Game] **" + _name + "** : " + _message);
                                     }
                                     else if (DiscordBot.LastPlayer != _cInfo.entityId)
                                     {
                                         DiscordBot.LastPlayer = _cInfo.entityId;
                                         DiscordBot.LastEntry = _message;
-                                        DiscordBot.Queue.Add("[Game] **" + _name + "** : " + DiscordBot.LastEntry);
+                                        DiscordBot.Queue.Add("[Game] **" + _name + "** : " + _message);
                                     }
                                 }
                                 else if (DiscordBot.LastEntry != _message)
                                 {
                                     DiscordBot.LastPlayer = -1;
                                     DiscordBot.LastEntry = _message;
-                                    DiscordBot.Queue.Add("[Game] **" + _name + "** : " + DiscordBot.LastEntry);
+                                    DiscordBot.Queue.Add("[Game] **" + _name + "** : " + _message);
                                 }
                             }
                         }

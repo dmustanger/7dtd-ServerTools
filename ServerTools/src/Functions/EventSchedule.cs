@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -12,7 +11,6 @@ namespace ServerTools
 
         private static DateTime dateTime;
         private static string[] split;
-        private static KeyValuePair<string, DateTime>[] expired;
 
         public static void Exec()
         {
@@ -20,33 +18,33 @@ namespace ServerTools
             {
                 if (Expired.Count > 0)
                 {
-                    expired = Schedule.ToArray();
                     for (int i = 0; i < Expired.Count; i++)
                     {
-                        for (int j = 0; j < expired.Length; j++)
-                        {
-                            if (expired[j].Key.Contains(Expired[i]))
-                            {
-                                Schedule.Remove(expired[j].Key);
-                            }
-                        }
+                        RemoveFromSchedule(Expired[i]);
                     }
                     Expired.Clear();
                 }
-                if (Schedule != null && Schedule.Count > 0)
+                if (NewEntries.Count > 0)
+                {
+                    foreach (var entry in NewEntries)
+                    {
+                        Schedule.Add(entry.Key, entry.Value);
+                    }
+                    NewEntries.Clear();
+                }
+                if (Schedule.Count > 0)
                 {
                     dateTime = DateTime.Now;
                     foreach (var entry in Schedule)
                     {
-                        split = entry.Key.Split('_');
-                        switch (split[0])
+                        switch (entry.Key)
                         {
                             case "AutoBackup":
                                 if (dateTime >= entry.Value)
                                 {
                                     Expired.Add(entry.Key);
                                     AutoBackup.Exec();
-                                    AutoBackup.SetDelay(true, false);
+                                    AutoBackup.SetDelay(true);
                                 }
                                 break;
                             case "AutoSaveWorld":
@@ -54,7 +52,7 @@ namespace ServerTools
                                 {
                                     Expired.Add(entry.Key);
                                     AutoSaveWorld.Save();
-                                    AutoSaveWorld.SetDelay(true, false);
+                                    AutoSaveWorld.SetDelay(true);
                                 }
                                 break;
                             case "Bloodmoon":
@@ -62,13 +60,14 @@ namespace ServerTools
                                 {
                                     Expired.Add(entry.Key);
                                     Bloodmoon.StatusCheck();
-                                    Bloodmoon.SetDelay(true, false);
+                                    Bloodmoon.SetDelay(true);
                                 }
                                 break;
                             case "Bonus":
                                 if (dateTime >= entry.Value)
                                 {
                                     Expired.Add(entry.Key);
+                                    split = entry.Key.Split('_');
                                     if (GeneralOperations.SessionBonus(split[1]))
                                     {
                                         AddToSchedule(entry.Key, dateTime.AddMinutes(15));
@@ -85,7 +84,7 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        BreakReminder.SetDelay(true, false);
+                                        BreakReminder.SetDelay(true);
                                     }
                                 }
                                 break;
@@ -99,7 +98,7 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        InfoTicker.SetDelay(true, false);
+                                        InfoTicker.SetDelay(true);
                                     }
                                 }
                                 break;
@@ -127,7 +126,7 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        NightAlert.SetDelay(true, false);
+                                        NightAlert.SetDelay(true);
                                     }
                                 }
                                 break;
@@ -141,7 +140,7 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        PlayerLogs.SetDelay(true, false);
+                                        PlayerLogs.SetDelay(true);
                                     }
                                 }
                                 break;
@@ -155,7 +154,7 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        RealWorldTime.SetDelay(true, false);
+                                        RealWorldTime.SetDelay(true);
                                     }
                                 }
                                 break;
@@ -183,7 +182,7 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        WatchList.SetDelay(true, false);
+                                        WatchList.SetDelay(true);
                                     }
                                 }
                                 break;
@@ -197,48 +196,33 @@ namespace ServerTools
                                     }
                                     finally
                                     {
-                                        Zones.SetDelay(true, false);
+                                        Zones.SetDelay(true);
                                     }
                                 }
                                 break;
                         }
                     }
-                    if (Expired.Count > 0)
-                    {
-                        expired = Schedule.ToArray();
-                        for (int i = 0; i < Expired.Count; i++)
-                        {
-                            for (int j = 0; j < expired.Length; j++)
-                            {
-                                if (expired[j].Key.Contains(Expired[i]))
-                                {
-                                    Schedule.Remove(expired[j].Key);
-                                }
-                            }
-                        }
-                        Expired.Clear();
-                    }
-                }
-                if (NewEntries.Count > 0)
-                {
-                    foreach (var entry in NewEntries)
-                    {
-                        Schedule.Add(entry.Key, entry.Value);
-                    }
-                    NewEntries.Clear();
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EventSchedule.Exec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in EventSchedule.Exec: {0}", e.Message);
             }
         }
         
-        public static void AddToSchedule(string _toolName, DateTime _date)
+        public static void AddToSchedule(string _toolName, DateTime _time)
         {
             if (!NewEntries.ContainsKey(_toolName))
             {
-                NewEntries.Add(_toolName, _date);
+                NewEntries.Add(_toolName, _time);
+            }
+        }
+
+        public static void RemoveFromSchedule(string _toolName)
+        {
+            if (Schedule.ContainsKey(_toolName))
+            {
+                Schedule.Remove(_toolName);
             }
         }
     }

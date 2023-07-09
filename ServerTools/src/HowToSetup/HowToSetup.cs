@@ -50,7 +50,6 @@ namespace ServerTools
                 sw.WriteLine("Admin_Chat_Commands");
                 sw.WriteLine("Admin_List");
                 sw.WriteLine("Allocs_Map");
-                sw.WriteLine("Ally_Balancer");
                 sw.WriteLine("Animal_Tracking");
                 sw.WriteLine("Auction");
                 sw.WriteLine("Auto_Backup");
@@ -205,15 +204,6 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Ally_Balancer\" />");
-                sw.WriteLine("<Tool Name=\"Ally_Balancer\" Enable=\"False\" />");
-                sw.WriteLine();
-                sw.WriteLine("Set True or False for Enable");
-                sw.WriteLine();
-                sw.WriteLine("Applies a hidden buff to all players. While within range of other allies, they will do less damage. This is meant to force players to work together and balance large teams");
-                sw.WriteLine();
-                sw.WriteLine();
-                sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Animal_Tracking\" />");
                 sw.WriteLine("<Tool Name=\"Animal_Tracking\" Enable=\"False\" Delay_Between_Uses=\"60\" Minimum_Spawn_Radius=\"40\" Maximum_Spawn_Radius=\"60\" Animal_Ids=\"85,86,87,88\" />");
                 sw.WriteLine("<Tool Name=\"Animal_Tracking_Extended\" Command_Cost=\"0\" />");
@@ -251,7 +241,7 @@ namespace ServerTools
                 sw.WriteLine("Profits are sent to the sellers wallet.");
                 sw.WriteLine("A player can cancel their auction by typing /auction cancel but it must have been longer than the cancel time.");
                 sw.WriteLine("Total_Items controls how many items they may have in the auction");
-                sw.WriteLine("Tax controls the perfect removed from sale for taxes.");
+                sw.WriteLine("Tax controls the percent removed from sale for taxes. 5 = 5%. 10 = 10%");
                 sw.WriteLine("Enabling the panel while the web api is active will allow an interactive browser based window for auction exchange.");
                 sw.WriteLine("Panel_Name controls the name shown for the Auction when a player enters the Auction panel.");
                 sw.WriteLine("Changing your Web_API port will automatically update the link in your xpath documents for the panel but requires a server restart to take full effect.");

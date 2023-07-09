@@ -13,71 +13,79 @@ namespace ServerTools
         public static string Delay = "120";
 
         private static string EventDelay = "";
-        private static readonly string file = string.Format("PlayerLog_{0}.xml", DateTime.Today.ToString("M-d-yyyy"));
-        private static readonly string FilePath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, file);
+        private static DateTime time;
+        private static readonly string PlayerLogFile = string.Format("PlayerLog_{0}.xml", DateTime.Today.ToString("M-d-yyyy"));
+        private static readonly string PlayerLogFilePath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, PlayerLogFile);
 
-        public static void SetDelay(bool _reset, bool _first)
+        public static void SetDelay(bool _loading)
         {
-            if (EventDelay != Delay)
+            try
             {
-                if (!EventSchedule.Expired.Contains("PlayerLogs"))
+                if (EventDelay != Delay || _loading)
                 {
-                    EventSchedule.Expired.Add("PlayerLogs");
+                    if (!EventSchedule.Expired.Contains("PlayerLogs"))
+                    {
+                        EventSchedule.RemoveFromSchedule("PlayerLogs");
+                    }
+                    EventDelay = Delay;
                 }
-                EventDelay = Delay;
-                _reset = true;
-            }
-            if (_reset || _first)
-            {
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
                     string[] times = Delay.Split(',');
                     for (int i = 0; i < times.Length; i++)
                     {
-                        string[] timeSplit = times[i].Split(':');
-                        int.TryParse(timeSplit[0], out int hours);
-                        int.TryParse(timeSplit[1], out int minutes);
-                        DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                        string[] timeSplit1 = times[i].Split(':');
+                        int.TryParse(timeSplit1[0], out int hours1);
+                        int.TryParse(timeSplit1[1], out int minutes1);
+                        time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
                         if (DateTime.Now < time)
                         {
-                            EventSchedule.AddToSchedule("PlayerLogs_", time);
-                        }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                            EventSchedule.AddToSchedule("PlayerLogs_", time);
+                            EventSchedule.AddToSchedule("PlayerLogs", time);
+                            return;
                         }
                     }
+                    string[] timeSplit2 = times[0].Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                    EventSchedule.AddToSchedule("PlayerLogs", time);
+                    return;
                 }
                 else if (Delay.Contains(":"))
                 {
-                    string[] timeSplit = Delay.Split(':');
-                    int.TryParse(timeSplit[0], out int hours);
-                    int.TryParse(timeSplit[1], out int minutes);
-                    DateTime time = DateTime.Today.AddHours(hours).AddMinutes(minutes);
+                    string[] timeSplit3 = Delay.Split(':');
+                    int.TryParse(timeSplit3[0], out int hours3);
+                    int.TryParse(timeSplit3[1], out int minutes3);
+                    time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
                     if (DateTime.Now < time)
                     {
-                        EventSchedule.AddToSchedule("PlayerLogs_", time);
+                        EventSchedule.AddToSchedule("PlayerLogs", time);
                     }
                     else
                     {
-                        time = DateTime.Today.AddDays(1).AddHours(hours).AddMinutes(minutes);
-                        EventSchedule.AddToSchedule("PlayerLogs_", time);
+                        time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                        EventSchedule.AddToSchedule("PlayerLogs", time);
                     }
+                    return;
                 }
                 else
                 {
                     if (int.TryParse(Delay, out int delay))
                     {
-                        DateTime time = DateTime.Now.AddMinutes(delay);
-                        EventSchedule.AddToSchedule("PlayerLogs_", time);
+                        time = DateTime.Now.AddSeconds(delay);
+                        EventSchedule.AddToSchedule("PlayerLogs", time);
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid Player_Logs Interval detected. Use a single integer, 24h time or multiple 24h time entries"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
+                        Log.Out("[SERVERTOOLS] Invalid Player_Logs Interval detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
                     }
+                    return;
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerLogs.SetDelay: {0}", e.Message));
             }
         }
 
@@ -87,25 +95,25 @@ namespace ServerTools
             {
                 if (GameManager.Instance.World != null && GameManager.Instance.World.Players.Count > 0)
                 {
-                    if (!File.Exists(FilePath))
+                    if (!File.Exists(PlayerLogFilePath))
                     {
-                        using (StreamWriter sw = new StreamWriter(FilePath, true, Encoding.UTF8))
+                        using (StreamWriter sw = new StreamWriter(PlayerLogFilePath, true, Encoding.UTF8))
                         {
                             sw.WriteLine("<PlayerLogs/>");
                             sw.Flush();
                             sw.Close();
                         }
                     }
-                    if (File.Exists(FilePath))
+                    if (File.Exists(PlayerLogFilePath))
                     {
                         XmlDocument xmlDoc = new XmlDocument();
                         try
                         {
-                            xmlDoc.Load(FilePath);
+                            xmlDoc.Load(PlayerLogFilePath);
                         }
                         catch (XmlException e)
                         {
-                            Log.Error(string.Format("[SERVERTOOLS] Player logs failed loading {0}: {1}", file, e.Message));
+                            Log.Error(string.Format("[SERVERTOOLS] Player logs failed loading {0}: {1}", PlayerLogFile, e.Message));
                             return;
                         }
                         string dt = DateTime.Now.ToString("HH:mm:ss");
@@ -175,21 +183,21 @@ namespace ServerTools
                                                     playerNode.AppendChild(newEntry);
                                                     playerNode = PrintVehicle(player.AttachedToEntity.entityId, playerNode, xmlDoc);
                                                 }
-                                                newEntry = xmlDoc.CreateTextNode("----------------\n");
+                                                newEntry = xmlDoc.CreateTextNode("       ----------------\n");
                                                 playerNode.AppendChild(newEntry);
                                             }
                                             else if (!player.IsDead() && !player.IsSpawned())
                                             {
                                                 XmlNode newEntry = xmlDoc.CreateTextNode(string.Format("       {0}: EntityId {1} / Name {2} / Player has not spawned\n", dt, cInfo.entityId, cInfo.playerName));
                                                 playerNode.AppendChild(newEntry);
-                                                newEntry = xmlDoc.CreateTextNode("----------------\n");
+                                                newEntry = xmlDoc.CreateTextNode("       ----------------\n");
                                                 playerNode.AppendChild(newEntry);
                                             }
                                             else if (player.IsDead())
                                             {
                                                 XmlNode newEntry = xmlDoc.CreateTextNode(string.Format("       {0}: EntityId {1} / Name {2} / Player is dead\n", dt, cInfo.entityId, cInfo.playerName));
                                                 playerNode.AppendChild(newEntry);
-                                                newEntry = xmlDoc.CreateTextNode("----------------\n");
+                                                newEntry = xmlDoc.CreateTextNode("       ----------------\n");
                                                 playerNode.AppendChild(newEntry);
                                             }
                                         }
@@ -197,7 +205,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        xmlDoc.Save(FilePath);
+                        xmlDoc.Save(PlayerLogFilePath);
                     }
                 }
             }

@@ -52,15 +52,15 @@ public static class Injections
         }
     }
 
-    public static void GameManager_ChangeBlocks_Prefix(GameManager __instance, PlatformUserIdentifierAbs persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
+    public static void NetPackageSetBlock_ProcessPackage_Prefix(GameManager _callbacks, List<BlockChangeInfo> ___blockChanges, int ___localPlayerThatChanged)
     {
         try
         {
-            BlockChange.ProcessBlockChange(__instance, persistentPlayerId, _blocksToChange);
+            BlockChange.ProcessBlockChange(_callbacks, ___blockChanges, ___localPlayerThatChanged);
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.GameManager_ChangeBlocks_Prefix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageSetBlock_ProcessPackage_Prefix: {0}", e.Message));
         }
     }
 
@@ -395,7 +395,7 @@ public static class Injections
 
     public static void NetPackagePlayerInventory_ProcessPackage_Postfix(NetPackagePlayerInventory __instance)
     {
-        if (__instance.Sender != null && Wallet.IsEnabled && (Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId) || Wallet.UpdateAltCurrency.ContainsKey(__instance.Sender.entityId)))
+        if (__instance.Sender != null && Wallet.IsEnabled && (Wallet.UpdateMainCurrency.ContainsKey(__instance.Sender.entityId) || Wallet.UpdateAltCurrency.ContainsKey(__instance.Sender.entityId) || Bank.AddToBank.ContainsKey(__instance.Sender.CrossplatformId.CombinedString)))
         {
             ItemStack[] stacks = __instance.Sender.latestPlayerData.bag;
             for (int i = 0; i < stacks.Length; i++)
@@ -405,10 +405,15 @@ public static class Injections
                     return;
                 }
             }
-            if (Wallet.UpdateMainCurrency.TryGetValue(__instance.Sender.entityId, out int balance))
+            if (Bank.AddToBank.TryGetValue(__instance.Sender.CrossplatformId.CombinedString, out int bankAddition))
+            {
+                Bank.AddToBank.Remove(__instance.Sender.CrossplatformId.CombinedString);
+                Bank.AddCurrencyToBank(__instance.Sender.CrossplatformId.CombinedString, bankAddition);
+            }
+            if (Wallet.UpdateMainCurrency.TryGetValue(__instance.Sender.entityId, out int walletAddition))
             {
                 Wallet.UpdateMainCurrency.Remove(__instance.Sender.entityId);
-                Wallet.AddCurrency(__instance.Sender.CrossplatformId.CombinedString, balance, false);
+                Wallet.AddCurrency(__instance.Sender.CrossplatformId.CombinedString, walletAddition, false);
             }
             if (Wallet.UpdateAltCurrency.TryGetValue(__instance.Sender.entityId, out List<string[]> altCurrency))
             {
@@ -458,7 +463,7 @@ public static class Injections
         return false;
     }
 
-    public static bool NetPackageDamageEntity_ProcessPackage_Prefix(int ___entityId, int ___attackerEntityId, ItemValue ___attackingItem, ushort ___strength)
+    public static bool NetPackageDamageEntity_ProcessPackage_Prefix(int ___entityId, int ___attackerEntityId, ItemValue ___attackingItem, ushort ___strength, EnumDamageTypes ___damageTyp, short ___hitBodyPart, bool ___bCritical, bool ___bFatal)
     {
         Entity victim = GeneralOperations.GetEntity(___entityId);
         if (victim != null)
@@ -466,7 +471,7 @@ public static class Injections
             Entity attacker = GeneralOperations.GetEntity(___attackerEntityId);
             if (attacker != null)
             {
-                return ProcessDamage.Exec(victim, attacker, ___attackingItem, ___strength);
+                return ProcessDamage.Exec(victim, attacker, ___attackingItem, ___strength, ___damageTyp, (EnumBodyPartHit)___hitBodyPart, ___bCritical, ___bFatal);
             }
         }
         return true;
@@ -548,32 +553,34 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.LootManager_LootContainerOpened_Prefix: {0}", e.Message));
+            Log.Out("[SERVERTOOLS] Error in Injections.LootManager_LootContainerOpened_Prefix: {0}", e.Message);
         }
         return true;
     }
 
-    public static void NetPackageTileEntity_Setup_Prefix(NetPackageTileEntity __instance, TileEntity _te, byte _handle)
+    public static void NetPackageTileEntity_ProcessPackage_Postfix(NetPackageTileEntity __instance, World _world, int ___clrIdx, Vector3i ___teWorldPos, byte ___handle)
     {
         try
         {
-            if (__instance == null || _te == null || !Vault.IsEnabled)
+            if (__instance == null || ___teWorldPos == null || !Vault.IsEnabled)
             {
                 return;
             }
-            if (_te is TileEntityLootContainer)
+            TileEntity tileEntity = _world.GetTileEntity(___clrIdx, ___teWorldPos);
+            if (tileEntity == null)
             {
-                TileEntityLootContainer lootContainer = (TileEntityLootContainer)_te;
-                if (lootContainer != null && lootContainer.bPlayerStorage && lootContainer.blockValue.Block != null &&
-                    lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && _handle != 255)
-                {
-                    Vault.UpdateData(lootContainer);
-                }
+                return;
+            }
+            TileEntityLootContainer lootContainer = (TileEntityLootContainer)tileEntity;
+            if (lootContainer != null && lootContainer.bPlayerStorage && lootContainer.blockValue.Block != null &&
+                lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && ___handle != 255)
+            {
+                Vault.UpdateData(lootContainer);
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_Setup_Prefix: {0}", e.Message));
+            Log.Out("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_ProcessPackage_Postfix: {0}", e.Message);
         }
     }
 
@@ -605,36 +612,36 @@ public static class Injections
 
     public static bool Log_Out_Prefix(string _txt)
     {
-        if (OutputLog.Vehicle_Manager_Off && _txt.Contains("VehicleManager"))
+        if (OutputLogBlocker.IsEnabled && OutputLogBlocker.Ommitted.Contains(_txt))
         {
             return false;
         }
         if (_txt.Contains("INF"))
         {
             string modifiedString = _txt.Substring(_txt.IndexOf("INF") + 4);
-            if (modifiedString.Equals(OutputLog.lastOutput))
+            if (modifiedString.Equals(GeneralOperations.lastOutput))
             {
                 return false;
             }
-            OutputLog.lastOutput = modifiedString;
+            GeneralOperations.lastOutput = modifiedString;
         }
         else if (_txt.Contains("WRN"))
         {
             string modifiedString = _txt.Substring(_txt.IndexOf("WRN") + 4);
-            if (modifiedString.Equals(OutputLog.lastOutput))
+            if (modifiedString.Equals(GeneralOperations.lastOutput))
             {
                 return false;
             }
-            OutputLog.lastOutput = modifiedString;
+            GeneralOperations.lastOutput = modifiedString;
         }
         else if (_txt.Contains("ERR"))
         {
             string modifiedString = _txt.Substring(_txt.IndexOf("ERR") + 4);
-            if (modifiedString.Equals(OutputLog.lastOutput))
+            if (modifiedString.Equals(GeneralOperations.lastOutput))
             {
                 return false;
             }
-            OutputLog.lastOutput = modifiedString;
+            GeneralOperations.lastOutput = modifiedString;
         }
         return true;
     }
@@ -684,9 +691,12 @@ public static class Injections
         }
     }
 
-    public static bool TileEntity_setModified_Prefix()
+    public static bool UserIdentifierXbl_WriteCustomData_Prefix(ulong ___xuid)
     {
-
+        if (___xuid == 0UL)
+        {
+            return false;
+        }
         return true;
     }
 }

@@ -14,6 +14,7 @@ namespace ServerTools
         public static int Deposit_Fee_Percent = 5;
 
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
+        public static Dictionary<string, int> AddToBank = new Dictionary<string, int>();
 
         private static readonly string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string Filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
@@ -247,34 +248,42 @@ namespace ServerTools
                 {
                     float fee = value * ((float)Deposit_Fee_Percent / 100);
                     int adjustedDeposit = value - (int)fee;
-                    AddCurrencyToBank(_cInfo.CrossplatformId.CombinedString, adjustedDeposit);
-                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    if (!AddToBank.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' added '{3}' to their bank", DateTime.Now, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, adjustedDeposit));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
+                        AddToBank.Add(_cInfo.CrossplatformId.CombinedString, adjustedDeposit);
+                        //AddCurrencyToBank(_cInfo.CrossplatformId.CombinedString, adjustedDeposit);
+                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                        {
+                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' added '{3}' to their bank", DateTime.Now, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, adjustedDeposit));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        Phrases.Dict.TryGetValue("Bank3", out string phrase2);
+                        phrase2 = phrase2.Replace("{Value}", adjustedDeposit.ToString());
+                        phrase2 = phrase2.Replace("{Name}", Wallet.Currency_Name);
+                        phrase2 = phrase2.Replace("{Percent}", Deposit_Fee_Percent.ToString());
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    Phrases.Dict.TryGetValue("Bank3", out string phrase2);
-                    phrase2 = phrase2.Replace("{Value}", adjustedDeposit.ToString());
-                    phrase2 = phrase2.Replace("{Name}", Wallet.Currency_Name);
-                    phrase2 = phrase2.Replace("{Percent}", Deposit_Fee_Percent.ToString());
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    AddCurrencyToBank(_cInfo.CrossplatformId.CombinedString, value);
-                    using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                    if (!AddToBank.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                     {
-                        sw.WriteLine(string.Format("{0}: '{1}' '{2}' added '{3}' to their bank", DateTime.Now, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, value));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
+                        AddToBank.Add(_cInfo.CrossplatformId.CombinedString, value);
+                        //AddCurrencyToBank(_cInfo.CrossplatformId.CombinedString, value);
+                        using (StreamWriter sw = new StreamWriter(Filepath, true, Encoding.UTF8))
+                        {
+                            sw.WriteLine(string.Format("{0}: '{1}' '{2}' added '{3}' to their bank", DateTime.Now, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, value));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        Phrases.Dict.TryGetValue("Bank4", out string phrase3);
+                        phrase3 = phrase3.Replace("{Value}", value.ToString());
+                        phrase3 = phrase3.Replace("{Name}", Wallet.Currency_Name);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    Phrases.Dict.TryGetValue("Bank4", out string phrase3);
-                    phrase3 = phrase3.Replace("{Value}", value.ToString());
-                    phrase3 = phrase3.Replace("{Name}", Wallet.Currency_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -310,20 +319,17 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
-                int maxAllowed;
+                int maxAllowed = 1000;
                 if (itemValue.ItemClass.Stacknumber != null)
                 {
                     maxAllowed = itemValue.ItemClass.Stacknumber.Value;
-                }
-                else
-                {
-                    maxAllowed = 30000;
                 }
                 if (value > maxAllowed)
                 {
                     Phrases.Dict.TryGetValue("Bank9", out string phrase3);
                     phrase3 = phrase3.Replace("{Max}", maxAllowed.ToString());
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
                 }
                 ItemStack itemStack = new ItemStack(itemValue, value);
                 if (itemStack == null)

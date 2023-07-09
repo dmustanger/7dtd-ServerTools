@@ -126,6 +126,7 @@ namespace ServerTools
         //            if (nodeList != null)
         //            {
         //                File.Delete(FilePath);
+        //                Timers.UpgradeChunkResetXml(nodeList);
         //                UpgradeXml(nodeList);
         //                return;
         //            }
@@ -157,10 +158,10 @@ namespace ServerTools
         //        {
         //            sw.WriteLine("<ChunkReset>");
         //            sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+        //            sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
         //            sw.WriteLine("    <!-- A chunk is 16x16 blocks. Only one position is needed inside a chunk for reset -->");
         //            sw.WriteLine("    <!-- Possible time: day, week, month -->");
         //            sw.WriteLine("    <!-- <Chunk Position=\"0,0\" Time=\"week\" /> -->");
-        //            sw.WriteLine("    <Chunk Position=\"\" Time=\"\" />");
         //            if (Chunks.Count > 0)
         //            {
         //                foreach (KeyValuePair<string, string> kvp in Chunks)
@@ -283,7 +284,7 @@ namespace ServerTools
         //    }
         //}
         //
-        //private static void UpgradeXml(XmlNodeList nodeList)
+        //public static void UpgradeXml(XmlNodeList nodeList)
         //{
         //    try
         //    {
@@ -292,19 +293,22 @@ namespace ServerTools
         //        {
         //            sw.WriteLine("<ChunkReset>");
         //            sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+        //            sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
         //            sw.WriteLine("    <!-- A chunk is 16x16 blocks. Only one position is needed inside a chunk for reset -->");
         //            sw.WriteLine("    <!-- Possible time: day, week, month -->");
         //            sw.WriteLine("    <!-- <Chunk Position=\"0,0\" Time=\"week\" /> -->");
         //            for (int i = 0; i < nodeList.Count; i++)
         //            {
-        //                if (!nodeList[i].OuterXml.Contains("<!-- <Version") &&
+        //                if (nodeList[i].NodeType == XmlNodeType.Comment)
+        //              {
+        //                if (!nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<!-- Do not forget") &&
         //                    !nodeList[i].OuterXml.Contains("<!-- A chunk") && !nodeList[i].OuterXml.Contains("<!-- Possible time") &&
         //                    !nodeList[i].OuterXml.Contains("<Chunk Position=\"\""))
         //                {
         //                    sw.WriteLine(nodeList[i].OuterXml);
         //                }
+        //              }
         //            }
-        //            sw.WriteLine("    <Chunk Position=\"\" Time=\"\" />");
         //            for (int i = 0; i < nodeList.Count; i++)
         //            {
         //                if (nodeList[i].NodeType != XmlNodeType.Comment)

@@ -399,9 +399,9 @@ namespace ServerTools
                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} {1}", _cInfo.CrossplatformId.CombinedString, phrase), null);
                 }
                 GeneralOperations.SavePersistentPlayerDataXML();
-                GeneralOperations.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);
                 GeneralOperations.RemovePersistentPlayerData(_cInfo.CrossplatformId.CombinedString);
-                GeneralOperations.RemoveAllACL(_cInfo.CrossplatformId.CombinedString);
+                //GeneralOperations.RemoveAllClaims(_cInfo.CrossplatformId.CombinedString);
+                //GeneralOperations.RemoveAllACL(_cInfo.CrossplatformId.CombinedString);
                 Timers.HardcoreDeleteFiles(_cInfo);
             }
             catch (Exception e)

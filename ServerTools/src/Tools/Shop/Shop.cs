@@ -68,9 +68,9 @@ namespace ServerTools
                     {
                         EntityCreationData entityCreationData = new EntityCreationData();
                         entityCreationData.entityClass = EntityClass.FromString("playerMale");
-                        entityCreationData.id = -1;
+                        entityCreationData.id = 0;
                         Player = (EntityPlayer)EntityFactory.CreateEntity(entityCreationData);
-                        Log.Out(string.Format("[SERVERTOOLS] Generated player for Shop item calculations"));
+                        Log.Out("[SERVERTOOLS] Created temporary player for Shop calculations");
                     }
                     Dict.Clear();
                     Categories.Clear();
@@ -1111,6 +1111,7 @@ namespace ServerTools
                     {
                         CategoryString = CategoryString.Remove(CategoryString.Length - 1);
                     }
+                    Player = null;
                 }
                 else
                 {
@@ -1118,7 +1119,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeShopXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -1137,6 +1139,7 @@ namespace ServerTools
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Error in Shop.LoadXml: {0}", e.Message));
                 }
+                Player = null;
             }
         }
 
@@ -1149,9 +1152,9 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Shop>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items with no quality should be set to 1 -->");
-                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\" />");
                     if (Dict.Count > 0)
                     {
                         for (int i = 0; i < Dict.Count; i++)
@@ -1622,7 +1625,7 @@ namespace ServerTools
             return pass;
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -1631,17 +1634,21 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Shop>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items with no quality should be set to 1 -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- Secondary name") && !nodeList[i].OuterXml.Contains("<!-- Items with") && 
-                            !nodeList[i].OuterXml.Contains("<Item Name=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Version"))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (!nodeList[i].OuterXml.Contains("<!-- Secondary name") && !nodeList[i].OuterXml.Contains("<!-- Items with") &&
+                            !nodeList[i].OuterXml.Contains("<Item Name=\"\"") && !nodeList[i].OuterXml.Contains("<!-- <Version") &&
+                            !nodeList[i].OuterXml.Contains("<!-- Do not forget"))
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Item Name=\"\" SecondaryName=\"\" Count=\"\" Quality=\"\" Price=\"\" Category=\"\" PanelMessage=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

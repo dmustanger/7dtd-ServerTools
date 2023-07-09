@@ -1,5 +1,55 @@
 ﻿CHANGELOG
 
+21.0.4
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Added option Claimed_Block_Limit to Damage_Detector. This is the
+max damage a player can output to a block inside a claimed space
+-Added console command to remove hardcore status from a player
+while set to optional mode
+-Changed target fps to 60
+-Changed Damage_Detector options Entity_Damage_Limit to 
+Entity_Limit, Block_Damage_Limit to Block_Limit and
+Player_Damage_Limit to Player_Limit
+-Changed Output_Log to Output_Log_Blocker. Enabling creates 
+OutputBlocker.xml. Enter a phrase or sentence you want to block 
+from seeing in the output log. Helpful for spam and clutter
+-Changed Bank deposit process to avoid lag issues
+-Changed xml update process to use a timer delay when upgrading
+the file. Should avoid the file being reported in use
+-Changed Home tool to remove saved points if no claim is found when
+attempting to use them
+-Changed Damage_Detector logs to be written to file every five
+seconds to avoid lag caused by rapid fire weapons and tools
+-Updated Damage_Detector for blocks to match a21 process and to
+detect irregular block damage inside a claimed space
+-Updated Damage_Detector to skip players using items marked as dev
+in the items.xml
+-Updated memory allocations to reduce garbage collection
+-Updated Block_Pickup detection to utilize more applicable data
+-Updated phrase file entry Homes5, DamageDetector2
+-Updated various tools for improved runtimes and reduced memory use
+-Fixed bank to bag transfer not functioning as intended when over
+the stack limit
+-Fixed Player_Logs delay running in minutes instead of seconds
+-Fixed Chat_Color utilizing multiple colors
+-Fixed Vault_Box tool failing to save data on some servers
+-Fixed Auto_Backup crashing the server when attempting to save
+a file that is in use
+-Fixed POI_Protection not functioning as intended
+-Fixed console command 'st-Wallet All' not functioning as intended
+-Fixed xml upgrade duplicating existing entries
+-Removed non ommitted empty value examples from the xml files
+-Removed phrase entry DamageDetector3
+
+Known issues:
+-Vault_Box does not work with all modded servers. Check privately
+-Shop panel does not recognize two players using the same ip
+-RIO is not functioning as intended
+-Spawn entity system not working as intended
+-Some console commands are out of date
+
 21.0.3
 Built using Alpha 21 experimental assets
 Functioning with Alpha 21 experimental. Untested with other versions

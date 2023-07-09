@@ -829,12 +829,12 @@ namespace ServerTools
                                                             Authorized[clientData[0]] = pass;
                                                             AuthorizedTime[clientData[0]] = DateTime.Now.AddMinutes(WebPanel.Timeout);
                                                             int.TryParse(clientData[2], out int lineNumber);
-                                                            int logCount = OutputLog.ActiveLog.Count;
+                                                            int logCount = GeneralOperations.ActiveLog.Count;
                                                             if (logCount >= lineNumber + 1)
                                                             {
                                                                 for (int i = lineNumber; i < logCount; i++)
                                                                 {
-                                                                    responseMessage += OutputLog.ActiveLog[i] + "\n";
+                                                                    responseMessage += GeneralOperations.ActiveLog[i] + "\n";
                                                                 }
                                                                 responseMessage += "☼" + logCount;
                                                                 responseMessage += "☼" + salt;
@@ -904,13 +904,13 @@ namespace ServerTools
                                                                     entityId = -1
                                                                 };
                                                                 List<string> cmdReponse = SdtdConsole.Instance.ExecuteSync(clientData[3], cInfo);
-                                                                int logCount = OutputLog.ActiveLog.Count;
+                                                                int logCount = GeneralOperations.ActiveLog.Count;
                                                                 int.TryParse(clientData[2], out int lineNumber);
                                                                 if (logCount >= lineNumber + 1)
                                                                 {
                                                                     for (int i = lineNumber; i < logCount; i++)
                                                                     {
-                                                                        responseMessage += OutputLog.ActiveLog[i] + "\n";
+                                                                        responseMessage += GeneralOperations.ActiveLog[i] + "\n";
                                                                     }
                                                                 }
                                                                 for (int i = 0; i < cmdReponse.Count; i++)

@@ -86,7 +86,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeCommandListXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -115,6 +116,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<CommandList>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                 sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
                 sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                 sw.WriteLine("    <!-- If hidden is set to true, the command will not show in response to using /commands -->");
@@ -709,7 +711,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"donate\" Replacement=\"donate\" Hidden=\"false\" />");
         }
 
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -719,18 +721,22 @@ namespace ServerTools
                     List<string> commandList = Commands;
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
                     sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                     sw.WriteLine("    <!-- If hidden is set to true, the command will not show in response to using /commands -->");
                     sw.WriteLine("    <!-- <Command Default=\"gimme\" Replacement=\"give\" Hidden=\"false\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            if (!nodeList[i].OuterXml.Contains("<!-- All capital letters in commands") &&
                             !nodeList[i].OuterXml.Contains("<!-- Leave the default alone.") && !nodeList[i].OuterXml.Contains("<!-- If hidden is set to true") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Command Default=\"gimme") && !nodeList[i].OuterXml.Contains("<Command Default=\"\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version"))
-                        {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            !nodeList[i].OuterXml.Contains("<!-- <Version") && !nodeList[i].OuterXml.Contains("<!-- Do not forget"))
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
                     for (int i = 0; i < nodeList.Count; i++)

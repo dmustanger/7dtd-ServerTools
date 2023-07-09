@@ -14,19 +14,15 @@ namespace ServerTools
         {
             try
             {
-                if (GameManager.Instance.World.Entities.Count < 0)
-                {
-                    return;
-                }
                 List<Entity> entityList = GameManager.Instance.World.Entities.list;
-                if (entityList == null)
+                if (entityList == null || entityList.Count < 1)
                 {
                     return;
                 }
                 for (int i = 0; i < entityList.Count; i++)
                 {
                     Entity entity = entityList[i];
-                    if (entity == null || !entity.IsSpawned())
+                    if (entity == null || !entity.IsSpawned() || entity.IsMarkedForUnload() || entity.IsInvoking())
                     {
                         continue;
                     }
@@ -46,8 +42,8 @@ namespace ServerTools
                             continue;
                         }
                     }
-                    else if (Underground && (int)pos.y < 0 && !entity.IsMarkedForUnload())
-                    {
+                    else if (Underground && (int)pos.y < 0)
+                    { 
                         if (entity is EntityZombie || entity is EntityAnimal)
                         {
                             entity.MarkToUnload();

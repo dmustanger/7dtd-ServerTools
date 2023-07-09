@@ -51,12 +51,12 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to find player data for id '{0}'", _params[0]));
+                        Log.Out("[SERVERTOOLS] Unable to find player data for id '{0}'", _params[0]);
                     }
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to find player data for id '{0}'", _params[0]));
+                    Log.Out("[SERVERTOOLS] Unable to find player data for id '{0}'", _params[0]);
                 }
             }
             catch (Exception e)
@@ -81,9 +81,9 @@ namespace ServerTools
 
         public static void RemovePersistentData(string _id)
         {
-            GeneralOperations.RemoveAllClaims(_id);
             GeneralOperations.RemovePersistentPlayerData(_id);
-            GeneralOperations.RemoveAllACL(_id);
+            //GeneralOperations.RemoveAllClaims(_id);
+            //GeneralOperations.RemoveAllACL(_id);
         }
 
         public static void RemoveProfile(string _id)

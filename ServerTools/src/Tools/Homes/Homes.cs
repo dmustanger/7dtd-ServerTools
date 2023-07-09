@@ -288,6 +288,8 @@ namespace ServerTools
                         }
                         else
                         {
+                            PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Homes.Remove(_homeName);
+                            PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Homes5", out string phrase);
                             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                         }

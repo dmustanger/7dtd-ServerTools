@@ -15,9 +15,9 @@ namespace ServerTools
         {
             try
             {
-                if (OutputLog.ActiveLog.Count > 0)
+                if (GeneralOperations.ActiveLog.Count > 0)
                 {
-                    List<string> log = OutputLog.ActiveLog;
+                    List<string> log = GeneralOperations.ActiveLog;
                     log.Reverse();
                     for (int i = 0; i < 50; i++)
                     {

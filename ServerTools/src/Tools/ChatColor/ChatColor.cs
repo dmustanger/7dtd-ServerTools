@@ -109,7 +109,8 @@ namespace ServerTools
                     if (nodeList != null)
                     {
                         File.Delete(FilePath);
-                        UpgradeXml(nodeList);
+                        Timers.UpgradeChatColorXml(nodeList);
+                        //UpgradeXml(nodeList);
                         return;
                     }
                     File.Delete(FilePath);
@@ -139,9 +140,9 @@ namespace ServerTools
             {
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                 sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                 sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
-                sw.WriteLine("    <Player Id=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" />");
                 if (Players.Count > 0)
                 {
                     foreach (KeyValuePair<string, string[]> kvp in Players)
@@ -504,6 +505,7 @@ namespace ServerTools
             {
                 return _name;
             }
+
             string nameColor = "";
             string prefix = "";
             string prefixColor = "";
@@ -570,25 +572,18 @@ namespace ServerTools
             {
                 if (prefixColor.Contains(","))
                 {
-                    int count = 0, colorIndex = 0;
+                    int colorIndex = 0;
                     string[] colors = prefixColor.Split(',');
-                    for (int i = 0; i < prefix.Length; i++)
+                    for (int i = 0; i < prefix.Length; i += 9)
                     {
-                        if (!Char.IsWhiteSpace(prefix[i]))
+                        prefix = prefix.Insert(i, colors[colorIndex]);
+                        colorIndex++;
+                        if (colorIndex == colors.Length)
                         {
-                            prefix = prefix.Insert(i, colors[colorIndex]);
-                            count++;
-                            colorIndex++;
-                            if (colorIndex == colors.Length)
-                            {
-                                colorIndex = 0;
-                            }
+                            colorIndex = 0;
                         }
                     }
-                    for (int j = 0; j < count; j++)
-                    {
-                        prefix = prefix.Insert(prefix.Length, "[-]");
-                    }
+                    prefix = prefix.Insert(prefix.Length, "[ffffff]");
                 }
                 else
                 {
@@ -596,29 +591,23 @@ namespace ServerTools
                     prefix = prefix.Insert(prefix.Length, "[-]");
                 }
             }
-            if (nameColor != "")
+            if (nameColor != "" && nameColor != "")
             {
                 if (nameColor.Contains(","))
                 {
                     int count = 0, colorIndex = 0;
                     string[] colors = nameColor.Split(',');
-                    for (int i = 0; i < _name.Length; i++)
+                    for (int i = 0; i < _name.Length; i += 9)
                     {
-                        if (!Char.IsWhiteSpace(_name[i]))
+                        _name = _name.Insert(i, colors[colorIndex]);
+                        count++;
+                        colorIndex++;
+                        if (colorIndex == colors.Length)
                         {
-                            _name = _name.Insert(i, colors[colorIndex]);
-                            count++;
-                            colorIndex++;
-                            if (colorIndex == colors.Length)
-                            {
-                                colorIndex = 0;
-                            }
+                            colorIndex = 0;
                         }
                     }
-                    for (int j = 0; j < count; j++)
-                    {
-                        _name = _name.Insert(_name.Length, "[-]");
-                    }
+                    _name = _name.Insert(_name.Length, "[ffffff]");
                 }
                 else
                 {
@@ -644,7 +633,7 @@ namespace ServerTools
             return _msg;
         }
         
-        private static void UpgradeXml(XmlNodeList nodeList)
+        public static void UpgradeXml(XmlNodeList nodeList)
         {
             try
             {
@@ -653,19 +642,24 @@ namespace ServerTools
                 {
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
+                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- NameColor and") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Player Id=\"Steam_12345678901234567") && !nodeList[i].OuterXml.Contains("<Player Id=\"") &&
-                            !nodeList[i].OuterXml.Contains("<!-- <Version") &&
-                            !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
                         {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            if (nodeList[i].NodeType == XmlNodeType.Comment)
+                            {
+                                if (!nodeList[i].OuterXml.Contains("NameColor and") &&
+                                !nodeList[i].OuterXml.Contains("<Player Id=\"Steam_12345678901234567") && !nodeList[i].OuterXml.Contains("Do not forget") &&
+                                !nodeList[i].OuterXml.Contains("<Version") && !nodeList[i].OuterXml.Contains("<Player Id=\"\""))
+                                {
+                                    sw.WriteLine(nodeList[i].OuterXml);
+                                }
+                            }
                         }
                     }
-                    sw.WriteLine("    <Player Id=\"\" Name=\"\" NameColor=\"\" Prefix=\"\" PrefixColor=\"\" Expires=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)
