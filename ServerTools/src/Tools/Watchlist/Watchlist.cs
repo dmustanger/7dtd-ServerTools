@@ -15,7 +15,7 @@ namespace ServerTools
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
 
         private static string EventDelay = "";
-        private static DateTime time;
+        private static DateTime time = new DateTime();
         private static string file = "WatchList.xml";
         private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -86,7 +86,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeWatchListXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -119,7 +118,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\" Reason=\"Cheaters R Assho\" /> -->");
                     if (Dict.Count > 0)
@@ -163,64 +162,64 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (!EventSchedule.Expired.Contains("WatchList"))
+                if (EventSchedule.Schedule.ContainsKey("WatchList") && !EventSchedule.Expired.Contains("WatchList"))
                 {
                     EventSchedule.RemoveFromSchedule("WatchList");
                 }
                 EventDelay = Delay;
-            }
-            if (Delay.Contains(",") && Delay.Contains(":"))
-            {
-                string[] times = Delay.Split(',');
-                for (int i = 0; i < times.Length; i++)
+                if (Delay.Contains(",") && Delay.Contains(":"))
                 {
-                    string[] timeSplit1 = times[i].Split(':');
-                    int.TryParse(timeSplit1[0], out int hours1);
-                    int.TryParse(timeSplit1[1], out int minutes1);
-                    time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
+                    string[] times = Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        string[] timeSplit1 = times[i].Split(':');
+                        int.TryParse(timeSplit1[0], out int hours1);
+                        int.TryParse(timeSplit1[1], out int minutes1);
+                        time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("WatchList", time);
+                            return;
+                        }
+                    }
+                    string[] timeSplit2 = times[0].Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                    EventSchedule.AddToSchedule("WatchList", time);
+                    return;
+                }
+                else if (Delay.Contains(":"))
+                {
+                    string[] timeSplit3 = Delay.Split(':');
+                    int.TryParse(timeSplit3[0], out int hours3);
+                    int.TryParse(timeSplit3[1], out int minutes3);
+                    time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
                     if (DateTime.Now < time)
                     {
                         EventSchedule.AddToSchedule("WatchList", time);
-                        return;
                     }
-                }
-                string[] timeSplit2 = times[0].Split(':');
-                int.TryParse(timeSplit2[0], out int hours2);
-                int.TryParse(timeSplit2[1], out int minutes2);
-                time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
-                EventSchedule.AddToSchedule("WatchList", time);
-                return;
-            }
-            else if (Delay.Contains(":"))
-            {
-                string[] timeSplit3 = Delay.Split(':');
-                int.TryParse(timeSplit3[0], out int hours3);
-                int.TryParse(timeSplit3[1], out int minutes3);
-                time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
-                if (DateTime.Now < time)
-                {
-                    EventSchedule.AddToSchedule("WatchList", time);
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                        EventSchedule.AddToSchedule("WatchList", time);
+                    }
+                    return;
                 }
                 else
                 {
-                    time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
-                    EventSchedule.AddToSchedule("WatchList", time);
+                    if (int.TryParse(Delay, out int delay))
+                    {
+                        time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.AddToSchedule("WatchList", time);
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                    return;
                 }
-                return;
-            }
-            else
-            {
-                if (int.TryParse(Delay, out int delay))
-                {
-                    time = DateTime.Now.AddMinutes(delay);
-                    EventSchedule.AddToSchedule("WatchList", time);
-                }
-                else
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Invalid Shutdown Time detected. Use a single integer, 24h time or multiple 24h time entries"));
-                    Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
-                }
-                return;
             }
         }
 
@@ -291,11 +290,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<Watchlist>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678909876543\" Reason=\"Suspected cheating.\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_1a3b5c7a9b1c3a5b7c9a1b3c5a7b9c1a3\" Reason=\"Cheaters R Assho\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)

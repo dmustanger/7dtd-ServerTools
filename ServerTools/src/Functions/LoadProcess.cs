@@ -124,7 +124,6 @@ namespace ServerTools
                     RunTimePatch.PatchAll();
                     Config.Load();
                     GeneralOperations.CreateCustomXUi();
-                    GeneralOperations.EntityIdList();
                     GeneralOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
                     GeneralOperations.StartTime = DateTime.Now;
                     CommandList.BuildList();
@@ -214,6 +213,12 @@ namespace ServerTools
                         PersistentContainer.Instance.Track = track;
                     }
                     PersistentContainer.DataChange = true;
+                    if (RegionReset.IsEnabled || ChunkReset.IsEnabled)
+                    {
+                        ResettingChunks = true;
+                        Timers.ChunkRegionResetTimer();
+                        Log.Out("[SERVERTOOLS] Running Region and Chunk reset in 10 seconds");
+                    }
                     if (CleanBin.IsEnabled)
                     {
                         CleanBin.Exec();
@@ -263,18 +268,18 @@ namespace ServerTools
             }
         }
 
-        //public static void Chunk_Region_Reset()
-        //{
-        //    if (RegionReset.IsEnabled)
-        //    {
-        //        RegionReset.Exec();
-        //    }
-        //    if (ChunkReset.IsEnabled)
-        //    {
-        //        ChunkReset.Exec();
-        //    }
-        //    ResettingChunks = false;
-        //    Log.Out("[SERVERTOOLS] Region and Chunk reset has completed");
-        //}
+        public static void ChunkRegionReset()
+        {
+            if (RegionReset.IsEnabled)
+            {
+                RegionReset.Exec();
+            }
+            if (ChunkReset.IsEnabled)
+            {
+                ChunkReset.Exec();
+            }
+            ResettingChunks = false;
+            Log.Out("[SERVERTOOLS] Region and Chunk reset has completed");
+        }
     }
 }

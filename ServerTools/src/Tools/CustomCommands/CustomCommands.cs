@@ -105,7 +105,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeCustomCommandsXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -139,7 +138,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {SetTeleport}, {RemoveTeleport}, {Teleport}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Cost=\"0\" Bloodmoon=\"true\" /> -->");
                     if (Dict.Count > 0)
@@ -669,11 +668,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<CustomCommands>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Possible variables {EntityId}, {Id}, {EOS}, {PlayerName}, {Delay}, {RandomId}, {SetTeleport}, {RemoveTeleport}, {Teleport}, whisper, global -->");
                     sw.WriteLine("    <!-- <Custom Trigger=\"Example\" Command=\"whisper Server Info... ^ global You have triggered the example\" DelayBetweenUses=\"0\" Hidden=\"false\" Reserved=\"false\" Cost=\"0\" Bloodmoon=\"true\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)

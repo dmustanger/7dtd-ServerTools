@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ namespace ServerTools
             {
                 if (_params.Count < 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or more, found '{0}'", _params.Count));
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Wrong number of arguments, expected 3 or more, found '{0}'", _params.Count);
                     return;
                 }
                 float x1, y1, z1, radius;
@@ -80,74 +81,62 @@ namespace ServerTools
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[1]));
+                                SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[1]);
                                 return;
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player name, Entity id or EOS id not found online for '{0}'", _params[0]));
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Player name, Entity id or EOS id not found online for '{0}'", _params[0]);
                         return;
                     }
                 }
                 else if (_params[3].Contains("r."))
                 {
-                    if (float.TryParse(_params[0], out x1))
+                    if (!float.TryParse(_params[0], out x1))
                     {
-                        if (float.TryParse(_params[1], out y1))
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid integer '{0}'", _params[0]);
+                        return;
+                    }
+                    if (!float.TryParse(_params[1], out y1))
+                    {
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid integer '{0}'", _params[1]);
+                        return;
+                    }
+                    if (!float.TryParse(_params[2], out z1))
+                    {
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid integer '{0}'", _params[2]);
+                        return;
+                    }
+                    if (!float.TryParse(_params[3].Replace("r.", ""), out radius))
+                    {
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[3]);
+                        return;
+                    }
+                    if (radius < 0)
+                    {
+                        radius = 1;
+                    }
+                    _params.RemoveRange(0, 3);
+                    string[] _entities = _params.ToArray();
+                    if (_entities.Length > 1)
+                    {
+                        for (int i = 0; i < _entities.Length; i++)
                         {
-                            if (float.TryParse(_params[2], out z1))
-                            {
-                                if (float.TryParse(_params[3].Replace("r.", ""), out radius))
-                                {
-                                    if (radius < 0)
-                                    {
-                                        radius = 1;
-                                    }
-                                    _params.RemoveRange(0, 3);
-                                    string[] _entities = _params.ToArray();
-                                    if (_entities.Length > 1)
-                                    {
-                                        for (int i = 0; i < _entities.Length; i++)
-                                        {
-                                            SpawnEntity(new Vector3(x1, y1, z1), radius, _entities[i]);
-                                            Thread.Sleep(250);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        SpawnEntity(new Vector3(x1, y1, z1), radius, _entities[0]);
-                                    }
-                                }
-                                else
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer for radius '{0}'", _params[3]));
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[2]));
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
-                            return;
+                            SpawnEntity(new Vector3(x1, y1, z1), radius, _entities[i]);
+                            Thread.Sleep(250);
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[0]));
-                        return;
+                        SpawnEntity(new Vector3(x1, y1, z1), radius, _entities[0]);
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SpawnMultipleRadiusConsole.Execute: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in SpawnMultipleRadiusConsole.Execute: {0}", e.Message);
             }
         }
 
@@ -155,29 +144,44 @@ namespace ServerTools
         {
             try
             {
-                if (int.TryParse(_id, out int id))
+                bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out int _x, out int _y, out int _z, new Vector3(_radius, _radius, _radius), true);
+                if (!posFound)
                 {
-                    GeneralOperations.EntityId.TryGetValue(id, out int entityId);
-                    bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out int _x, out int _y, out int _z, new Vector3(_radius, _radius, _radius), true);
-                    if (!posFound)
+                    posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out _x, out _y, out _z, new Vector3(_radius + 5, _radius + 50, _radius + 5), true);
+                }
+                if (posFound)
+                {
+                    if (int.TryParse(_id, out int value))
                     {
-                        posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_pos, 15, out _x, out _y, out _z, new Vector3(_radius + 5, _radius + 50, _radius + 5), true);
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid id provided for spawning. '{0}'", _id);
                     }
-                    if (posFound)
+                    int count = 1;
+                    var entities = EntityClass.list.Dict.ToArray();
+                    for (int i = 0; i < entities.Length; i++)
                     {
-                        Entity entity = EntityFactory.CreateEntity(entityId, new Vector3(_x, _y, _z));
-                        GameManager.Instance.World.SpawnEntityInWorld(entity);
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Spawned a {0} at {1} x, {2} y, {3} z", entity.EntityClass.entityClassName, _x, _y, _z));
+                        if (entities[i].Value.userSpawnType != EntityClass.UserSpawnType.None)
+                        {
+                            if (count == value)
+                            {
+                                Entity entity = EntityFactory.CreateEntity(entities[i].Key, new Vector3(_x, _y, _z));
+                                GameManager.Instance.World.SpawnEntityInWorld(entity);
+                                SdtdConsole.Instance.Output("[SERVERTOOLS] Spawned a '{0}' at '{1} x, {2} y, {3} z'", entity.EntityClass.entityClassName, _x, _y, _z);
+                                return;
+                            }
+                            count++;
+                        }
                     }
-                    else
-                    {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No spawn points were found near {0} x, {1} y, {2} z", _pos.x, _pos.y, _pos.z));
-                    }
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Unable to find entity matching id '{0}'", _id);
+                    return;
+                }
+                else
+                {
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] No spawn points were found near {0} x, {1} y, {2} z", _pos.x, _pos.y, _pos.z);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SpawnMultipleRadiusConsole.SpawnEntity: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in SpawnMultipleRadiusConsole.SpawnEntity: {0}", e.Message);
             }
         }
     }

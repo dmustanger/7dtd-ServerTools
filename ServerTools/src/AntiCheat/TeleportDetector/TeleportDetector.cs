@@ -12,14 +12,14 @@ namespace ServerTools
         public static string file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string Filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, file);
 
-        public static List<int> Ommissions = new List<int>();
+        public static List<int> Omissions = new List<int>();
 
         public static void Exec(ClientInfo _cInfo)
         {
             if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) > Admin_Level &&
                 GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) > Admin_Level)
             {
-                if (!Ommissions.Contains(_cInfo.entityId))
+                if (!Omissions.Contains(_cInfo.entityId))
                 {
                     if (Jail)
                     {
@@ -56,7 +56,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Ommissions.Remove(_cInfo.entityId);
+                    Omissions.Remove(_cInfo.entityId);
                 }
             }
         }

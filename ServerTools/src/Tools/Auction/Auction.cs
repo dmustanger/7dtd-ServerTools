@@ -1,9 +1,9 @@
-﻿using Platform;
+﻿using HarmonyLib;
+using Platform;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Xml;
 using UnityEngine;
@@ -21,8 +21,10 @@ namespace ServerTools
         public static Dictionary<string, int> PanelAccess = new Dictionary<string, int>();
         public static List<ushort> DroppedSeed = new List<ushort>();
 
-        private static readonly string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        public static readonly string Filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
+        public static readonly string AuctionFile = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        public static readonly string Filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, AuctionFile);
+
+        private static AccessTools.FieldRef<GameManager, Dictionary<TileEntity, int>> lockedTileEntities = AccessTools.FieldRefAccess<GameManager, Dictionary<TileEntity, int>>("lockedTileEntities");
 
         public static void SetLink()
         {
@@ -97,29 +99,10 @@ namespace ServerTools
                             }
                             if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Auction.Count < Total_Items + PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].AuctionCount)
                             {
-                                List<Chunk> chunks = new List<Chunk>();
+                                Dictionary<TileEntity, int> lockedTiles = lockedTileEntities(GameManager.Instance);
+                                Vector3i position = new Vector3i(player.position);
                                 DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
-                                Vector3 position = player.position;
-                                Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x - 5, (int)position.y, (int)position.z);
-                                if (chunk != null && !chunks.Contains(chunk))
-                                {
-                                    chunks.Add(chunk);
-                                }
-                                chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x + 5, (int)position.y, (int)position.z);
-                                if (chunk != null && !chunks.Contains(chunk))
-                                {
-                                    chunks.Add(chunk);
-                                }
-                                chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, (int)position.y, (int)position.z - 5);
-                                if (chunk != null && !chunks.Contains(chunk))
-                                {
-                                    chunks.Add(chunk);
-                                }
-                                chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x + 5, (int)position.y, (int)position.z + 5);
-                                if (chunk != null && !chunks.Contains(chunk))
-                                {
-                                    chunks.Add(chunk);
-                                }
+                                List<Chunk> chunks = GeneralOperations.GetSurroundingChunks(position);
                                 for (int i = 0; i < chunks.Count; i++)
                                 {
                                     tiles = chunks[i].GetTileEntities();
@@ -133,7 +116,7 @@ namespace ServerTools
                                             {
                                                 if (vec3i.y >= (int)player.position.y - 3 && vec3i.y <= (int)player.position.y + 3)
                                                 {
-                                                    if ((SecureLoot.IsUserAllowed(_cInfo.PlatformId) || SecureLoot.IsUserAllowed(_cInfo.CrossplatformId)) && !SecureLoot.IsUserAccessing())
+                                                    if ((SecureLoot.IsUserAllowed(_cInfo.PlatformId) || SecureLoot.IsUserAllowed(_cInfo.CrossplatformId)) && !lockedTiles.ContainsKey(SecureLoot))
                                                     {
                                                         ItemStack[] items = SecureLoot.items;
                                                         ItemStack item = items[0];

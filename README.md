@@ -73,6 +73,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Chat_Command_Response_Extended](#chat_command_response_extended)
   - [Chat_Flood_Protection](#chat_flood_protection)
   - [Chat_Logger](#chat_logger)
+  - [Chunk_Reset](#chunk_reset)
   - [Clan_Manager](#clan_manager)
   - [Clean_Bin](#clean_bin)
   - [Confetti](#confetti)
@@ -123,6 +124,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Private_Message](#private_message)
   - [Public_Waypoints](#public_waypoints)
   - [Real_World_Time](#real_world_time)
+  - [Region_Reset](#region_reset)
   - [Report](#report)
   - [Reserved_Slots](#reserved_slots)
   - [Restart_Vote](#restart_vote)
@@ -131,6 +133,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Shop](#shop)
   - [Shutdown & Shutdown_Extended](#shutdown--shutdown_extended)
   - [Sleeper_Respawn](#sleeper_respawn)
+  - [Sorter](#sorter)
   - [Starting_Items](#starting_items)
   - [Stuck](#stuck)
   - [Suicide](#suicide)
@@ -999,6 +1002,20 @@ Protect the chat from being flooded from a player's chat spam.
 Set the maximum amount of characters that can be in a single chat message.
 
 Set the maximum amount of message a player can send in a single minute.
+
+## Chunk_Reset
+```xml
+<Tool Name="## Chunk_Reset" Enable="False" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Creates a ChunkReset.xml after enabling the tool.
+Edit the xml file with chunk positions and the time expected to reset.
+The designated chunks will reset automatically on schedule.
+The tool will initiate when the server finishes loading.
 
 ## Chat_Logger
 ```xml
@@ -2076,6 +2093,20 @@ Recommend changing the Time_Zone to match the time zone of the server host locat
 
 This will not adjust for the difference.
 
+## Region_Reset
+```xml
+<Tool Name="## Region_Reset" Enable="False" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Creates a RegionReset.xml after enabling the tool.
+Edit the xml file with region file names and the time expected to reset.
+The designated regions will reset automatically on schedule.
+The tool will initiate when the server finishes loading.
+
 ## Report
 ```xml
 <Tool Name="Report" Enable="False" Delay_Between_Uses="60" Length="150" Admin_Level="0" />
@@ -2245,6 +2276,18 @@ Set True or False for Enable
 ### Description
 Sleeper spawn points will be reset on server restart.
 
+## Sorter
+```xml
+<Tool Name="## Sorter" Enable="False" />
+```
+### Attributes
+* __Enable__  
+Set True or False for Enable
+
+### Description
+Players can place a writable box and mark it 'sort'. Stackable items inside the box will be sent to surrounding storage based on identical items.
+Typing /sort initiates the tool.
+All storage must be inside of a claimed space.
 
 ## Starting_Items
 ```xml

@@ -11,70 +11,70 @@ namespace ServerTools
         public static int Backup_Count = 5, Compression_Level = 0;
         public static string Save_Destination = "", Target_Directory = "", Delay = "240", EventDelay = "";
 
-        private static DateTime time;
+        private static DateTime time = new DateTime();
 
         public static void SetDelay(bool _loading)
         {
             if (EventDelay != Delay || _loading)
             {
-                if (!EventSchedule.Expired.Contains("AutoBackup"))
+                if (EventSchedule.Schedule.ContainsKey("AutoBackup") && !EventSchedule.Expired.Contains("AutoBackup"))
                 {
                     EventSchedule.RemoveFromSchedule("AutoBackup");
                 }
                 EventDelay = Delay;
-            }
-            if (Delay.Contains(",") && Delay.Contains(":"))
-            {
-                string[] times = Delay.Split(',');
-                for (int i = 0; i < times.Length; i++)
+                if (Delay.Contains(",") && Delay.Contains(":"))
                 {
-                    string[] timeSplit1 = times[i].Split(':');
-                    int.TryParse(timeSplit1[0], out int hours1);
-                    int.TryParse(timeSplit1[1], out int minutes1);
-                    time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
+                    string[] times = Delay.Split(',');
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        string[] timeSplit1 = times[i].Split(':');
+                        int.TryParse(timeSplit1[0], out int hours1);
+                        int.TryParse(timeSplit1[1], out int minutes1);
+                        time = DateTime.Today.AddHours(hours1).AddMinutes(minutes1);
+                        if (DateTime.Now < time)
+                        {
+                            EventSchedule.AddToSchedule("AutoBackup", time);
+                            return;
+                        }
+                    }
+                    string[] timeSplit2 = times[0].Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                    EventSchedule.AddToSchedule("AutoBackup", time);
+                    return;
+                }
+                else if (Delay.Contains(":"))
+                {
+                    string[] timeSplit3 = Delay.Split(':');
+                    int.TryParse(timeSplit3[0], out int hours3);
+                    int.TryParse(timeSplit3[1], out int minutes3);
+                    time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
                     if (DateTime.Now < time)
                     {
                         EventSchedule.AddToSchedule("AutoBackup", time);
-                        return;
                     }
-                }
-                string[] timeSplit2 = times[0].Split(':');
-                int.TryParse(timeSplit2[0], out int hours2);
-                int.TryParse(timeSplit2[1], out int minutes2);
-                time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
-                EventSchedule.AddToSchedule("AutoBackup", time);
-                return;
-            }
-            else if (Delay.Contains(":"))
-            {
-                string[] timeSplit3 = Delay.Split(':');
-                int.TryParse(timeSplit3[0], out int hours3);
-                int.TryParse(timeSplit3[1], out int minutes3);
-                time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
-                if (DateTime.Now < time)
-                {
-                    EventSchedule.AddToSchedule("AutoBackup", time);
+                    else
+                    {
+                        time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                        EventSchedule.AddToSchedule("AutoBackup", time);
+                    }
+                    return;
                 }
                 else
                 {
-                    time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
-                    EventSchedule.AddToSchedule("AutoBackup", time);
+                    if (int.TryParse(Delay, out int delay))
+                    {
+                        time = DateTime.Now.AddMinutes(delay);
+                        EventSchedule.AddToSchedule("AutoBackup", time);
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Invalid AutoBackup Delay detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
+                    }
+                    return;
                 }
-                return;
-            }
-            else
-            {
-                if (int.TryParse(Delay, out int delay))
-                {
-                    time = DateTime.Now.AddMinutes(delay);
-                    EventSchedule.AddToSchedule("AutoBackup", time);
-                }
-                else
-                {
-                    Log.Out("[SERVERTOOLS] Invalid AutoBackup Delay detected. Use a single integer, 24h time or multiple 24h time entries");
-                    Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
-                }
-                return;
             }
         }
 
@@ -239,12 +239,15 @@ namespace ServerTools
                                 string file = fileNames[j];
                                 try
                                 {
-                                    ZipEntry entry = new ZipEntry(file);
-
-                                    entry.DateTime = DateTime.Now;
-                                    OutputStream.PutNextEntry(entry);
                                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                     {
+                                        if (!fs.CanRead)
+                                        {
+                                            continue;
+                                        }
+                                        ZipEntry entry = new ZipEntry(file);
+                                        entry.DateTime = DateTime.Now;
+                                        OutputStream.PutNextEntry(entry);
                                         int sourceBytes;
                                         do
                                         {
@@ -265,12 +268,15 @@ namespace ServerTools
                                 for (int j = 0; j < fileNames.Length; j++)
                                 {
                                     string file = fileNames[j];
-                                    ZipEntry entry = new ZipEntry(file);
-
-                                    entry.DateTime = DateTime.Now;
-                                    OutputStream.PutNextEntry(entry);
                                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                     {
+                                        if (!fs.CanRead)
+                                        {
+                                            continue;
+                                        }
+                                        ZipEntry entry = new ZipEntry(file);
+                                        entry.DateTime = DateTime.Now;
+                                        OutputStream.PutNextEntry(entry);
                                         int sourceBytes;
                                         do
                                         {

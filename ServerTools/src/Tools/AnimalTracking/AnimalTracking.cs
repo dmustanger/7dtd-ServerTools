@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -9,7 +10,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Command_trackanimal = "trackanimal", Command_track = "track";
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
-        public static string Animal_Ids = "85,86,87,88";
+        public static string Animal_Ids = "87,88,89,90";
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -204,7 +205,6 @@ namespace ServerTools
 
         public static bool SpawnAnimal(ClientInfo _cInfo, EntityPlayer _entityPlayer, int _radius, int _animalId)
         {
-            GeneralOperations.EntityId.TryGetValue(_animalId, out int entityId);
             bool posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(_entityPlayer.position, 15, out int x, out int y, out int z, new Vector3(_radius, _radius, _radius), true);
             if (!posFound)
             {
@@ -212,33 +212,27 @@ namespace ServerTools
             }
             if (posFound)
             {
-                Entity entity = EntityFactory.CreateEntity(entityId, new Vector3(x, y, z));
-                GameManager.Instance.World.SpawnEntityInWorld(entity);
-                Phrases.Dict.TryGetValue("AnimalTracking3", out string phrase);
-                phrase = phrase.Replace("{Radius}", _radius.ToString());
-                float angle = Vector2.Angle(_entityPlayer.position, new Vector2(x, z));
-                if (angle >= 0 && angle < 45)
+                int count = 1;
+                var entities = EntityClass.list.Dict.ToArray();
+                for (int i = 0; i < entities.Length; i++)
                 {
-                    phrase = phrase.Replace("{Direction}", "North");
+                    if (entities[i].Value.userSpawnType != EntityClass.UserSpawnType.None)
+                    {
+                        if (count == _animalId)
+                        {
+                            Entity entity = EntityFactory.CreateEntity(entities[i].Key, new Vector3(x, y, z));
+                            GameManager.Instance.World.SpawnEntityInWorld(entity);
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Spawned a '{0}' at '{1} x, {2} y, {3} z'", entity.EntityClass.entityClassName, x, y, z);
+                            Phrases.Dict.TryGetValue("AnimalTracking3", out string phrase);
+                            phrase = phrase.Replace("{Radius}", _radius.ToString());
+                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            return true;
+                        }
+                        count++;
+                    }
                 }
-                else if (angle >= 45 && angle < 135)
-                {
-                    phrase = phrase.Replace("{Direction}", "East");
-                }
-                else if (angle >= 135 && angle < 225)
-                {
-                    phrase = phrase.Replace("{Direction}", "South");
-                }
-                else if (angle >= 225 && angle < 315)
-                {
-                    phrase = phrase.Replace("{Direction}", "West");
-                }
-                else if (angle >= 315 && angle <= 360)
-                {
-                    phrase = phrase.Replace("{Direction}", "North");
-                }
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                return true;
+                SdtdConsole.Instance.Output("[SERVERTOOLS] Unable to find entity matching id '{0}'", _animalId);
+                return false;
             }
             else
             {

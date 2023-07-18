@@ -16,7 +16,6 @@ namespace ServerTools
         public static string lastOutput = "";
         public static List<string> ActiveLog = new List<string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
-        public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
 
         public static List<ClientInfo> NewPlayerQue = new List<ClientInfo>();
@@ -27,7 +26,7 @@ namespace ServerTools
 
         public static DateTime StartTime;
 
-        private static ClientInfo cInfo, cInfoTwo;
+        //private static ClientInfo cInfo, cInfoTwo;
         private static EntityPlayer player;
         private static Entity entity;
         private static PlatformUserIdentifierAbs uId;
@@ -555,30 +554,7 @@ namespace ServerTools
                 }
                 if (File.Exists(XPathDir + "recipes.xml"))
                 {
-                    List<string> windowContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "recipes.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                windowContent.Add(sr.ReadLine());
-                            }
-                        }
-                    }
-                    int count = 0;
-                    for (int i = 0; i < windowContent.Count; i++)
-                    {
-                        string line = windowContent[i];
-                        if (line.Contains("VaultBox"))
-                        {
-                            count += 1;
-                        }
-                    }
-                    if (count != 1)
-                    {
-                        File.Delete(XPathDir + "recipes.xml");
-                    }
+                    File.Delete(XPathDir + "recipes.xml");
                 }
                 if (!File.Exists(XPathDir + "recipes.xml"))
                 {
@@ -613,10 +589,11 @@ namespace ServerTools
                     Running = false;
                     return;
                 }
+                ClientInfo cInfo;
                 for (int i = 0; i < clientList.Count; i++)
                 {
                     cInfo = clientList[i];
-                    if (cInfo == null || TeleportDetector.Ommissions.Contains(cInfo.entityId))
+                    if (cInfo == null || TeleportDetector.Omissions.Contains(cInfo.entityId))
                     {
                         continue;
                     }
@@ -629,14 +606,14 @@ namespace ServerTools
                     {
                         Zones.ZoneCheck(cInfo, player);
                     }
-                    //if (RegionReset.IsEnabled)
-                    //{
-                    //    RegionReset.IsResetRegion(cInfo, player);
-                    //}
-                    //if (ChunkReset.IsEnabled)
-                    //{
-                    //    ChunkReset.IsResetChunk(cInfo, player);
-                    //}
+                    if (RegionReset.IsEnabled)
+                    {
+                        RegionReset.IsResetRegion(cInfo, player);
+                    }
+                    if (ChunkReset.IsEnabled)
+                    {
+                        ChunkReset.IsResetChunk(cInfo, player);
+                    }
                 }
                 entityList = GameManager.Instance.World.Entities.list;
                 if (entityList == null || entityList.Count < 1)
@@ -695,17 +672,17 @@ namespace ServerTools
 
         public static ClientInfo GetClientInfoFromNameOrId(string _id)
         {
-            cInfoTwo = ConnectionManager.Instance.Clients.GetForNameOrId(_id);
-            if (cInfoTwo != null)
+            ClientInfo cInfo = ConnectionManager.Instance.Clients.GetForNameOrId(_id);
+            if (cInfo != null)
             {
-                return cInfoTwo;
+                return cInfo;
             }
             else if (int.TryParse(_id, out int entityId))
             {
-                cInfoTwo = ConnectionManager.Instance.Clients.ForEntityId(entityId);
-                if (cInfoTwo != null)
+                cInfo = ConnectionManager.Instance.Clients.ForEntityId(entityId);
+                if (cInfo != null)
                 {
-                    return cInfoTwo;
+                    return cInfo;
                 }
             }
             return null;
@@ -964,22 +941,6 @@ namespace ServerTools
             return false;
         }
 
-        public static void EntityIdList()
-        {
-            if (EntityClass.list.Dict != null && EntityClass.list.Dict.Count > 0)
-            {
-                int count = 1;
-                foreach (KeyValuePair<int, EntityClass> entityClass in EntityClass.list.Dict)
-                {
-                    if (!EntityId.ContainsKey(count))
-                    {
-                        EntityId.Add(count, entityClass.Key);
-                    }
-                    count++;
-                }
-            }
-        }
-
         public static void ReturnBlock(ClientInfo _cInfo, string _blockName, int _quantity, string _phrase)
         {
             EntityPlayer player = GetEntityPlayer(_cInfo.entityId);
@@ -1064,6 +1025,65 @@ namespace ServerTools
                 No_Currency = true;
                 Log.Out(string.Format("[SERVERTOOLS] Unable to find an item with the tag 'currency' in the item list. Bank and Wallet tools have been disabled. Anything relying on the Wallet for exchange will also not work. If this is the first time running ServerTools or it was recently updated, you may need to restart one more time"));
             }
+        }
+
+        public static List<Chunk> GetSurroundingChunks(Vector3i _position)
+        {
+            List<Chunk> chunks = new List<Chunk>();
+            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.x += 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.z += 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.x -= 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.x -= 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.z -= 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.z -= 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.x += 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            _position.x += 16;
+            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
+            if (chunk != null)
+            {
+                chunks.Add(chunk);
+            }
+            return chunks;
         }
 
         public static void JailPlayer(ClientInfo _cInfoKiller)
@@ -2490,7 +2510,7 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (LoginNotice.IsEnabled && (LoginNotice.Dict1.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict1.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
+                if (LoginNotice.IsEnabled && (LoginNotice.Dict1.ContainsKey(_cInfo.PlatformId.CombinedString) || LoginNotice.Dict1.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                 {
                     if (CommandList.Dict.TryGetValue(Command_expire, out string[] values))
                     {
@@ -2499,6 +2519,19 @@ namespace ServerTools
                             if (!hidden)
                             {
                                 commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Command_expire);
+                            }
+                        }
+                    }
+                }
+                if (Sorter.IsEnabled)
+                {
+                    if (CommandList.Dict.TryGetValue(Sorter.Command_sort, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Sorter.Command_sort);
                             }
                         }
                     }
@@ -2633,6 +2666,11 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.LogAction: {0}", e.Message));
             }
+        }
+
+        public static void KickPlayer(ClientInfo _cInfo, string _reason)
+        {
+            GameUtils.KickPlayerForClientInfo(_cInfo, new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), _reason));
         }
     }
 }

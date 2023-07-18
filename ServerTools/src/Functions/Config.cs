@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "21.0.4";
+        public const string Version = "21.0.7";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
         public static bool FirstLoad = true;
@@ -272,7 +272,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!AutoBackup.IsEnabled)
+                                        if (!AutoBackup.IsEnabled && EventSchedule.Schedule.ContainsKey("AutoBackup"))
                                         {
                                             EventSchedule.Expired.Add("AutoBackup");
                                         }
@@ -365,7 +365,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Save_World entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!AutoSaveWorld.IsEnabled)
+                                        if (!AutoSaveWorld.IsEnabled && EventSchedule.Schedule.ContainsKey("AutoSaveWorld"))
                                         {
                                             EventSchedule.Expired.Add("AutoSaveWorld");
                                         }
@@ -593,7 +593,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!Bloodmoon.IsEnabled)
+                                        if (!Bloodmoon.IsEnabled && EventSchedule.Schedule.ContainsKey("Bloodmoon"))
                                         {
                                             EventSchedule.Expired.Add("Bloodmoon");
                                         }
@@ -738,7 +738,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Break_Reminder entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!BreakReminder.IsEnabled)
+                                        if (!BreakReminder.IsEnabled && EventSchedule.Schedule.ContainsKey("BreakReminder"))
                                         {
                                             EventSchedule.Expired.Add("BreakReminder");
                                         }
@@ -921,18 +921,18 @@ namespace ServerTools
                                             continue;
                                         }
                                         break;
-                                    //case "Chunk_Reset":
-                                    //    if (!line.HasAttribute("Enable"))
-                                    //    {
-                                    //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
-                                    //        continue;
-                                    //    }
-                                    //    if (!bool.TryParse(line.GetAttribute("Enable"), out ChunkReset.IsEnabled))
-                                    //    {
-                                    //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
-                                    //        continue;
-                                    //    }
-                                    //    break;
+                                    case "Chunk_Reset":
+                                        if (!line.HasAttribute("Enable"))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        if (!bool.TryParse(line.GetAttribute("Enable"), out ChunkReset.IsEnabled))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        break;
                                     case "Clan_Manager":
                                         if (!line.HasAttribute("Enable"))
                                         {
@@ -2129,7 +2129,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!InfoTicker.IsEnabled)
+                                        if (!InfoTicker.IsEnabled && EventSchedule.Schedule.ContainsKey("InfoTicker"))
                                         {
                                             EventSchedule.Expired.Add("InfoTicker");
                                         }
@@ -2571,7 +2571,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lottery entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!Lottery.IsEnabled)
+                                        if (!Lottery.IsEnabled && EventSchedule.Schedule.ContainsKey("Lottery"))
                                         {
                                             EventSchedule.Expired.Add("Lottery");
                                         }
@@ -2916,7 +2916,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Alert entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!NightAlert.IsEnabled)
+                                        if (!NightAlert.IsEnabled && EventSchedule.Schedule.ContainsKey("NightAlert"))
                                         {
                                             EventSchedule.Expired.Add("NightAlert");
                                         }
@@ -3032,7 +3032,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player_Logs entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!PlayerLogs.IsEnabled)
+                                        if (!PlayerLogs.IsEnabled && EventSchedule.Schedule.ContainsKey("PlayerLogs"))
                                         {
                                             EventSchedule.Expired.Add("PlayerLogs");
                                         }
@@ -3319,7 +3319,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!RealWorldTime.IsEnabled)
+                                        if (!RealWorldTime.IsEnabled && EventSchedule.Schedule.ContainsKey("RealWorldTime"))
                                         {
                                             EventSchedule.Expired.Add("RealWorldTime");
                                         }
@@ -3356,18 +3356,18 @@ namespace ServerTools
                                             RealWorldTime.SetDelay(FirstLoad);
                                         }
                                         break;
-                                    //case "Region_Reset":
-                                    //    if (!line.HasAttribute("Enable"))
-                                    //    {
-                                    //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
-                                    //        continue;
-                                    //    }
-                                    //    if (!bool.TryParse(line.GetAttribute("Enable"), out RegionReset.IsEnabled))
-                                    //    {
-                                    //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
-                                    //        continue;
-                                    //    }
-                                    //    break;
+                                    case "Region_Reset":
+                                        if (!line.HasAttribute("Enable"))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        if (!bool.TryParse(line.GetAttribute("Enable"), out RegionReset.IsEnabled))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        break;
                                     case "Report":
                                         if (!line.HasAttribute("Enable"))
                                         {
@@ -3613,7 +3613,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!Shutdown.IsEnabled)
+                                        if (!Shutdown.IsEnabled && EventSchedule.Schedule.ContainsKey("Shutdown"))
                                         {
                                             EventSchedule.Expired.Add("Shutdown");
                                         }
@@ -3692,6 +3692,18 @@ namespace ServerTools
                                         if (!bool.TryParse(line.GetAttribute("Enable"), out SleeperRespawn.IsEnabled))
                                         {
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Sleeper_Respawn entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        break;
+                                    case "Sorter":
+                                        if (!line.HasAttribute("Enable"))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Sorter entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        if (!bool.TryParse(line.GetAttribute("Enable"), out Sorter.IsEnabled))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Sorter entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
                                         break;
@@ -4197,7 +4209,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Watch_List entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!WatchList.IsEnabled)
+                                        if (!WatchList.IsEnabled && EventSchedule.Schedule.ContainsKey("WatchList"))
                                         {
                                             EventSchedule.Expired.Add("WatchList");
                                         }
@@ -4478,7 +4490,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (!Zones.IsEnabled)
+                                        if (!Zones.IsEnabled && EventSchedule.Schedule.ContainsKey("Zones"))
                                         {
                                             EventSchedule.Expired.Add("Zones");
                                         }
@@ -4582,8 +4594,6 @@ namespace ServerTools
                 sw.WriteLine("        <Anti Name=\"Invalid_Items\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" />", InvalidItems.IsEnabled, InvalidItems.Ban_Player, InvalidItems.Admin_Level);
                 sw.WriteLine("        <Anti Name=\"Invalid_Item_Stack\" Enable=\"{0}\" />", InvalidItems.Invalid_Stack);
                 sw.WriteLine("        <Anti Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock);
-                //sw.WriteLine("        <Anti Name=\"Magic_Bullet_Detector\" Enable=\"{0}\" />", MagicBullet.IsEnabled);
-                //sw.WriteLine("        <Anti Name=\"Net_Package_Detector\" Enable=\"{0}\" />", GeneralOperations.Net_Package_Detector);
                 sw.WriteLine("        <Anti Name=\"Player_Logs\" Enable=\"{0}\" Vehicle=\"{1}\" Interval=\"{2}\" />", PlayerLogs.IsEnabled, PlayerLogs.Vehicle, PlayerLogs.Delay);
                 sw.WriteLine("        <Anti Name=\"Player_Stats\" Enable=\"{0}\" Health=\"{1}\" Stamina=\"{2}\" Jump_Strength=\"{3}\" />", PlayerStats.IsEnabled, PlayerStats.Health, PlayerStats.Stamina, PlayerStats.Jump_Strength);
                 sw.WriteLine("        <Anti Name=\"Player_Stats_Extended\" Height=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStats.Height, PlayerStats.Admin_Level, PlayerStats.Kick_Enabled, PlayerStats.Ban_Enabled);
@@ -4626,7 +4636,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Passthrough=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Passthrough);
                 sw.WriteLine("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" Wait_Time=\"{3}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min, ChatHook.Wait_Time);
                 sw.WriteLine("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled);
-                //sw.WriteLine("        <Tool Name=\"Chunk_Reset\" Enable=\"{0}\" />", ChunkReset.IsEnabled);
+                sw.WriteLine("        <Tool Name=\"Chunk_Reset\" Enable=\"{0}\" />", ChunkReset.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Max_Name_Length=\"{1}\" Private_Chat_Color=\"{2}\" />", ClanManager.IsEnabled, ClanManager.Max_Name_Length, ClanManager.Private_Chat_Color);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin\" Enable=\"{0}\" Auction=\"{1}\" Bank=\"{2}\" Bounties=\"{3}\" Delays=\"{4}\" />", CleanBin.IsEnabled, CleanBin.Auction, CleanBin.Bank, CleanBin.Bounties, CleanBin.Delays);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended1\" Homes=\"{0}\" Jail=\"{1}\" Lobby=\"{2}\" Market=\"{3}\" New_Spawn_Tele=\"{4}\" />", CleanBin.Homes, CleanBin.Jail, CleanBin.Lobby, CleanBin.Market, CleanBin.New_Spawn_Tele);
@@ -4695,7 +4705,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Public_Waypoints\" Enable=\"{0}\" />", Waypoints.Public_Waypoints);
                 sw.WriteLine("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, RealWorldTime.Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment);
-                //sw.WriteLine("        <Tool Name=\"Region_Reset\" Enable=\"{0}\" />", RegionReset.IsEnabled);
+                sw.WriteLine("        <Tool Name=\"Region_Reset\" Enable=\"{0}\" />", RegionReset.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Length=\"{2}\" Admin_Level=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Length, Report.Admin_Level);
                 sw.WriteLine("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Session_Time=\"{1}\" Admin_Level=\"{2}\" Reduced_Delay=\"{3}\" Bonus_Exp=\"{4}\" />", ReservedSlots.IsEnabled, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Reduced_Delay, ReservedSlots.Bonus_Exp);
                 sw.WriteLine("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level);
@@ -4705,6 +4715,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown=\"{1}\" Time=\"{2}\" Alert_On_Login=\"{3}\" Alert_Count=\"{4}\" />", Shutdown.IsEnabled, Shutdown.Countdown, Shutdown.Time, Shutdown.Alert_On_Login, Shutdown.Alert_Count);
                 sw.WriteLine("        <Tool Name=\"Shutdown_Extended\" UI_Lock=\"{0}\" Interrupt_Bloodmoon=\"{1}\" />", Shutdown.UI_Lock, Shutdown.Interrupt_Bloodmoon);
                 sw.WriteLine("        <Tool Name=\"Sleeper_Respawn\" Enable=\"{0}\" />", SleeperRespawn.IsEnabled);
+                sw.WriteLine("        <Tool Name=\"Sorter\" Enable=\"{0}\" />", Sorter.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses);
                 sw.WriteLine("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Player_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.Player_Check, Suicide.Zombie_Check);

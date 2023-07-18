@@ -162,10 +162,10 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeBloodmoonWarriorXml(nodeList);
                         //UpgradeXml(nodeList);
                         Log.Out(string.Format("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                        return;
                     }
                 }
             }
@@ -192,7 +192,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<BloodmoonWarrior>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
                     if (Dict.Count > 0)
                     {
@@ -405,11 +405,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<BloodmoonWarrior>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Item Name=\"gunPistolExample\" SecondaryName=\"pistol\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"3\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {

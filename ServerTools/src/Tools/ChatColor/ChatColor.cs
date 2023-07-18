@@ -108,7 +108,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeChatColorXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -140,7 +139,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<ChatColor>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                 sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                 sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
                 if (Players.Count > 0)
@@ -638,11 +637,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<ChatColor>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- NameColor and PrefixColor can come from the ColorList.xml -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_12345678901234567\" Name=\"bob\" NameColor=\"[FF0000]\" Prefix=\"(Captain)\" PrefixColor=\"Red\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)

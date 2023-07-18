@@ -1,5 +1,51 @@
 ﻿CHANGELOG
 
+21.0.7
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Added Region_Reset tool
+-Added Chunk_Reset tool
+-Added Sorter tool. Place items into a writable box marked 
+'sort' inside of a claimed area. Typing /sort while near the 
+box will auto sort stackable items into near by secure storage
+based on identical items found inside
+-Updated Block_Pickup to allow up to 10 damage on the block
+-Updated Auto_Backup with file check to avoid exception error
+-Updated phrase AnimalTracking3
+-Updated ui window closure during shutdown to utilize default
+game process added in a21 that closes all open windows
+-Updated Reserved_Slots kick system
+-Fixed block changes triggering an error in the log
+-Fixed POI_Protection not working as intended
+-Fixed Output_Log_Blocker not working as intended
+-Fixed /shutdown chat command not working as intended
+-Fixed Block_Pickup not working as intended
+-Fixed entity spawn system not working as intended
+
+21.0.6
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Fixed a fix provided in ServerTools for xbl error that was 
+causing an internal error on client join
+
+21.0.5
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Fixed error in event scheduler
+-Fixed rebuild of recipe file
+*After installing the new files, restart the server twice*
+
+Known issues:
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
+-Shop panel does not recognize two players using the same ip
+-RIO is not functioning as intended
+-Spawn entity system not working as intended
+-Some console commands are out of date
+
 21.0.4
 Built using Alpha 21 stable assets
 Functioning with Alpha 21 stable. Untested with other versions
@@ -40,11 +86,12 @@ a file that is in use
 -Fixed POI_Protection not functioning as intended
 -Fixed console command 'st-Wallet All' not functioning as intended
 -Fixed xml upgrade duplicating existing entries
--Removed non ommitted empty value examples from the xml files
+-Removed non omitted empty value examples from the xml files
 -Removed phrase entry DamageDetector3
 
 Known issues:
--Vault_Box does not work with all modded servers. Check privately
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
 -Shop panel does not recognize two players using the same ip
 -RIO is not functioning as intended
 -Spawn entity system not working as intended

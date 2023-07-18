@@ -92,7 +92,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeInteractiveMapXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -250,6 +249,7 @@ namespace ServerTools
                     }
                 }
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<IMapPermission>");

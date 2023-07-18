@@ -45,44 +45,57 @@ namespace ServerTools
 
         private void GameAwake()
         {
-            GeneralOperations.StartLog();
+            if (GameManager.Instance != null && GameManager.IsDedicatedServer)
+            {
+                GeneralOperations.StartLog();
+            }
         }
 
         private static void GameStartDone()
         {
-            Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
-            if (!Directory.Exists(ConfigPath))
+            if (GameManager.Instance != null && GameManager.IsDedicatedServer)
             {
-                Directory.CreateDirectory(ConfigPath);
-                Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
+                Log.Out("[SERVERTOOLS] The server has completed loading. Beginning to process ServerTools");
+                if (!Directory.Exists(ConfigPath))
+                {
+                    Directory.CreateDirectory(ConfigPath);
+                    Log.Out("[SERVERTOOLS] Created new ServerTools directory at '{0}'", ConfigPath);
+                }
+                LoadProcess.Load();
             }
-            LoadProcess.Load();
         }
 
         private static void GameShutdown()
         {
-            GeneralOperations.Shutdown_Initiated = true;
-            if (WebAPI.IsEnabled && WebAPI.IsRunning)
+            if (GameManager.Instance != null && GameManager.IsDedicatedServer)
             {
-                WebAPI.Unload();
-            }
-            Timers.CoreTimerStop();
-            Phrases.Unload();
-            CommandList.Unload();
-            GeneralOperations.CloseLog();
-            if (AutoRestart.IsEnabled)
-            {
-                AutoRestart.Exec();
+                GeneralOperations.Shutdown_Initiated = true;
+                if (WebAPI.IsEnabled && WebAPI.IsRunning)
+                {
+                    WebAPI.Unload();
+                }
+                Timers.CoreTimerStop();
+                Phrases.Unload();
+                CommandList.Unload();
+                GeneralOperations.CloseLog();
+                if (AutoRestart.IsEnabled)
+                {
+                    AutoRestart.Exec();
+                }
             }
         }
 
         private static bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)//Initiating player login
         {
-            if (_cInfo != null && _cInfo.CrossplatformId != null)
+            if (GameManager.Instance != null && GameManager.IsDedicatedServer && _cInfo != null)
             {
                 try
                 {
-                    string id = _cInfo.CrossplatformId.CombinedString;
+                    string id = "";
+                    if (_cInfo.CrossplatformId != null)
+                    {
+                        id = _cInfo.CrossplatformId.CombinedString;
+                    }
                     string ip = "";
                     if (_cInfo.ip != null)
                     {
@@ -111,16 +124,13 @@ namespace ServerTools
                         Phrases.Dict.TryGetValue("NewPlayer1", out string phrase);
                         SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", id, phrase), null);
                     }
-                    if (ip != "")
+                    if (!string.IsNullOrEmpty(_cInfo.ip))
                     {
-                        if (_cInfo.PlatformId != null)
-                        {
-                            Log.Out("[SERVERTOOLS] Player connected named '{0}' with ID '{1}' '{2}' and IP '{3}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, id, ip);
-                        }
-                        else
-                        {
-                            Log.Out("[SERVERTOOLS] Player connected named '{0}' with ID '{1}' and IP '{2}' ", _cInfo.playerName, id, ip);
-                        }
+                        Log.Out("[SERVERTOOLS] Player connected named '{0}' with ID '{1}' '{2}' and IP '{3}'", _cInfo.playerName, _cInfo.PlatformId.CombinedString, id, ip);
+                    }
+                    else
+                    {
+                        Log.Out("[SERVERTOOLS] Player connected named '{0}' with ID '{1}' and IP '{2}' ", _cInfo.playerName, id, ip);
                     }
                 }
                 catch (Exception e)
@@ -133,7 +143,7 @@ namespace ServerTools
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)//Spawning player
         {
-            if (_cInfo != null && _pos != null)
+            if (GameManager.Instance != null && GameManager.IsDedicatedServer && _cInfo != null && _pos != null)
             {
                 try
                 {
@@ -255,9 +265,9 @@ namespace ServerTools
                         {
                             ExitCommand.Players.Add(_cInfo.entityId, player.position);
                         }
-                        if (TeleportDetector.Ommissions.Contains(_cInfo.entityId))
+                        if (TeleportDetector.Omissions.Contains(_cInfo.entityId))
                         {
-                            TeleportDetector.Ommissions.Remove(_cInfo.entityId);
+                            TeleportDetector.Omissions.Remove(_cInfo.entityId);
                         }
                     }
                 }
@@ -275,11 +285,15 @@ namespace ServerTools
 
         public static void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
-            if (_cInfo != null)
+            if (GameManager.Instance != null && GameManager.IsDedicatedServer && _cInfo != null)
             {
                 try
                 {
-                    string id = _cInfo.CrossplatformId.CombinedString;
+                    string id = "";
+                    if (_cInfo.CrossplatformId != null)
+                    {
+                        id = _cInfo.CrossplatformId.CombinedString;
+                    }
                     if (_cInfo.PlatformId != null)
                     {
                         Log.Out("[SERVERTOOLS] Player with ID '{0}' '{1}' disconnected", _cInfo.PlatformId.CombinedString, id);
@@ -322,9 +336,9 @@ namespace ServerTools
                         BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
                         BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
                     }
-                    if (TeleportDetector.Ommissions.Contains(_cInfo.entityId))
+                    if (TeleportDetector.Omissions.Contains(_cInfo.entityId))
                     {
-                        TeleportDetector.Ommissions.Remove(_cInfo.entityId);
+                        TeleportDetector.Omissions.Remove(_cInfo.entityId);
                     }
                     if (LevelUp.PlayerLevels.ContainsKey(_cInfo.entityId))
                     {

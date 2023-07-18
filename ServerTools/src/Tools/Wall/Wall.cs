@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HarmonyLib;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -8,6 +9,8 @@ namespace ServerTools
         public static string Command_wall = "wall";
 
         public static List<int> WallEnabled = new List<int>();
+
+        private static AccessTools.FieldRef<GameManager, Dictionary<TileEntity, int>> lockedTileEntities = AccessTools.FieldRefAccess<GameManager, Dictionary<TileEntity, int>>("lockedTileEntities");
 
         public static void Exec(ClientInfo _cInfo)
         {
@@ -129,6 +132,7 @@ namespace ServerTools
                 }
             }
             int availableBlocks = 0;
+            Dictionary<TileEntity, int> lockedTiles = lockedTileEntities(GameManager.Instance);
             DictionaryList<Vector3i, TileEntity> tiles;
             for (int i = 0; i < chunks.Count; i++)
             {
@@ -148,7 +152,7 @@ namespace ServerTools
                         continue;
                     }
                     TileEntityLootContainer lootContainer = (TileEntityLootContainer)tile;
-                    if (lootContainer == null || lootContainer.IsUserAccessing())
+                    if (lootContainer == null || lockedTiles.ContainsKey(lootContainer))
                     {
                         continue;
                     }

@@ -882,6 +882,22 @@ namespace ServerTools
             };
         }
 
+        public static void ChunkRegionResetTimer()
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(10000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init51();
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
         public static void PersistentDataSave()
         {
             System.Timers.Timer saveDelay = new System.Timers.Timer(60000)
@@ -1259,7 +1275,7 @@ namespace ServerTools
 
         private static void Init30(XmlNodeList _nodeList)
         {
-            //ChunkReset.UpgradeXml(_nodeList);
+            ChunkReset.UpgradeXml(_nodeList);
         }
 
         private static void Init31(XmlNodeList _nodeList)
@@ -1360,6 +1376,11 @@ namespace ServerTools
         private static void Init50(XmlNodeList _nodeList)
         {
             OutputLogBlocker.UpgradeXml(_nodeList);
+        }
+
+        private static void Init51()
+        {
+            LoadProcess.ChunkRegionReset();
         }
     }
 }

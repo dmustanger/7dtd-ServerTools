@@ -15,24 +15,19 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Runtime patching initialized"));
                 Harmony harmony = new Harmony("com.github.servertools.patch");
 
-                MethodInfo original = AccessTools.Method(typeof(GameManager), "PlayerLoginRPC");
+                MethodInfo original = AccessTools.Method(typeof(PlayerSlotsAuthorizer), "Authorize");
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerSlotsAuthorizer.Authorize Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo prefix = typeof(Injections).GetMethod("PlayerLoginRPC_Prefix");
+                    MethodInfo prefix = typeof(Injections).GetMethod("PlayerSlotsAuthorizer_Authorize_Prefix");
                     if (prefix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.prefix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerSlotsAuthorizer_Authorize_Prefix"));
                     }
-                    MethodInfo postfix = typeof(Injections).GetMethod("PlayerLoginRPC_Postfix");
-                    if (postfix == null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC_Postfix"));
-                    }
-                    harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
                 original = AccessTools.Method(typeof(ConnectionManager), "ServerConsoleCommand");
@@ -407,6 +402,21 @@ namespace ServerTools
                     if (prefix == null)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: UserIdentifierXbl_WriteCustomData_Prefix"));
+                    }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null);
+                }
+
+                original = AccessTools.Method(typeof(ChunkProviderGenerateWorld), "RemoveChunks");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkProviderGenerateWorld.RemoveChunks Class.Method was not found"));
+                }
+                else
+                {
+                    MethodInfo prefix = typeof(Injections).GetMethod("ChunkProviderGenerateWorld_RemoveChunks_Prefix");
+                    if (prefix == null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChunkProviderGenerateWorld_RemoveChunks_Prefix"));
                     }
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }

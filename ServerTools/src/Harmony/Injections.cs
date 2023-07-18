@@ -2,54 +2,34 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 public static class Injections
 {
-
-    public static void PlayerLoginRPC_Prefix(ClientInfo _cInfo, ValueTuple<PlatformUserIdentifierAbs, string> _platformUserAndToken, ValueTuple<PlatformUserIdentifierAbs, string> _crossplatformUserAndToken, out bool __state)
-    {
-        __state = false;
-        try
-        {
-            if (GameManager.Instance == null || GameManager.Instance.World == null)
-            {
-                return;
-            }
-            if (_platformUserAndToken.Item1 == null || _crossplatformUserAndToken.Item1 == null)
-            {
-                return;
-            }
-            if (!ReservedSlots.IsEnabled)
-            {
-                return;
-            }
-            int maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-            if (ConnectionManager.Instance.ClientCount() > maxPlayers && ReservedSlots.FullServer(_cInfo, _platformUserAndToken.Item1, _crossplatformUserAndToken.Item1))
-            {
-                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, maxPlayers + 1);
-                __state = true;
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Prefix: {0}", e.Message));
-        }
-    }
-
-    public static void PlayerLoginRPC_Postfix(bool __state)
+    public static bool PlayerSlotsAuthorizer_Authorize_Prefix(ref ValueTuple<EAuthorizerSyncResult, GameUtils.KickPlayerData?> __result, ClientInfo _clientInfo)
     {
         try
         {
-            if (__state)
+            if (GameManager.Instance == null || GameManager.Instance.World == null || _clientInfo == null || 
+                !ReservedSlots.IsEnabled || _clientInfo.PlatformId == null || _clientInfo.CrossplatformId == null)
             {
-                int maxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
-                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, maxPlayers - 1);
+                return true;
             }
+            if (ConnectionManager.Instance.ClientCount() > GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount))
+            {
+                if (ReservedSlots.FullServer(_clientInfo))
+                {
+                    __result = new ValueTuple<EAuthorizerSyncResult, GameUtils.KickPlayerData?>(EAuthorizerSyncResult.SyncAllow, null);
+                    return false;
+                }
+            }
+
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Postfix: {0}", e.Message));
+            Log.Out("[SERVERTOOLS] Error in Injections.PlayerSlotsAuthorizer_Authorize_Prefix: {0}", e.Message);
         }
+        return true;
     }
 
     public static void NetPackageSetBlock_ProcessPackage_Prefix(GameManager _callbacks, List<BlockChangeInfo> ___blockChanges, int ___localPlayerThatChanged)
@@ -443,16 +423,13 @@ public static class Injections
                 __result = clientInfo;
                 return false;
             }
-            if (_nameOrId.Contains("Local_") || _nameOrId.Contains("EOS_") || _nameOrId.Contains("Steam_") || _nameOrId.Contains("XBL_") || _nameOrId.Contains("PSN_") || _nameOrId.Contains("EGS_"))
+            if (!string.IsNullOrEmpty(_nameOrId) && PlatformUserIdentifierAbs.TryFromCombinedString(_nameOrId, out PlatformUserIdentifierAbs userIdentifier))
             {
-                if (PlatformUserIdentifierAbs.TryFromCombinedString(_nameOrId, out PlatformUserIdentifierAbs userIdentifier))
+                clientInfo = GeneralOperations.GetClientInfoFromUId(userIdentifier);
+                if (clientInfo != null)
                 {
-                    clientInfo = GeneralOperations.GetClientInfoFromUId(userIdentifier);
-                    if (clientInfo != null)
-                    {
-                        __result = clientInfo;
-                        return false;
-                    }
+                    __result = clientInfo;
+                    return false;
                 }
             }
         }
@@ -460,7 +437,7 @@ public static class Injections
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ClientInfoCollection_GetForNameOrId_Prefix: {0}", e.Message));
         }
-        return false;
+        return true;
     }
 
     public static bool NetPackageDamageEntity_ProcessPackage_Prefix(int ___entityId, int ___attackerEntityId, ItemValue ___attackingItem, ushort ___strength, EnumDamageTypes ___damageTyp, short ___hitBodyPart, bool ___bCritical, bool ___bFatal)
@@ -481,9 +458,9 @@ public static class Injections
     {
         if (_package is NetPackageTeleportPlayer || _package is NetPackageEntityTeleport)
         {
-            if (!TeleportDetector.Ommissions.Contains(__instance.entityId))
+            if (!TeleportDetector.Omissions.Contains(__instance.entityId))
             {
-                TeleportDetector.Ommissions.Add(__instance.entityId);
+                TeleportDetector.Omissions.Add(__instance.entityId);
             }
         }
     }
@@ -614,7 +591,13 @@ public static class Injections
     {
         if (OutputLogBlocker.IsEnabled && OutputLogBlocker.Ommitted.Contains(_txt))
         {
-            return false;
+            for (int i = 0; i < OutputLogBlocker.Ommitted.Count; i++)
+            {
+                if (_txt.Contains(OutputLogBlocker.Ommitted[i]))
+                {
+                    return false;
+                }
+            }
         }
         if (_txt.Contains("INF"))
         {
@@ -691,12 +674,18 @@ public static class Injections
         }
     }
 
-    public static bool UserIdentifierXbl_WriteCustomData_Prefix(ulong ___xuid)
+    public static bool UserIdentifierXbl_WriteCustomData_Prefix(BinaryWriter _writer, ulong ___xuid)
     {
         if (___xuid == 0UL)
         {
+            _writer.Write(___xuid);
             return false;
         }
         return true;
+    }
+
+    public static bool ChunkProviderGenerateWorld_RemoveChunks_Prefix()
+    {
+        return false;
     }
 }

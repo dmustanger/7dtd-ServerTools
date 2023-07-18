@@ -87,7 +87,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeLevelUpXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -120,7 +119,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Levels>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {Id}, {EOS}, {PlayerId}, {Delay} -->");
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");
@@ -362,11 +361,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<Levels>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Command triggers console commands. Use ^ to separate multiple commands -->");
                     sw.WriteLine("    <!-- Possible variables for commands include whisper, global, {PlayerName}, {Id}, {EOS}, {PlayerId}, {Delay} -->");
                     sw.WriteLine("    <!-- <Level Required=\"300\" Command=\"global MAX LEVEL! Congratulations {PlayerName}!\" /> -->");

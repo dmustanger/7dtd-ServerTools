@@ -29,7 +29,7 @@ namespace ServerTools
                         if (cInfo != null)
                         {
                             EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
-                            if (player != null && player.IsSpawned() && player.IsAlive() && !TeleportDetector.Ommissions.Contains(player.entityId))
+                            if (player != null && player.IsSpawned() && player.IsAlive() && !TeleportDetector.Omissions.Contains(player.entityId))
                             {
                                 int userPlatformPermissionLevel = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId);
                                 int userCrossplatformPermissionLevel = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId);

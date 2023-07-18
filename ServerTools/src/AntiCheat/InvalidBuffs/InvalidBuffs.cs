@@ -80,7 +80,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeInvalidBuffsXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -113,7 +112,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<InvalidBuffs>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"godmode\" /> -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"twitch_immortal\" /> -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"twitch_tough1\" /> -->");
@@ -184,11 +183,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<InvalidBuffs>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"godmode\" /> -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"twitch_immortal\" /> -->");
                     sw.WriteLine("    <!-- <Invalid Buff=\"twitch_tough1\" /> -->");

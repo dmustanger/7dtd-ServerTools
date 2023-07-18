@@ -66,7 +66,7 @@ namespace ServerTools
                     {
                         using (StreamWriter sw = new StreamWriter(DetectionFilepath, true, Encoding.UTF8))
                         {
-                            sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' @ '{3}' using item '{4}' exceeding the entity damage limit. Damage total '{5}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _entity.serverPos, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _strength));
+                            sw.WriteLine(string.Format("Detected Id '{0}' '{1}' named '{2}' @ '{3}' using item '{4}' exceeding the entity damage limit. Damage total '{5}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _entity.serverPos.ToVector3() / 32f, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _strength));
                             sw.WriteLine();
                             sw.Flush();
                             sw.Close();

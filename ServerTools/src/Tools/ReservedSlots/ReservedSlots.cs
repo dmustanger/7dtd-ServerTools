@@ -13,7 +13,6 @@ namespace ServerTools
 
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
-        public static Dictionary<ClientInfo, DateTime> Kicked = new Dictionary<ClientInfo, DateTime>();
 
         private const string file = "ReservedSlots.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -93,7 +92,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeReservedSlotsXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -124,7 +122,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<ReservedSlots>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                 sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"2050-10-29 10:30:00\" /> -->");
                 sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
                 if (Dict.Count > 0)
@@ -160,19 +158,19 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static bool ReservedCheck(PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
+        public static bool IsReserved(ClientInfo _cInfo)
         {
-            if (Dict.ContainsKey(_platformId.CombinedString))
+            if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString))
             {
-                Dict.TryGetValue(_platformId.CombinedString, out DateTime dt);
+                Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
                 {
                     return true;
                 }
             }
-            if (Dict.ContainsKey(_crossplatformId.CombinedString))
+            if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
             {
-                Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt);
+                Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
                 {
                     return true;
@@ -181,11 +179,11 @@ namespace ServerTools
             return false;
         }
 
-        public static void ReservedStatus(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
+        public static void ReservedStatus(ClientInfo _cInfo)
         {
-            if (Dict.ContainsKey(_platformId.CombinedString))
+            if (Dict.ContainsKey(_cInfo.PlatformId.CombinedString))
             {
-                Dict.TryGetValue(_platformId.CombinedString, out DateTime dt);
+                Dict.TryGetValue(_cInfo.PlatformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
                 {
                     Phrases.Dict.TryGetValue("Reserved4", out string phrase);
@@ -200,9 +198,9 @@ namespace ServerTools
                 }
                 return;
             }
-            if (Dict.ContainsKey(_crossplatformId.CombinedString))
+            if (Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
             {
-                Dict.TryGetValue(_crossplatformId.CombinedString, out DateTime dt);
+                Dict.TryGetValue(_cInfo.CrossplatformId.CombinedString, out DateTime dt);
                 if (DateTime.Now < dt)
                 {
                     Phrases.Dict.TryGetValue("Reserved4", out string phrase);
@@ -221,90 +219,99 @@ namespace ServerTools
             ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
         }
 
-        public static bool AdminCheck(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
+        public static bool IsAdmin(ClientInfo _cInfo)
         {
-            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_platformId) <= Admin_Level || 
-                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_crossplatformId) <= Admin_Level)
+            if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.PlatformId) <= Admin_Level || 
+                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(_cInfo.CrossplatformId) <= Admin_Level)
             {
                 return true;
             }
             return false;
         }
 
-        public static bool FullServer(ClientInfo _cInfo, PlatformUserIdentifierAbs _platformId, PlatformUserIdentifierAbs _crossplatformId)
+        public static bool FullServer(ClientInfo _cInfo)
         {
             try
             {
-                List<ClientInfo> reserved = new List<ClientInfo>();
-                List<ClientInfo> normal = new List<ClientInfo>();
-                List<ClientInfo> clientList = GeneralOperations.ClientList();
-                if (clientList == null)
+                if (_cInfo == null)
                 {
                     return true;
                 }
-                if (AdminCheck(_cInfo, _platformId, _crossplatformId))//admin is joining
+                List<ClientInfo> clientList = GeneralOperations.ClientList();
+                if (clientList == null || clientList.Count == 0)
                 {
-                    for (int i = 0; i < clientList.Count; i++)
-                    {
-                        ClientInfo cInfo2 = clientList[i];
-                        if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
-                        {
-                            if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId))//not admin
-                            {
-                                if (ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))//reserved player
-                                {
-                                    reserved.Add(cInfo2);
-                                }
-                                else
-                                {
-                                    normal.Add(cInfo2);
-                                }
-                            }
-                        }
-                    }
+                    return true;
                 }
-                else if (ReservedCheck(_platformId, _crossplatformId))//reserved player is joining
+                if (IsAdmin(_cInfo))
                 {
+                    List<ClientInfo> reserved = new List<ClientInfo>();
+                    List<ClientInfo> normal = new List<ClientInfo>();
                     for (int i = 0; i < clientList.Count; i++)
                     {
                         ClientInfo cInfo2 = clientList[i];
-                        if (cInfo2 != null && cInfo2.PlatformId != null && cInfo2.CrossplatformId != null && cInfo2.entityId != _cInfo.entityId)
+                        if (cInfo2 == null || !cInfo2.loginDone || cInfo2.PlatformId == null || cInfo2.CrossplatformId == null || cInfo2.entityId == _cInfo.entityId)
                         {
-                            if (!AdminCheck(cInfo2, cInfo2.PlatformId, cInfo2.CrossplatformId) && !ReservedCheck(cInfo2.PlatformId, cInfo2.CrossplatformId))
+                            continue;
+                        }
+                        if (!IsAdmin(cInfo2))
+                        {
+                            if (IsReserved(cInfo2))
+                            {
+                                reserved.Add(cInfo2);
+                            }
+                            else
                             {
                                 normal.Add(cInfo2);
                             }
                         }
                     }
-                }
-                if (normal.Count > 0)
-                {
-                    if (normal.Count > 1)
+                    if (normal.Count > 0)
                     {
                         normal.RandomizeList();
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase1);
+                        phrase1 = phrase1.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                        GeneralOperations.KickPlayer(normal[0], phrase1);
+                        return true;
                     }
-                    Phrases.Dict.TryGetValue("Reserved1", out string phrase);
-                    phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", normal[0].CrossplatformId.CombinedString, phrase), null);
-                    return true;
-                }
-                else if (reserved.Count > 0)
-                {
-                    if (reserved.Count > 1)
+                    else if (reserved.Count > 0)
                     {
                         reserved.RandomizeList();
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase2);
+                        phrase2 = phrase2.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                        GeneralOperations.KickPlayer(normal[0], phrase2);
+                        return true;
                     }
-                    Phrases.Dict.TryGetValue("Reserved1", out string phrase);
-                    phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", reserved[0].CrossplatformId.CombinedString, phrase), null);
-                    return true;
+                }
+                else if (IsReserved(_cInfo))
+                {
+                    List<ClientInfo> normal = new List<ClientInfo>();
+                    for (int i = 0; i < clientList.Count; i++)
+                    {
+                        ClientInfo cInfo2 = clientList[i];
+                        if (cInfo2 == null || !cInfo2.loginDone || cInfo2.PlatformId == null || cInfo2.CrossplatformId == null || cInfo2.entityId == _cInfo.entityId)
+                        {
+                            continue;
+                        }
+                        if (!IsAdmin(cInfo2) && !IsReserved(cInfo2))
+                        {
+                            normal.Add(cInfo2);
+                        }
+                    }
+                    if (normal.Count > 0)
+                    {
+                        normal.RandomizeList();
+                        Phrases.Dict.TryGetValue("Reserved1", out string phrase);
+                        phrase = phrase.Replace("{ServerResponseName}", Config.Server_Response_Name);
+                        GeneralOperations.KickPlayer(normal[0], phrase);
+                        return true;
+                    }
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}", e.Message));
             }
-            return true;
+            return false;
         }
 
         public static void UpgradeXml(XmlNodeList nodeList)
@@ -312,11 +319,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<ReservedSlots>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- <Player Id=\"Steam_76561191234567891\" Name=\"Tron\" Expires=\"2050-10-29 10:30:00\" /> -->");
                     sw.WriteLine("    <!-- <Player Id=\"EOS_0000a1b1c1dfe1feg1b1aaa1234aa123\" Name=\"Yoggi\" Expires=\"2050-01-11 07:30:00\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)

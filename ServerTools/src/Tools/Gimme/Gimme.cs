@@ -156,7 +156,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeGimmeXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -189,7 +188,7 @@ namespace ServerTools
                 {
                     sw.WriteLine("<Gimme>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
@@ -463,8 +462,8 @@ namespace ServerTools
                         string zId = zombieIds[count];
                         if (int.TryParse(zId, out int zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
-                            Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("st-SpawnEntityRadius {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme tool spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
                                 Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
@@ -483,8 +482,8 @@ namespace ServerTools
                     {
                         if (int.TryParse(Zombie_Id, out int _zombieId))
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("st-Ser {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
-                            Log.Out(string.Format("[SERVERTOOLS] Gimme result spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("st-SpawnEntityRadius {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme tool spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
                             if (Command_Cost >= 1 && Wallet.IsEnabled)
                             {
                                 Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
@@ -516,11 +515,12 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<Gimme>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Secondary name is what will show in chat instead of the item name -->");
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 1 for both min and max -->");
                     sw.WriteLine("    <!-- <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"boiled water\" MinCount=\"1\" MaxCount=\"6\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");

@@ -120,19 +120,6 @@ namespace ServerTools
                 Dict.Remove("Magic bullet");
                 Log.Out("[SERVERTOOLS] Magic bullet disabled");
             }
-            //if (GeneralOperations.Net_Package_Detector)
-            //{
-            //    if (!Dict.Contains("Net package detector")
-            //    {
-            //        Dict.Add("Net package detector");
-            //        Log.Out("[SERVERTOOLS] Net package detector enabled");
-            //    }
-            //}
-            //else if (Dict.Contains("Net package detector") && !_initiating)
-            //{
-            //    Dict.Remove("Net package detector");
-            //    Log.Out("[SERVERTOOLS] Net package detector disabled");
-            //}
             if (PlayerStats.IsEnabled)
             {
                 if (!Dict.Contains("Player stats"))
@@ -612,6 +599,19 @@ namespace ServerTools
             {
                 Dict.Remove("Chat log");
                 Log.Out("[SERVERTOOLS] Chat log disabled");
+            }
+            if (ChunkReset.IsEnabled)
+            {
+                if (!Dict.Contains("Chunk reset"))
+                {
+                    Dict.Add("Chunk reset");
+                    Log.Out("[SERVERTOOLS] Chunk reset enabled");
+                }
+            }
+            else if (Dict.Contains("Chunk reset") && !_initiating)
+            {
+                Dict.Remove("Chunk reset");
+                Log.Out("[SERVERTOOLS] Chunk reset disabled");
             }
             if (ClanManager.IsEnabled)
             {
@@ -1237,19 +1237,19 @@ namespace ServerTools
                 Dict.Remove("Real world time");
                 Log.Out("[SERVERTOOLS] Real world time disabled");
             }
-            //if (RegionReset.IsEnabled)
-            //{
-            //    if (!Dict.Contains("Region reset"))
-            //    {
-            //        Dict.Add("Region reset");
-            //        Log.Out("[SERVERTOOLS] Region reset enabled");
-            //    }
-            //}
-            //else if (Dict.Contains("Region reset") && !_initiating)
-            //{
-            //    Dict.Remove("Region reset");
-            //    Log.Out("[SERVERTOOLS] Region reset disabled");
-            //}
+            if (RegionReset.IsEnabled)
+            {
+                if (!Dict.Contains("Region reset"))
+                {
+                    Dict.Add("Region reset");
+                    Log.Out("[SERVERTOOLS] Region reset enabled");
+                }
+            }
+            else if (Dict.Contains("Region reset") && !_initiating)
+            {
+                Dict.Remove("Region reset");
+                Log.Out("[SERVERTOOLS] Region reset disabled");
+            }
             if (ReservedSlots.IsEnabled)
             {
                 if (!Dict.Contains("Reserved slots"))

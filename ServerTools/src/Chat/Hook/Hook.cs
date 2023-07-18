@@ -1084,7 +1084,7 @@ namespace ServerTools
                                 if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.PlatformId.CombinedString) || 
                                     ReservedSlots.Dict.ContainsKey(_cInfo.CrossplatformId.CombinedString))
                                 {
-                                    ReservedSlots.ReservedStatus(_cInfo, _cInfo.PlatformId, _cInfo.CrossplatformId);
+                                    ReservedSlots.ReservedStatus(_cInfo);
                                 }
                                 if (ChatColor.IsEnabled && (ChatColor.Players.ContainsKey(_cInfo.PlatformId.CombinedString) || ChatColor.Players.ContainsKey(_cInfo.CrossplatformId.CombinedString)))
                                 {
@@ -1340,7 +1340,14 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                            
+                            if (Sorter.IsEnabled)
+                            {
+                                if (messageLowerCase == Sorter.Command_sort && Permission(_cInfo, Sorter.Command_sort))
+                                {
+                                    Sorter.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
                             if (!Passthrough)
                             {
                                 return false;

@@ -38,7 +38,7 @@ namespace ServerTools
                             if (DamageDetector.LogEnabled)
                             {
                                 float distance = _attacker.GetDistance(_victim);
-                                newEntry = string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' '{5}' '{6}' '{7}' named '{8}' @ '{9}' using '{10}' for '{11}' damage in the '{12}'. Distance '{13}' Critical '{14}' Fatal '{15}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, _attacker.serverPos, ___damageTyp.ToString(), cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, _victim.serverPos, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, ___hitBodyPart.ToString(), distance, ___bCritical, ___bFatal);
+                                newEntry = string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' '{5}' '{6}' '{7}' named '{8}' @ '{9}' using '{10}' for '{11}' damage in the '{12}'. Distance '{13}' Critical '{14}' Fatal '{15}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, _attacker.serverPos.ToVector3() / 32f, ___damageTyp.ToString(), cInfoVictim.PlatformId.CombinedString, cInfoVictim.CrossplatformId.CombinedString, cInfoVictim.playerName, _victim.serverPos, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, ___hitBodyPart.ToString(), distance, ___bCritical, ___bFatal);
                                 DamageDetector.DamageLog.Enqueue(newEntry);
                             }
                         }
@@ -61,12 +61,12 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Lobby.IsEnabled && Lobby.PvE && (Lobby.IsLobby(_victim.serverPos) || Lobby.IsLobby(_attacker.serverPos)))
+                        if (Lobby.IsEnabled && Lobby.PvE && (Lobby.IsLobby(_victim.serverPos.ToVector3() / 32f) || Lobby.IsLobby(_attacker.serverPos.ToVector3() / 32f)))
                         {
                             Lobby.PvEViolation(cInfoAttacker);
                             return false;
                         }
-                        if (Market.IsEnabled && Market.PvE && (Market.IsMarket(_victim.serverPos) || Market.IsMarket(_attacker.serverPos)))
+                        if (Market.IsEnabled && Market.PvE && (Market.IsMarket(_victim.serverPos.ToVector3() / 32f) || Market.IsMarket(_attacker.serverPos.ToVector3() / 32f)))
                         {
                             Market.PvEViolation(cInfoAttacker);
                             return false;
@@ -93,7 +93,7 @@ namespace ServerTools
                         if (DamageDetector.LogEnabled)
                         {
                             float distance = _attacker.GetDistance(_victim);
-                            newEntry = string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage in the '{11}'. Distance '{12}' Critical '{13}' Fatal '{14}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, _attacker.serverPos, ___damageTyp.ToString(), _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, ___hitBodyPart.ToString(), distance, ___bCritical, ___bFatal);
+                            newEntry = string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage in the '{11}'. Distance '{12}' Critical '{13}' Fatal '{14}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, _attacker.serverPos.ToVector3() / 32f, ___damageTyp.ToString(), _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, ___hitBodyPart.ToString(), distance, ___bCritical, ___bFatal);
                             DamageDetector.DamageLog.Enqueue(newEntry);
                         }
                     }
@@ -119,7 +119,7 @@ namespace ServerTools
                         if (DamageDetector.LogEnabled)
                         {
                             float distance = _attacker.GetDistance(_victim);
-                            newEntry = string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage in the '{11}'. Distance '{12}' Critical '{13}' Fatal '{14}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, _attacker.serverPos, ___damageTyp.ToString(), _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, ___hitBodyPart.ToString(), distance, ___bCritical, ___bFatal);
+                            newEntry = string.Format("{0}: '{1}' '{2}' named '{3}' @ '{4}' '{5}' '{6}' named '{7}' @ '{8}' using '{9}' for '{10}' damage in the '{11}'. Distance '{12}' Critical '{13}' Fatal '{14}'", DateTime.Now, cInfoAttacker.PlatformId.CombinedString, cInfoAttacker.CrossplatformId.CombinedString, cInfoAttacker.playerName, _attacker.serverPos.ToVector3() / 32f, ___damageTyp.ToString(), _victim.entityId, _victim.EntityClass.entityClassName, _victim.position, ___attackingItem.ItemClass.GetLocalizedItemName() ?? ___attackingItem.ItemClass.GetItemName(), ___strength, ___hitBodyPart.ToString(), distance, ___bCritical, ___bFatal);
                             DamageDetector.DamageLog.Enqueue(newEntry);
                         }
                     }

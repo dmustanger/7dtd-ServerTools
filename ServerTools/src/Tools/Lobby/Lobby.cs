@@ -52,7 +52,7 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
-            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.PlatformId, _cInfo.CrossplatformId))
+            if (Reserved_Only && ReservedSlots.IsEnabled && !ReservedSlots.IsReserved(_cInfo))
             {
                 Phrases.Dict.TryGetValue("Lobby9", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -199,9 +199,9 @@ namespace ServerTools
                                     string pposition = x + "," + y + "," + z;
                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LobbyReturnPos = pposition;
                                 }
-                                if (!TeleportDetector.Ommissions.Contains(_cInfo.entityId))
+                                if (!TeleportDetector.Omissions.Contains(_cInfo.entityId))
                                 {
-                                    TeleportDetector.Ommissions.Add(_cInfo.entityId);
+                                    TeleportDetector.Omissions.Add(_cInfo.entityId);
                                 }
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
                                 if (Command_Cost >= 1 && Wallet.IsEnabled)

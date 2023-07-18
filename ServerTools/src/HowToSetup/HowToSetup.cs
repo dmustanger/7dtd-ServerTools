@@ -548,7 +548,8 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a ChunkReset.xml.");
                 sw.WriteLine("Enter the chunk positions and time for reset into the ChunkReset.xml.");
-                sw.WriteLine("Entries to the file should list the positions of the first and second corners designated the intended chunk. The time can be entered as day, week or month />");
+                sw.WriteLine("Entries to the file should list the positions of the first and second corners opposite each other. This is designating the intended chunk. The time can be entered as day, week or month />");
+                sw.WriteLine("If any designated position overlaps a chunk, that chunk will be reset in full, not just the single position within the chunk.");
                 sw.WriteLine("The reset will only occur at the start of the server.");
                 sw.WriteLine("The ServerTools.bin keeps a record of when the chunk resets occur.");
                 sw.WriteLine("This can be cleared from the bin file using the Clean_Bin tool.");
@@ -1575,7 +1576,8 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a RegionReset.xml.");
                 sw.WriteLine("Enter the region name and time for reset into the RegionReset.xml.");
-                sw.WriteLine("Entries to the file should use the 'r.*.*.7rg' format or '*.*'. The time can be entered as day, week or month />");
+                sw.WriteLine("Entries to the file should use the 'r.*.*.7rg' format. Example: r.1.-2.7rg.");
+                sw.WriteLine("The time can be entered as day, week or month.");
                 sw.WriteLine("The reset will only occur at the start of the server.");
                 sw.WriteLine("The ServerTools.bin keeps a record of when the region resets occur.");
                 sw.WriteLine("This can be cleared from the bin file using the Clean_Bin tool.");
@@ -1714,6 +1716,17 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
                 sw.WriteLine("Sleeper spawn points will be reset on server restart.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Sorter\" />");
+                sw.WriteLine("<Tool Name=\"Sorter\" Enable=\"False\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Players must craft and place a writable box marked 'sort'.");
+                sw.WriteLine("Typing /sort will automatically reorganize stackable items taken from the box and placed in the surrounding secure storage based on identical items found inside.");
+                sw.WriteLine("If unable to add to an existing stack due to quantity, then it will attempt to place the entire stack in to an empty slot.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

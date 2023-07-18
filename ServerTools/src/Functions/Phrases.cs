@@ -953,7 +953,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"AnimalTracking2\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AnimalTracking3", out phrase))
                     {
-                        phrase = "You have tracked down an animal to within {Radius} metres {Direction}";
+                        phrase = "You have tracked down an animal to within {Radius} blocks";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"AnimalTracking3\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("AnimalTracking4", out phrase))
@@ -3389,6 +3389,15 @@ namespace ServerTools
                         phrase = "The server is busy. Please try again";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"RegionChunkReset1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- *********************** Sorter ************************* -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Sorter1", out phrase))
+                    {
+                        phrase = "Sort Completed";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Sorter1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

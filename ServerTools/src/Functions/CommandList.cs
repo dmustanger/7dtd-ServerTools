@@ -85,7 +85,6 @@ namespace ServerTools
                     XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;
                     if (nodeList != null)
                     {
-                        File.Delete(FilePath);
                         Timers.UpgradeCommandListXml(nodeList);
                         //UpgradeXml(nodeList);
                         return;
@@ -116,7 +115,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<CommandList>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                 sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
                 sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                 sw.WriteLine("    <!-- If hidden is set to true, the command will not show in response to using /commands -->");
@@ -566,6 +565,9 @@ namespace ServerTools
                         case "donate":
                             DonationLink.Command_donate = kvp.Value[0];
                             continue;
+                        case "sort":
+                            Sorter.Command_sort = kvp.Value[0];
+                            continue;
                     }
                 }
             }
@@ -709,6 +711,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"discord\" Replacement=\"discord\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"claims\" Replacement=\"claims\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"donate\" Replacement=\"donate\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"sort\" Replacement=\"sort\" Hidden=\"false\" />");
         }
 
         public static void UpgradeXml(XmlNodeList nodeList)
@@ -716,12 +719,13 @@ namespace ServerTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
+                File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
                     List<string> commandList = Commands;
                     sw.WriteLine("<CommandList>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
-                    sw.WriteLine("    <!-- Do not forget to remove these ommission tags/arrows on your own entries -->");
+                    sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
                     sw.WriteLine("    <!-- Leave the default alone. Only edit the replacement to your desired command -->");
                     sw.WriteLine("    <!-- All capital letters in commands will be reduced to lowercase -->");
                     sw.WriteLine("    <!-- If hidden is set to true, the command will not show in response to using /commands -->");
