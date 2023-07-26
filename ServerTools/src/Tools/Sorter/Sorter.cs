@@ -37,7 +37,7 @@ namespace ServerTools
                         continue;
                     }
                     signedContainer = tile.Value as TileEntitySecureLootContainerSigned;
-                    if (signedContainer != null && signedContainer.GetText() == "sort" && !lockedTiles.ContainsKey(signedContainer))
+                    if (signedContainer != null && signedContainer.GetText().ToLower() == "sort" && !lockedTiles.ContainsKey(signedContainer))
                     {
                         EnumLandClaimOwner claimOwner = GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, signedContainer.ToWorldPos());
                         if (claimOwner == EnumLandClaimOwner.Self || claimOwner == EnumLandClaimOwner.Ally)
@@ -54,7 +54,6 @@ namespace ServerTools
 
         public static void SecureLootContainer(ClientInfo _cInfo, TileEntitySecureLootContainerSigned _secureLoot, List<Chunk> _surroundingChunks, Dictionary<TileEntity, int> _lockedTiles)
         {
-            
             if (_secureLoot.IsEmpty() || _lockedTiles.ContainsKey(_secureLoot))
             {
                 return;
@@ -63,7 +62,7 @@ namespace ServerTools
             EnumLandClaimOwner claimOwner;
             TileEntityLootContainer lootContainer;
             ItemStack[] secondaryContainer;
-            DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
+            Dictionary<Vector3i, TileEntity> tiles = new Dictionary<Vector3i, TileEntity>();
             int newStackCount = 0, stackMax = 0;
             for (int i = 0; i < _surroundingChunks.Count; i++)
             {
@@ -71,10 +70,10 @@ namespace ServerTools
                 {
                     break;
                 }
-                tiles = _surroundingChunks[i].GetTileEntities();
-                foreach (var tile in tiles.dict)
+                tiles = _surroundingChunks[i].GetTileEntities().dict;
+                foreach (var tile in tiles)
                 {
-                    if (_lockedTiles.ContainsKey(tile.Value) || !(tile.Value is TileEntitySecureLootContainer) || !(tile.Value is TileEntitySecureLootContainerSigned))
+                    if (_lockedTiles.ContainsKey(tile.Value) || _secureLoot.ToWorldPos() == tile.Value.ToWorldPos())
                     {
                         continue;
                     }
@@ -97,13 +96,14 @@ namespace ServerTools
                             {
                                 for (int k = 0; k < secondaryContainer.Length; k++)
                                 {
-                                    if (!secondaryContainer[k].IsEmpty() && mainContainer[j].itemValue.type == secondaryContainer[k].itemValue.type)
+                                    if (!secondaryContainer[k].IsEmpty() && mainContainer[j].itemValue.GetItemOrBlockId() == secondaryContainer[k].itemValue.GetItemOrBlockId())
                                     {
                                         newStackCount = mainContainer[j].count + secondaryContainer[k].count;
                                         stackMax = mainContainer[j].itemValue.ItemClass.Stacknumber.Value;
                                         if (newStackCount <= stackMax)
                                         {
                                             _secureLoot.RemoveItem(mainContainer[j].itemValue);
+                                            secondaryContainer[k].count = newStackCount;
                                             lootContainer.items[k].count = newStackCount;
                                             lootContainer.SetModified();
                                             break;
@@ -111,7 +111,7 @@ namespace ServerTools
                                         else if (secondaryContainer[k].count < stackMax)
                                         {
                                             newStackCount = secondaryContainer[k].count + mainContainer[j].count;
-                                            if (newStackCount < stackMax)
+                                            if (newStackCount <= stackMax)
                                             {
                                                 _secureLoot.RemoveItem(mainContainer[j].itemValue);
                                                 lootContainer.items[k].count = newStackCount;
@@ -121,7 +121,7 @@ namespace ServerTools
                                             else
                                             {
                                                 newStackCount = stackMax - secondaryContainer[k].count;
-                                                mainContainer[j].count -= newStackCount;
+                                                _secureLoot.items[j].count = newStackCount;
                                                 lootContainer.items[k].count = stackMax;
                                                 lootContainer.SetModified();
                                                 break;

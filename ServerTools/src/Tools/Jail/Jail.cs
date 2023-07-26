@@ -21,25 +21,26 @@ namespace ServerTools
                 for (int i = 0; i < Jailed.Count; i++)
                 {
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(Jailed[i]);
-                    if (cInfo != null)
+                    if (cInfo == null)
                     {
-                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
-                        if (player.Spawned && player.IsAlive())
+                        continue;
+                    }
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+                    if (player.Spawned && player.IsAlive())
+                    {
+                        string[] cords = Jail_Position.Split(',');
+                        int.TryParse(cords[0], out int x);
+                        int.TryParse(cords[1], out int y);
+                        int.TryParse(cords[2], out int z);
+                        Vector3 vector = player.position;
+                        if ((x - vector.x) * (x - vector.x) + (z - vector.z) * (z - vector.z) >= Jail_Size * Jail_Size)
                         {
-                            string[] cords = Jail_Position.Split(',');
-                            int.TryParse(cords[0], out int x);
-                            int.TryParse(cords[1], out int y);
-                            int.TryParse(cords[2], out int z);
-                            Vector3 vector = player.position;
-                            if ((x - vector.x) * (x - vector.x) + (z - vector.z) * (z - vector.z) >= Jail_Size * Jail_Size) 
+                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                            if (Jail_Shock)
                             {
-                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                                if (Jail_Shock)
-                                {
-                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff buffShocked", true));
-                                    Phrases.Dict.TryGetValue("Jail9", out string phrase);
-                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                }
+                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff buffShocked", true));
+                                Phrases.Dict.TryGetValue("Jail9", out string phrase);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }

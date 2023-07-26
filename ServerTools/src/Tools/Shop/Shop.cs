@@ -1520,6 +1520,10 @@ namespace ServerTools
                         {
                             currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                         }
+                        if (Bank.IsEnabled && Bank.Direct_Payment)
+                        {
+                            currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                        }
                         int cost = int.Parse(itemData[5]) * _count;
                         if (currency >= cost)
                         {

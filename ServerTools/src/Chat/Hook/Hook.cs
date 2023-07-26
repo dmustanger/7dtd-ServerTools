@@ -135,10 +135,13 @@ namespace ServerTools
                                 ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.CrossplatformId.CombinedString) || Normal_Player_Color_Prefix)
                             {
                                 _mainName = ChatColor.ApplyNameColor(_cInfo, _type, _mainName);
-                                _message = ChatColor.ApplyMessageColor(_message);
-                                ChatMessage(_cInfo, _message, _senderId, _mainName, _type, _recipientEntityIds);
-                                return false;
                             }
+                            if (Message_Color_Enabled && Message_Color != "")
+                            {
+                                _message = ChatColor.ApplyMessageColor(_message);
+                            }
+                            ChatMessage(_cInfo, _message, _senderId, _mainName, _type, _recipientEntityIds);
+                            return false;
                         }
                         if ((_message.StartsWith(Chat_Command_Prefix1) || _message.StartsWith(Chat_Command_Prefix2)) && !GeneralOperations.BlockChatCommands.Contains(_cInfo))
                         {

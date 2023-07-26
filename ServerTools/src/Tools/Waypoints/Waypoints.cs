@@ -446,11 +446,16 @@ namespace ServerTools
         {
             try
             {
-                if (!Wallet.IsEnabled || _cost < 1)
+                int currency = 0;
+                if (Wallet.IsEnabled)
                 {
-                    Exec(_cInfo, _waypoint, _position, _friends, _cost);
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
-                else if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= _cost)
+                if (Bank.IsEnabled && Bank.Direct_Payment)
+                {
+                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                }
+                if (currency >= _cost)
                 {
                     Exec(_cInfo, _waypoint, _position, _friends, _cost);
                 }

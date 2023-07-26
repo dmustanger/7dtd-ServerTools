@@ -1,5 +1,32 @@
 ﻿CHANGELOG
 
+21.0.8
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Added option Buff_Icon to Chunk_Reset and Region_Reset tools.
+Enter the desired icon from the buffs.xml. Changes require a
+server restart to take effect
+-Added Direct_Payment option to Bank. Allows command payments to
+come out of a players bank. Funds will be taken from their
+bag first but if they do not have enough, the remainder is
+taken from the bank
+-Fixed Region_Reset and Chunk_Reset xml failing to process
+-Fixed harmony injection of NetPackageTileEntity ProcessPackage
+failing to check the tile type while Vault was enabled
+-Fixed VoteReward.xml forming improper at upgrade time
+-Fixed Sorter tool losing items
+-Fixed Message_Color not working as intended
+-Updated Region_Reset and Chunk_Reset to clear the player buff
+when the tools are disabled
+
+Known issues:
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
+-Shop panel does not recognize two players using the same ip
+-RIO is not functioning as intended
+-Some console commands are out of date
+
 21.0.7
 Built using Alpha 21 stable assets
 Functioning with Alpha 21 stable. Untested with other versions

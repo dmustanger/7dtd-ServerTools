@@ -46,6 +46,10 @@ namespace ServerTools
         {
             if (!string.IsNullOrEmpty(XPathDir))
             {
+                if (File.Exists(XPathDir + "items.xml"))
+                {
+                    File.Delete(XPathDir + "items.xml");
+                }
                 if (!File.Exists(XPathDir + "items.xml"))
                 {
                     using (StreamWriter sw = new StreamWriter(XPathDir + "items.xml", false, Encoding.UTF8))
@@ -62,31 +66,7 @@ namespace ServerTools
                 }
                 if (File.Exists(XPathDir + "gameevents.xml"))
                 {
-                    List<string> eventContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "gameevents.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                eventContent.Add(sr.ReadLine());
-                            }
-                        }
-                    }
-                    int count = 0;
-                    for (int i = 0; i < eventContent.Count; i++)
-                    {
-                        string line = eventContent[i];
-                        if (line.Contains("action_admin") || line.Contains("action_dukes") || line.Contains("action_currency") || 
-                            line.Contains("action_eject") || line.Contains("action_remove_bedrolls"))
-                        {
-                            count += 1;
-                        }
-                    }
-                    if (count != 5)
-                    {
-                        File.Delete(XPathDir + "gameevents.xml");
-                    }
+                    File.Delete(XPathDir + "gameevents.xml");
                 }
                 if (!File.Exists(XPathDir + "gameevents.xml"))
                 {
@@ -165,302 +145,8 @@ namespace ServerTools
                         sw.Close();
                     }
                 }
-                if (File.Exists(XPathDir + "XUi/windows.xml"))
-                {
-                    List<string> windowContent = new List<string>();
-                    using (FileStream fs = new FileStream(XPathDir + "XUi/windows.xml", FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                windowContent.Add(sr.ReadLine());
-                            }
-                        }
-                    }
-                    int count = 0;
-                    for (int i = 0; i < windowContent.Count; i++)
-                    {
-                        string line = windowContent[i];
-                        if (line.Contains(AllocsMap.Link) || line.Contains(DiscordLink.Link) || line.Contains(Voting.Link) ||
-                            line.Contains("rio.html") || line.Contains("shop.html") || line.Contains("auction.html") ||
-                            line.Contains("imap.html") || line.Contains(DonationLink.Link))
-                        {
-                            count += 1;
-                        }
-                    }
-                    if (count != 8)
-                    {
-                        File.Delete(XPathDir + "XUi/windows.xml");
-                    }
-                }
-                if (!File.Exists(XPathDir + "XUi/windows.xml"))
-                {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "XUi/windows.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/windows\">");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserMap\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"World Map\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", AllocsMap.Link));
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserDiscord\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Discord Link\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Link));
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserVote\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Voting Site\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Voting.Link));
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserRio\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Roll It Out\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/rio.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserShop\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Shop\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserAuction\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Auction\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserIMap\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Interactive Map\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/imap.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("  <window name=\"browserDonation\" controller=\"ServerInfo\">");
-                        sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                        sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Donation Link\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                        sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                        sw.WriteLine("          <label name=\"ServerDescription\" />");
-                        sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DonationLink.Link);
-                        sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                        sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
-                        sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                        sw.WriteLine("      </panel>");
-                        sw.WriteLine("  </window>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                    }
-                }
-                if (File.Exists(XPathDir + "buffs.xml"))
-                {
-                    File.Delete(XPathDir + "buffs.xml");
-                }
-                if (!File.Exists(XPathDir + "buffs.xml"))
-                {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "buffs.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/buffs\">");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description_key=\"You are inside a PvE area\" tooltip_key=\"PvE_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
-                        sw.WriteLine("	<display_value_key value=\"PvE Zone\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description_key=\"You are inside a area with active damage for allies\" tooltip_key=\"PvP_Ally_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
-                        sw.WriteLine("	<display_value_key value=\"Ally PvP Zone\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description_key=\"You are inside a area with active damage for strangers\" tooltip_key=\"PvP_Stranger_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
-                        sw.WriteLine("	<display_value_key value=\"Stranger PvP Zone\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description_key=\"You are inside a area with active damage for everyone\" tooltip_key=\"PvP_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
-                        sw.WriteLine("	<display_value_key value=\"PvP Zone\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
-                        sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
-                        sw.WriteLine("		</triggered_effect>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_ally_damage\" hidden=\"true\">");
-                        sw.WriteLine("	<display_value_key value=\"PvP Ally Damage\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<duration value=\"1\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
-                        sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"perc_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"perc_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_damage\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_stranger_damage\" hidden=\"true\">");
-                        sw.WriteLine("	<display_value_key value=\"PvP Stranger Damage\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<duration value=\"1\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_stranger_zone\"/>");
-                        sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_damage\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"pvp_damage\" hidden=\"true\">");
-                        sw.WriteLine("	<display_value_key value=\"PvP Damage\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<duration value=\"1\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("      <requirements>");
-                        sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_zone\"/>");
-                        sw.WriteLine("	    </requirements>");
-                        sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
-                        sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"region_reset\" name_key=\"Region_reset\" description_key=\"The region you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"255, 153, 51\">");
-                        sw.WriteLine("	<display_value_key value=\"     Region will reset\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"region_reset\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("<buff name=\"chunk_reset\" name_key=\"Chunk_reset\" description_key=\"The chunk you are in will reset. Building here is NOT recommended\" icon=\"ui_game_symbol_brick\" icon_color=\"204, 102, 0\">");
-                        sw.WriteLine("	<display_value_key value=\"     Chunk will reset\"/>");
-                        sw.WriteLine("	<display_value value=\"xxx\"/>");
-                        sw.WriteLine("	<stack_type value=\"replace\"/>");
-                        sw.WriteLine("	<effect_group>");
-                        sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"chunk_reset\"/>");
-                        sw.WriteLine("	</effect_group>");
-                        sw.WriteLine("</buff>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                        sw.Flush();
-                        sw.Close();
-                    }
-                }
+                SetWindows();
+                SetBuffs();
                 if (File.Exists(XPathDir + "XUi/xui.xml"))
                 {
                     File.Delete(XPathDir + "XUi/xui.xml");
@@ -578,6 +264,285 @@ namespace ServerTools
             }
         }
 
+        public static void SetWindows()
+        {
+            if (File.Exists(XPathDir + "XUi/windows.xml"))
+            {
+                File.Delete(XPathDir + "XUi/windows.xml");
+            }
+            if (!File.Exists(XPathDir + "XUi/windows.xml"))
+            {
+                using (StreamWriter sw = new StreamWriter(XPathDir + "XUi/windows.xml", false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<configs>");
+                    sw.WriteLine();
+                    sw.WriteLine("<append xpath=\"/windows\">");
+                    //sw.WriteLine();
+                    //sw.WriteLine("  <window name=\"browserMap\" controller=\"ServerInfo\">");
+                    //sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    //sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"World Map\" />");
+                    //sw.WriteLine("      </panel>");
+                    //sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    //sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    //sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    //sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", AllocsMap.Link));
+                    //sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    //sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
+                    //sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    //sw.WriteLine("      </panel>");
+                    //sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserDiscord\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Discord Link\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Link));
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserVote\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Voting Site\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Voting.Link));
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserRio\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Roll It Out\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/rio.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserShop\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Shop\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserAuction\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Auction\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserIMap\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Interactive Map\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/imap.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("  <window name=\"browserDonation\" controller=\"ServerInfo\">");
+                    sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
+                    sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"Donation Link\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
+                    sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
+                    sw.WriteLine("          <label name=\"ServerDescription\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DonationLink.Link);
+                    sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
+                    sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
+                    sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
+                    sw.WriteLine("      </panel>");
+                    sw.WriteLine("  </window>");
+                    sw.WriteLine();
+                    sw.WriteLine("</append>");
+                    sw.WriteLine();
+                    sw.WriteLine("</configs>");
+                }
+            }
+        }
+
+        public static void SetBuffs()
+        {
+            if (File.Exists(XPathDir + "buffs.xml"))
+            {
+                File.Delete(XPathDir + "buffs.xml");
+            }
+            if (!File.Exists(XPathDir + "buffs.xml"))
+            {
+                using (StreamWriter sw = new StreamWriter(XPathDir + "buffs.xml", false, Encoding.UTF8))
+                {
+                    sw.WriteLine("<configs>");
+                    sw.WriteLine();
+                    sw.WriteLine("<append xpath=\"/buffs\">");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pve_zone\" name_key=\"PvE_Zone\" description_key=\"You are inside a PvE area\" tooltip_key=\"PvE_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"0,102,153\">");
+                    sw.WriteLine("	<display_value_key value=\"PvE Zone\"/>");
+                    sw.WriteLine("	<display_value value=\"xxx\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pve_zone\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_ally_zone\" name_key=\"PvP_Ally_Zone\" description_key=\"You are inside a area with active damage for allies\" tooltip_key=\"PvP_Ally_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,204,0\">");
+                    sw.WriteLine("	<display_value_key value=\"Ally PvP Zone\"/>");
+                    sw.WriteLine("	<display_value value=\"xxx\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_ally_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_stranger_zone\" name_key=\"PvP_Stranger_Zone\" description_key=\"You are inside a area with active damage for strangers\" tooltip_key=\"PvP_Stranger_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"255,153,0\">");
+                    sw.WriteLine("	<display_value_key value=\"Stranger PvP Zone\"/>");
+                    sw.WriteLine("	<display_value value=\"xxx\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_stranger_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_zone\" name_key=\"PvP_Zone\" description_key=\"You are inside a area with active damage for everyone\" tooltip_key=\"PvP_Zone\" icon=\"ui_game_symbol_twitch_no_ranged\" icon_color=\"204,0,0\">");
+                    sw.WriteLine("	<display_value_key value=\"PvP Zone\"/>");
+                    sw.WriteLine("	<display_value value=\"xxx\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_zone\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfPrimaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfSecondaryActionRayHit\" target=\"other\" action=\"AddBuff\" buff=\"pvp_damage\">");
+                    sw.WriteLine("			<requirement name=\"EntityTagCompare\" target=\"other\" tags=\"player\"/>");
+                    sw.WriteLine("		</triggered_effect>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_ally_damage\" hidden=\"true\">");
+                    sw.WriteLine("	<display_value_key value=\"PvP Ally Damage\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<duration value=\"1\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("      <requirements>");
+                    sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_ally_zone\"/>");
+                    sw.WriteLine("	    </requirements>");
+                    sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"perc_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"perc_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_ally_damage\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_stranger_damage\" hidden=\"true\">");
+                    sw.WriteLine("	<display_value_key value=\"PvP Stranger Damage\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<duration value=\"1\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("      <requirements>");
+                    sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_stranger_zone\"/>");
+                    sw.WriteLine("	    </requirements>");
+                    sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_stranger_damage\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("<buff name=\"pvp_damage\" hidden=\"true\">");
+                    sw.WriteLine("	<display_value_key value=\"PvP Damage\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<duration value=\"1\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("      <requirements>");
+                    sw.WriteLine("			<requirement name=\"!HasBuff\" buff=\"pvp_zone\"/>");
+                    sw.WriteLine("	    </requirements>");
+                    sw.WriteLine("		<passive_effect name=\"GeneralDamageResist\" operation=\"base_add\" value=\"1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ElementalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"PhysicalDamageResist\" operation=\"base_add\" value=\"200\"/>");
+                    sw.WriteLine("		<passive_effect name=\"ExplosionIncomingDamage\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<passive_effect name=\"HealthLoss\" operation=\"perc_add\" value=\"-1\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"pvp_damage\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine(string.Format("<buff name=\"region_reset\" name_key=\"Region_reset\" description_key=\"The region you are in will reset. Building here is NOT recommended\" icon=\"{0}\" icon_color=\"255, 153, 51\">", RegionReset.Icon));
+                    sw.WriteLine("	<display_value_key value=\"     Region will reset\"/>");
+                    sw.WriteLine("	<display_value value=\"xxx\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"region_reset\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine(string.Format("<buff name=\"chunk_reset\" name_key=\"Chunk_reset\" description_key=\"The chunk you are in will reset. Building here is NOT recommended\" icon=\"{0}\" icon_color=\"204, 102, 0\">", ChunkReset.Icon));
+                    sw.WriteLine("	<display_value_key value=\"     Chunk will reset\"/>");
+                    sw.WriteLine("	<display_value value=\"xxx\"/>");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"chunk_reset\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
+                    sw.WriteLine("</append>");
+                    sw.WriteLine();
+                    sw.WriteLine("</configs>");
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+        }
+
         public static void CheckArea()
         {
             if (!Running)
@@ -593,7 +558,7 @@ namespace ServerTools
                 for (int i = 0; i < clientList.Count; i++)
                 {
                     cInfo = clientList[i];
-                    if (cInfo == null || TeleportDetector.Omissions.Contains(cInfo.entityId))
+                    if (cInfo == null || !cInfo.loginDone || TeleportDetector.Omissions.Contains(cInfo.entityId))
                     {
                         continue;
                     }

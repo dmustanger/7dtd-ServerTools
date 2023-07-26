@@ -1335,7 +1335,7 @@ namespace ServerTools
 
         private static void Init42(XmlNodeList _nodeList)
         {
-            //RegionReset.UpgradeXml(_nodeList);
+            RegionReset.UpgradeXml(_nodeList);
         }
 
         private static void Init43(XmlNodeList _nodeList)

@@ -36,7 +36,16 @@ namespace ServerTools
 
         public static void EnterLottery(ClientInfo _cInfo)
         {
-            if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Entry_Cost)
+            int currency = 0;
+            if (Wallet.IsEnabled)
+            {
+                currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+            }
+            if (Bank.IsEnabled && Bank.Direct_Payment)
+            {
+                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+            }
+            if (currency >= Entry_Cost)
             {
                 int newTicket = NewTicket();
                 if (newTicket < 1000)

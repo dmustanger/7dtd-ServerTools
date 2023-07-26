@@ -92,22 +92,24 @@ namespace ServerTools
 
         private static void CommandCost(ClientInfo _cInfo)
         {
-            if (Wallet.IsEnabled && Command_Cost > 0)
+            int currency = 0;
+            if (Wallet.IsEnabled)
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
-                {
-                    StartScouting(_cInfo);
-                }
-                else
-                {
-                    Phrases.Dict.TryGetValue("ScoutPlayer2", out string phrase);
-                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                }
+                currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+            }
+            if (Bank.IsEnabled && Bank.Direct_Payment)
+            {
+                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+            }
+            if (currency > 0)
+            {
+                StartScouting(_cInfo);
             }
             else
             {
-                StartScouting(_cInfo);
+                Phrases.Dict.TryGetValue("ScoutPlayer2", out string phrase);
+                phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

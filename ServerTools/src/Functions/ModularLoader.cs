@@ -263,6 +263,22 @@ namespace ServerTools
             {
                 OutputLogBlocker.Load();
             }
+            if (ChunkReset.IsRunning && !ChunkReset.IsEnabled)
+            {
+                ChunkReset.Unload();
+            }
+            else if (!ChunkReset.IsRunning && ChunkReset.IsEnabled)
+            {
+                ChunkReset.Load();
+            }
+            if (RegionReset.IsRunning && !RegionReset.IsEnabled)
+            {
+                RegionReset.Unload();
+            }
+            else if (!RegionReset.IsRunning && RegionReset.IsEnabled)
+            {
+                RegionReset.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();

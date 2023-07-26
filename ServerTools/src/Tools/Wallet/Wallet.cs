@@ -239,9 +239,9 @@ namespace ServerTools
             {
                 Timers.Wallet_Remove_SingleUseTimer(cInfo.CrossplatformId.CombinedString, _amount);
             }
-            int balance = currency - _amount;
-            if (balance >= 0)
+            if (currency >= _amount)
             {
+                int balance = currency - _amount;
                 GameEventManager.Current.HandleAction("action_currency", null, player, false);
                 cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
                 if (!UpdateMainCurrency.ContainsKey(cInfo.entityId))
@@ -262,6 +262,27 @@ namespace ServerTools
                 else
                 {
                     UpdateMainCurrency[cInfo.entityId] = balance;
+                    if (otherCurrency.Count > 0)
+                    {
+                        if (!UpdateAltCurrency.ContainsKey(cInfo.entityId))
+                        {
+                            UpdateAltCurrency.Add(cInfo.entityId, otherCurrency);
+                        }
+                        else
+                        {
+                            UpdateAltCurrency[cInfo.entityId] = otherCurrency;
+                        }
+                    }
+                }
+            }
+            else if (Bank.IsEnabled && Bank.Direct_Payment)
+            {
+                int remainder = _amount - currency;
+                if (Bank.GetCurrency(cInfo.CrossplatformId.CombinedString) >= remainder)
+                {
+                    GameEventManager.Current.HandleAction("action_currency", null, player, false);
+                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageGameEventResponse>().Setup("action_currency", cInfo.entityId, "", "", NetPackageGameEventResponse.ResponseTypes.Approved));
+                    Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, remainder);
                     if (otherCurrency.Count > 0)
                     {
                         if (!UpdateAltCurrency.ContainsKey(cInfo.entityId))

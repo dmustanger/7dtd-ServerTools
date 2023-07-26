@@ -11,6 +11,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static float[] Bounds = new float[6];
+        public static string Icon = "ui_game_symbol_brick";
+
         public static Dictionary<string, string> Chunks = new Dictionary<string, string>();
         public static List<float[]> ChunkBounds = new List<float[]>();
         public static List<int> ChunkPlayer = new List<int>();
@@ -28,6 +30,9 @@ namespace ServerTools
         public static void Unload()
         {
             Chunks.Clear();
+            ChunkBounds.Clear();
+            DisablePlayerBuff();
+            ChunkPlayer.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
         }
@@ -283,7 +288,31 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Error in ChunkReset.Exec: {0}", e.Message));
             }
         }
-        
+
+        public static void DisablePlayerBuff()
+        {
+            if (ChunkPlayer.Count > 0)
+            {
+                for (int i = 0; i < ChunkPlayer.Count; i++)
+                {
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(ChunkPlayer[i]);
+                    if (cInfo != null)
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", cInfo.CrossplatformId.CombinedString, "chunk_reset"), null);
+                    }
+                }
+            }
+        }
+
+        public static void SetIcon(string _iconName)
+        {
+            if (Icon != _iconName)
+            {
+                Icon = _iconName;
+                GeneralOperations.SetBuffs();
+            }
+        }
+
         public static void UpgradeXml(XmlNodeList nodeList)
         {
             try

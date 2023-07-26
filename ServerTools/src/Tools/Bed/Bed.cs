@@ -121,7 +121,16 @@ namespace ServerTools
         {
             try
             {
-                if (Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString) >= Command_Cost)
+                int currency = 0;
+                if (Wallet.IsEnabled)
+                {
+                    currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                }
+                if (Bank.IsEnabled && Bank.Direct_Payment)
+                {
+                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                }
+                if (currency >= Command_Cost)
                 {
                     Teleport(_cInfo, player.SpawnPoints[0].ToVector3());
                 }

@@ -9,6 +9,8 @@ namespace ServerTools
     public class RegionReset
     {
         public static bool IsEnabled = false, IsRunning = false;
+        public static string Icon = "ui_game_symbol_brick";
+
         public static Dictionary<string, string> Regions = new Dictionary<string, string>();
         public static List<int[]> RegionBounds = new List<int[]>();
         public static List<int> RegionPlayer = new List<int>();
@@ -27,6 +29,7 @@ namespace ServerTools
         {
             Regions.Clear();
             RegionBounds.Clear();
+            DisablePlayerBuff();
             RegionPlayer.Clear();
             FileWatcher.Dispose();
             IsRunning = false;
@@ -294,7 +297,31 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Error in RegionReset.Exec: {0}", e.Message);
             }
         }
-        
+
+        public static void DisablePlayerBuff()
+        {
+            if (RegionPlayer.Count > 0)
+            {
+                for (int i = 0; i < RegionPlayer.Count; i++)
+                {
+                    ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(RegionPlayer[i]);
+                    if (cInfo != null)
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", cInfo.CrossplatformId.CombinedString, "region_reset"), null);
+                    }            
+                }
+            }
+        }
+
+        public static void SetIcon(string _iconName)
+        {
+            if (Icon != _iconName)
+            {
+                Icon = _iconName;
+                GeneralOperations.SetBuffs();
+            }
+        }
+
         public static void UpgradeXml(XmlNodeList nodeList)
         {
             try

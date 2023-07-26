@@ -78,6 +78,10 @@ namespace ServerTools
                                 {
                                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                                 }
+                                if (Bank.IsEnabled && Bank.Direct_Payment)
+                                {
+                                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                                }
                                 if (currency >= bounty)
                                 {
                                     if (bounty >= 1)
@@ -125,6 +129,10 @@ namespace ServerTools
                             if (Wallet.IsEnabled)
                             {
                                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
+                            }
+                            if (Bank.IsEnabled && Bank.Direct_Payment)
+                            {
+                                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                             }
                             if (currency >= Minimum_Bounty)
                             {

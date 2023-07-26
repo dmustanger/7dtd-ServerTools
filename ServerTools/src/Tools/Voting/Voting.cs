@@ -303,7 +303,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <!-- <Version=\"{0}\" /> -->", Config.Version));
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
                     sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     if (Rewards.Count > 0)
                     {
                         foreach (KeyValuePair<string, int[]> kvp in Rewards)
@@ -333,7 +332,6 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Items that do not require a quality should be set to 0 or 1 for min and max -->");
                     sw.WriteLine("    <!-- <Bonus ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
-                    sw.WriteLine("    <Bonus ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     if (BonusRewards.Count > 0)
                     {
                         foreach (KeyValuePair<string, int[]> kvp in BonusRewards)
@@ -844,14 +842,16 @@ namespace ServerTools
                     sw.WriteLine("    <!-- <Reward ItemOrBlock=\"meleeToolTorch\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" /> -->");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
-                        if (!nodeList[i].OuterXml.Contains("<!-- Items that") &&
+                        if (nodeList[i].NodeType == XmlNodeType.Comment)
+                        {
+                            if (!nodeList[i].OuterXml.Contains("<!-- Items that") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Reward ItemOrBlock=\"meleeToolTorch\"") && !nodeList[i].OuterXml.Contains("<Reward ItemOrBlock=\"\"") &&
                             !nodeList[i].OuterXml.Contains("<!-- <Version"))
-                        {
-                            sw.WriteLine(nodeList[i].OuterXml);
+                            {
+                                sw.WriteLine(nodeList[i].OuterXml);
+                            }
                         }
                     }
-                    sw.WriteLine("    <Reward ItemOrBlock=\"\" MinCount=\"\" MaxCount=\"\" MinQuality=\"\" MaxQuality=\"\" />");
                     for (int i = 0; i < nodeList.Count; i++)
                     {
                         if (nodeList[i].NodeType != XmlNodeType.Comment)

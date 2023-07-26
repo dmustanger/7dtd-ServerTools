@@ -101,6 +101,10 @@ namespace ServerTools
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
+            if (Bank.IsEnabled && Bank.Direct_Payment)
+            {
+                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+            }
             if (currency >= Command_Cost)
             {
                 PlayerLevel(_cInfo);

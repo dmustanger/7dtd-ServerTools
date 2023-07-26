@@ -539,7 +539,7 @@ public static class Injections
     {
         try
         {
-            if (__instance == null || ___teWorldPos == null || !Vault.IsEnabled)
+            if (!Vault.IsEnabled && __instance == null || ___teWorldPos == null)
             {
                 return;
             }
@@ -548,11 +548,14 @@ public static class Injections
             {
                 return;
             }
-            TileEntityLootContainer lootContainer = (TileEntityLootContainer)tileEntity;
-            if (lootContainer != null && lootContainer.bPlayerStorage && lootContainer.blockValue.Block != null &&
-                lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && ___handle != 255)
+            if (tileEntity is TileEntityLootContainer)
             {
-                Vault.UpdateData(lootContainer);
+                TileEntityLootContainer lootContainer = tileEntity as TileEntityLootContainer;
+                if (lootContainer != null && lootContainer.bPlayerStorage && lootContainer.blockValue.Block != null &&
+                    lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && ___handle != 255)
+                {
+                    Vault.UpdateData(lootContainer);
+                }
             }
         }
         catch (Exception e)

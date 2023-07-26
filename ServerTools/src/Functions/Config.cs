@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "21.0.7";
+        public const string Version = "21.0.8";
         public static string Server_Response_Name = "[FFCC00]ServerTools", Chat_Response_Color = "[00FF00]";
         public static string ConfigFilePath = string.Format("{0}/{1}", API.ConfigPath, ConfigFile);
         public static bool FirstLoad = true;
@@ -471,6 +471,16 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Deposit_Message' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
+                                        if (!line.HasAttribute("Direct_Payment"))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of missing 'Direct_Payment' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        if (!bool.TryParse(line.GetAttribute("Direct_Payment"), out Bank.Direct_Payment))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank_Extended entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Direct_Payment' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
                                         break;
                                     case "Bed":
                                         if (!line.HasAttribute("Enable"))
@@ -931,6 +941,16 @@ namespace ServerTools
                                         {
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
+                                        }
+                                        if (!line.HasAttribute("Buff_Icon"))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chunk_Reset entry in ServerToolsConfig.xml because of missing 'Buff_Icon' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            string iconName = line.GetAttribute("Buff_Icon");
+                                            ChunkReset.SetIcon(iconName);
                                         }
                                         break;
                                     case "Clan_Manager":
@@ -3367,6 +3387,16 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
+                                        if (!line.HasAttribute("Buff_Icon"))
+                                        {
+                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Region_Reset entry in ServerToolsConfig.xml because of missing 'Buff_Icon' attribute: {0}", line.OuterXml));
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            string iconName = line.GetAttribute("Buff_Icon");
+                                            RegionReset.SetIcon(iconName);
+                                        }
                                         break;
                                     case "Report":
                                         if (!line.HasAttribute("Enable"))
@@ -4192,7 +4222,7 @@ namespace ServerTools
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Wallet_Extended entry in ServerToolsConfig.xml because of missing 'Item_Name' attribute: {0}", line.OuterXml));
                                             continue;
                                         }
-                                        if (line.HasAttribute("Item_Name"))
+                                        else
                                         {
                                             string itemName = line.GetAttribute("Item_Name");
                                             Wallet.SetItem(itemName);
@@ -4607,7 +4637,7 @@ namespace ServerTools
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level);
-                sw.WriteLine("        <Tool Name=\"Allocs_Map\" Enable=\"{0}\" Link=\"{1}\" />", AllocsMap.IsEnabled, AllocsMap.Link);
+                //sw.WriteLine("        <Tool Name=\"Allocs_Map\" Enable=\"{0}\" Link=\"{1}\" />", AllocsMap.IsEnabled, AllocsMap.Link);
                 sw.WriteLine("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Minimum_Spawn_Radius=\"{2}\" Maximum_Spawn_Radius=\"{3}\" Animal_Ids=\"{4}\" />", AnimalTracking.IsEnabled, AnimalTracking.Delay_Between_Uses, AnimalTracking.Minimum_Spawn_Radius, AnimalTracking.Maximum_Spawn_Radius, AnimalTracking.Animal_Ids);
                 sw.WriteLine("        <Tool Name=\"Animal_Tracking_Extended\" Command_Cost=\"{0}\" />", AnimalTracking.Command_Cost);
                 sw.WriteLine("        <Tool Name=\"Auction\" Enable=\"{0}\" No_Admins=\"{1}\" Admin_Level=\"{2}\" Total_Items=\"{3}\" Tax=\"{4}\" />", Auction.IsEnabled, Auction.No_Admins, Auction.Admin_Level, Auction.Total_Items, Auction.Tax);
@@ -4619,7 +4649,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay);
                 sw.WriteLine("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name);
                 sw.WriteLine("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Deposit_Fee_Percent=\"{2}\" Player_Transfers=\"{3}\" Direct_Deposit=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Deposit_Fee_Percent, Bank.Player_Transfers, Bank.Direct_Deposit);
-                sw.WriteLine("        <Tool Name=\"Bank_Extended\" Deposit_Message=\"{0}\" />", Bank.Deposit_Message);
+                sw.WriteLine("        <Tool Name=\"Bank_Extended\" Deposit_Message=\"{0}\" Direct_Payment=\"{1}\" />", Bank.Deposit_Message, Bank.Direct_Payment);
                 sw.WriteLine("        <Tool Name=\"Bed\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Bed.IsEnabled, Bed.Delay_Between_Uses, Bed.Command_Cost);
                 sw.WriteLine("        <Tool Name=\"Big_Head\" Enable=\"{0}\" />", BigHead.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled);
@@ -4636,7 +4666,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Passthrough=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Passthrough);
                 sw.WriteLine("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" Wait_Time=\"{3}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min, ChatHook.Wait_Time);
                 sw.WriteLine("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled);
-                sw.WriteLine("        <Tool Name=\"Chunk_Reset\" Enable=\"{0}\" />", ChunkReset.IsEnabled);
+                sw.WriteLine("        <Tool Name=\"Chunk_Reset\" Enable=\"{0}\" Buff_Icon=\"{1}\" />", ChunkReset.IsEnabled, ChunkReset.Icon);
                 sw.WriteLine("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Max_Name_Length=\"{1}\" Private_Chat_Color=\"{2}\" />", ClanManager.IsEnabled, ClanManager.Max_Name_Length, ClanManager.Private_Chat_Color);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin\" Enable=\"{0}\" Auction=\"{1}\" Bank=\"{2}\" Bounties=\"{3}\" Delays=\"{4}\" />", CleanBin.IsEnabled, CleanBin.Auction, CleanBin.Bank, CleanBin.Bounties, CleanBin.Delays);
                 sw.WriteLine("        <Tool Name=\"Clean_Bin_Extended1\" Homes=\"{0}\" Jail=\"{1}\" Lobby=\"{2}\" Market=\"{3}\" New_Spawn_Tele=\"{4}\" />", CleanBin.Homes, CleanBin.Jail, CleanBin.Lobby, CleanBin.Market, CleanBin.New_Spawn_Tele);
@@ -4705,7 +4735,7 @@ namespace ServerTools
                 sw.WriteLine("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled);
                 sw.WriteLine("        <Tool Name=\"Public_Waypoints\" Enable=\"{0}\" />", Waypoints.Public_Waypoints);
                 sw.WriteLine("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, RealWorldTime.Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment);
-                sw.WriteLine("        <Tool Name=\"Region_Reset\" Enable=\"{0}\" />", RegionReset.IsEnabled);
+                sw.WriteLine("        <Tool Name=\"Region_Reset\" Enable=\"{0}\" Buff_Icon=\"{1}\" />", RegionReset.IsEnabled, RegionReset.Icon);
                 sw.WriteLine("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Length=\"{2}\" Admin_Level=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Length, Report.Admin_Level);
                 sw.WriteLine("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Session_Time=\"{1}\" Admin_Level=\"{2}\" Reduced_Delay=\"{3}\" Bonus_Exp=\"{4}\" />", ReservedSlots.IsEnabled, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Reduced_Delay, ReservedSlots.Bonus_Exp);
                 sw.WriteLine("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level);

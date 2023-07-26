@@ -623,8 +623,7 @@ namespace ServerTools
 
         public static string ApplyMessageColor(string _msg)
         {
-            if (ChatHook.Message_Color_Enabled && !Symbols.Contains(_msg[0]) && ChatHook.Message_Color != "" && ChatHook.Message_Color.StartsWith("[") && 
-                ChatHook.Message_Color.EndsWith("]") && (_msg.Length < 8 || (_msg[0] != '[' && _msg[7] != ']')))
+            if (ChatHook.Message_Color.StartsWith("[") && ChatHook.Message_Color.EndsWith("]"))
             {
                 _msg = _msg.Insert(0, ChatHook.Message_Color);
                 _msg = _msg.Insert(_msg.Length, "[-]");
