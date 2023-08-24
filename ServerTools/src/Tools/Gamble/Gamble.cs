@@ -46,25 +46,34 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
+                int currency = 0, bankCurrency = 0, cost = Command_Cost;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
                 if (Bank.IsEnabled && Bank.Direct_Payment)
                 {
-                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 }
-                if (currency < Command_Cost)
+                if (currency + bankCurrency >= cost)
                 {
-                    Phrases.Dict.TryGetValue("Gamble3", out string phrase);
-                    phrase = phrase.Replace("{Value}", Command_Cost.ToString());
-                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    return;
-                }
-                else
-                {
+                    if (currency > 0)
+                    {
+                        if (currency < cost)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                            cost -= currency;
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                    }
+                    else
+                    {
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
                     DateTime lastgamble = new DateTime();
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGamble != null)
                     {
@@ -105,10 +114,6 @@ namespace ServerTools
                         else
                         {
                             pot = new int[] { 1, 0 };
-                        }
-                        if (Command_Cost >= 1 && Wallet.IsEnabled)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
                         }
                         int gamble = Random.Next(pot[0] + 1);
                         if (gamble == 1)
@@ -157,6 +162,14 @@ namespace ServerTools
                         phrase = phrase.Replace("{TimeRemaining}", remaining.ToString());
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue("Gamble3", out string phrase);
+                    phrase = phrase.Replace("{Value}", Command_Cost.ToString());
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    return;
                 }
             }
             catch (Exception e)

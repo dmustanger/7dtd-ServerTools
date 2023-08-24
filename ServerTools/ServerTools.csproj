@@ -106,6 +106,7 @@
     <Compile Include="src\Tools\ChunkReset\ChunkReset.cs" />
     <Compile Include="src\Tools\Confetti\Confetti.cs" />
     <Compile Include="src\Tools\DonationLink\DonationLink.cs" />
+    <Compile Include="src\Tools\Harvest\Harvest.cs" />
     <Compile Include="src\Tools\InteractiveMap\InteractiveMap.cs" />
     <Compile Include="src\Tools\LandClaimCount\LandClaimCount.cs" />
     <Compile Include="src\Tools\RegionReset\RegionReset.cs" />
@@ -325,7 +326,7 @@
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\7DaysToDieServers\DedicatedStable\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\Deobfuscation\Deobfuscated projects\7DaysToDie\21.13 Stable\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">

@@ -408,19 +408,36 @@ namespace ServerTools
         {
             try
             {
-                if (_cost > 0 && Wallet.IsEnabled)
+                if (_cost > 0 && Wallet.IsEnabled || (Bank.IsEnabled && Bank.Direct_Payment))
                 {
-                    int currency = 0;
+                    int currency = 0, bankCurrency = 0, cost = _cost;
                     if (Wallet.IsEnabled)
                     {
                         currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                     }
                     if (Bank.IsEnabled && Bank.Direct_Payment)
                     {
-                        currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                        bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                     }
-                    if (currency >= _cost)
+                    if (currency + bankCurrency >= cost)
                     {
+                        if (currency > 0)
+                        {
+                            if (currency < cost)
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                                cost -= currency;
+                                Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                            }
+                            else
+                            {
+                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                            }
+                        }
+                        else
+                        {
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
                         ProcessCommand(_cInfo, _command, _cost);
                     }
                     else
@@ -496,10 +513,6 @@ namespace ServerTools
                     else
                     {
                         CommandExec(_cInfo, commandData[0], _command);
-                    }
-                    if (_cost >= 1 && Wallet.IsEnabled)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
                     }
                 }
             }

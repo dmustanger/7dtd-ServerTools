@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Platform.Steam;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace ServerTools
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10, Player_Killing_Mode = 0;
         public static string AppPath, Currency_Item, XPathDir, Command_expire = "expire", Command_commands = "commands", Command_overlay = "overlay";
         public static string lastOutput = "";
+        public static int LandClaimDurability = 0;
         public static List<string> ActiveLog = new List<string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
@@ -26,14 +28,12 @@ namespace ServerTools
 
         public static DateTime StartTime;
 
-        //private static ClientInfo cInfo, cInfoTwo;
         private static EntityPlayer player;
         private static Entity entity;
         private static PlatformUserIdentifierAbs uId;
         private static PersistentPlayerList persistentPlayerList, persistentPlayerListTwo, persistentPlayerListThree, persistentPlayerListFour;
         private static PersistentPlayerData persistentPlayerData, persistentPlayerDataTwo, ppdThree, ppdFour;
         private static PlayerDataFile playerDatafile, playerDatafileTwo, playerDatafileThree;
-        private static Chunk chunk;
         private static ItemValue itemValue;
 
         private static List<ClientInfo> clientList;
@@ -56,8 +56,8 @@ namespace ServerTools
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
-                        sw.WriteLine("<set xpath=\"/items/item[@name='casinoCoin']/property[@name='Tags']/@value\">dukes,currency</set>");
-                        sw.WriteLine("<!-- ..... Wallet and Bank currency ^ ..... -->");
+                        sw.WriteLine("  <set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", Wallet.Item_Name);
+                        sw.WriteLine("  <!-- ..... Wallet and Bank currency ^ ..... -->");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
                         sw.Flush();
@@ -192,74 +192,9 @@ namespace ServerTools
                 {
                     File.Delete(XPathDir + "blocks.xml");
                 }
-                if (!File.Exists(XPathDir + "blocks.xml"))
-                {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "blocks.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/blocks\">");
-                        sw.WriteLine();
-                        sw.WriteLine("<block name=\"VaultBox\">");
-                        sw.WriteLine("  <property name=\"CreativeMode\" value=\"Dev\"/>");
-                        sw.WriteLine("  <property name=\"Tags\" value=\"timecharge\"/>");
-                        sw.WriteLine("  <property name=\"Class\" value=\"SecureLoot\"/>");
-                        sw.WriteLine("  <property name=\"CustomIcon\" value=\"cntSecureStorageChest\"/>");
-                        sw.WriteLine("  <property name=\"LootList\" value=\"playerStorage\"/>");
-                        sw.WriteLine("  <property name=\"Material\" value=\"MwoodReinforced\"/>");
-                        sw.WriteLine("  <property name=\"Shape\" value=\"ModelEntity\"/>");
-                        sw.WriteLine("  <property name=\"Model\" value=\"@:Entities/LootContainers/woodenChestRotten_01Prefab Variant.prefab\"/>");
-                        sw.WriteLine("  <property name=\"ImposterExchange\" value=\"imposterQuarter\" param1=\"154\"/>");
-                        sw.WriteLine("  <property name=\"WaterFlow\" value=\"permitted\"/>");
-                        sw.WriteLine("  <property name=\"HandleFace\" value=\"Bottom\"/>");
-                        sw.WriteLine("  <property name=\"Collide\" value=\"movement,melee,bullet,arrow,rocket\"/>");
-                        sw.WriteLine("  <property name=\"IsTerrainDecoration\" value=\"true\"/>");
-                        sw.WriteLine("  <property name=\"StabilitySupport\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"FuelValue\" value=\"300\"/>");
-                        sw.WriteLine("  <property name=\"LPHardnessScale\" value=\"8\"/>");
-                        sw.WriteLine("  <property name=\"RepairItems\">");
-                        sw.WriteLine("    <property name=\"resourceWood\" value=\"10\"/>");
-                        sw.WriteLine("  </property>");
-                        sw.WriteLine("  <property name=\"Destroy\" count=\"1,3\"/>");
-                        sw.WriteLine("  <property name=\"Fall\" count=\"1\" prob=\"0.75\" stick_chance=\"1\"/>");
-                        sw.WriteLine("  <property name=\"SortOrder1\" value=\"B106\"/>");
-                        sw.WriteLine("  <property name=\"SortOrder2\" value=\"0012\"/>");
-                        sw.WriteLine("  <property name=\"Group\" value=\"advBuilding\"/>");
-                        sw.WriteLine("  <property name=\"ShowModelOnFall\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"CanPickup\" value=\"true\"/>");
-                        sw.WriteLine("  <property name=\"SellableToTrader\" value=\"false\"/>");
-                        sw.WriteLine("  <property name=\"FilterTags\" value=\"MC_playerBlocks\"/>");
-                        sw.WriteLine("</block>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                        sw.Flush();
-                        sw.Close();
-                    }
-                }
                 if (File.Exists(XPathDir + "recipes.xml"))
                 {
                     File.Delete(XPathDir + "recipes.xml");
-                }
-                if (!File.Exists(XPathDir + "recipes.xml"))
-                {
-                    using (StreamWriter sw = new StreamWriter(XPathDir + "recipes.xml", false, Encoding.UTF8))
-                    {
-                        sw.WriteLine("<configs>");
-                        sw.WriteLine();
-                        sw.WriteLine("<append xpath=\"/recipes\">");
-                        sw.WriteLine();
-                        sw.WriteLine("<recipe name=\"VaultBox\" count=\"1\">");
-                        sw.WriteLine("	<ingredient name=\"resourceWood\" count=\"60\"/>");
-                        sw.WriteLine("</recipe>");
-                        sw.WriteLine();
-                        sw.WriteLine("</append>");
-                        sw.WriteLine();
-                        sw.WriteLine("</configs>");
-                        sw.Flush();
-                        sw.Close();
-                    }
                 }
             }
         }
@@ -277,20 +212,6 @@ namespace ServerTools
                     sw.WriteLine("<configs>");
                     sw.WriteLine();
                     sw.WriteLine("<append xpath=\"/windows\">");
-                    //sw.WriteLine();
-                    //sw.WriteLine("  <window name=\"browserMap\" controller=\"ServerInfo\">");
-                    //sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
-                    //sw.WriteLine("          <label style=\"header.name\" pos=\"0,0\" width=\"197\" justify=\"center\" text=\"World Map\" />");
-                    //sw.WriteLine("      </panel>");
-                    //sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
-                    //sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
-                    //sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    //sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", AllocsMap.Link));
-                    //sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
-                    //sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
-                    //sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
-                    //sw.WriteLine("      </panel>");
-                    //sw.WriteLine("  </window>");
                     sw.WriteLine();
                     sw.WriteLine("  <window name=\"browserDiscord\" controller=\"ServerInfo\">");
                     sw.WriteLine("      <panel name=\"header\" pos=\"-300,0\" height=\"40\" depth=\"1\" backgroundspritename=\"ui_game_panel_header\" >");
@@ -299,7 +220,7 @@ namespace ServerTools
                     sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                     sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                     sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Link));
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", DiscordLink.Link);
                     sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                     sw.WriteLine("          <sprite depth=\"4\" name=\"microphoneIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_mic\" />");
                     sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -313,7 +234,7 @@ namespace ServerTools
                     sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                     sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                     sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    sw.WriteLine(string.Format("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Voting.Link));
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"{0}\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", Voting.Link);
                     sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                     sw.WriteLine("          <sprite depth=\"4\" name=\"computerIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_computer\" />");
                     sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -327,7 +248,7 @@ namespace ServerTools
                     sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                     sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                     sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/rio.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://{0}:{1}/rio.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", WebAPI.BaseAddress, WebAPI.Port);
                     sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                     sw.WriteLine("          <sprite depth=\"4\" name=\"coinIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_coin\" />");
                     sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -341,7 +262,7 @@ namespace ServerTools
                     sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                     sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                     sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://{0}:{1}/shop.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", WebAPI.BaseAddress, WebAPI.Port);
                     sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                     sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                     sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -355,7 +276,7 @@ namespace ServerTools
                     sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                     sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                     sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://{0}:{1}/auction.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", WebAPI.BaseAddress, WebAPI.Port);
                     sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                     sw.WriteLine("          <sprite depth=\"4\" name=\"shoppingCartIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_shopping_cart\" />");
                     sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -369,7 +290,7 @@ namespace ServerTools
                     sw.WriteLine("      <panel name=\"\" pos=\"-300,0\" height=\"63\">");
                     sw.WriteLine("          <sprite depth=\"5\" pos=\"0,0\" height=\"33\" width=\"200\" name=\"background\" color=\"[darkGrey]\" type=\"sliced\" />");
                     sw.WriteLine("          <label name=\"ServerDescription\" />");
-                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://0.0.0.0:8084/imap.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />");
+                    sw.WriteLine("          <label depth=\"2\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"ServerWebsiteURL\" text=\"http://{0}:{1}/imap.html\" justify=\"center\" style=\"press,hover\" font_size=\"1\" upper_case=\"false\" sound=\"[paging_click]\" />", WebAPI.BaseAddress, WebAPI.Port);
                     sw.WriteLine("          <sprite depth=\"3\" pos=\"0,-40\" height=\"32\" width=\"200\" name=\"URLMask\" color=\"[white]\" foregroundlayer=\"true\" fillcenter=\"true\" />");
                     sw.WriteLine("          <sprite depth=\"4\" name=\"mapIcon\" style=\"icon30px\" pos=\"5,-40\" color=\"[black]\" sprite=\"ui_game_symbol_map\" />");
                     sw.WriteLine("          <label depth=\"4\" style=\"header.name\" pos=\"0,-40\" height=\"32\" width=\"200\" justify=\"center\" color=\"[black]\" text=\"Click Here\" />");
@@ -534,6 +455,14 @@ namespace ServerTools
                     sw.WriteLine("	</effect_group>");
                     sw.WriteLine("</buff>");
                     sw.WriteLine();
+                    sw.WriteLine("<buff name=\"block_protection\" name_key=\"Block_protection\" hidden=\"true\" >");
+                    sw.WriteLine("	<stack_type value=\"replace\"/>");
+                    sw.WriteLine("	<effect_group>");
+                    sw.WriteLine("		<passive_effect name=\"DisableItem\" operation=\"base_set\" value=\"1\" tags=\"melee\"/>");
+                    sw.WriteLine("		<triggered_effect trigger=\"onSelfDied\" target=\"self\" action=\"RemoveBuff\" buff=\"block_protection\"/>");
+                    sw.WriteLine("	</effect_group>");
+                    sw.WriteLine("</buff>");
+                    sw.WriteLine();
                     sw.WriteLine("</append>");
                     sw.WriteLine();
                     sw.WriteLine("</configs>");
@@ -543,69 +472,85 @@ namespace ServerTools
             }
         }
 
+        public static void GetProtectionLevel()
+        {
+            LandClaimDurability = GamePrefs.GetInt(EnumGamePrefs.LandClaimOnlineDurabilityModifier);
+        }
+
         public static void CheckArea()
         {
             if (!Running)
             {
-                Running = true;
-                clientList = ClientList();
-                if (clientList == null || clientList.Count < 1)
+                ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
                 {
-                    Running = false;
-                    return;
-                }
-                ClientInfo cInfo;
-                for (int i = 0; i < clientList.Count; i++)
-                {
-                    cInfo = clientList[i];
-                    if (cInfo == null || !cInfo.loginDone || TeleportDetector.Omissions.Contains(cInfo.entityId))
+                    Running = true;
+                    clientList = ClientList();
+                    if (clientList == null || clientList.Count < 1)
                     {
-                        continue;
+                        Running = false;
+                        return;
                     }
-                    player = GetEntityPlayer(cInfo.entityId);
-                    if (player == null || !player.IsSpawned() || player.IsDead() || player.position == null)
+                    ClientInfo cInfo;
+                    for (int i = 0; i < clientList.Count; i++)
                     {
-                        continue;
-                    }
-                    if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
-                    {
-                        Zones.ZoneCheck(cInfo, player);
-                    }
-                    if (RegionReset.IsEnabled)
-                    {
-                        RegionReset.IsResetRegion(cInfo, player);
-                    }
-                    if (ChunkReset.IsEnabled)
-                    {
-                        ChunkReset.IsResetChunk(cInfo, player);
-                    }
-                }
-                entityList = GameManager.Instance.World.Entities.list;
-                if (entityList == null || entityList.Count < 1)
-                {
-                    Running = false;
-                    return;
-                }
-                for (int i = 0; i < entityList.Count; i++)
-                {
-                    entity = entityList[i];
-                    if (entity == null || !entity.IsSpawned() || entity.IsDead() || entity.IsMarkedForUnload())
-                    {
-                        continue;
-                    }
-                    if (entity is EntityZombie || entity is EntityEnemyAnimal)
-                    {
-                        if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
+                        cInfo = clientList[i];
+                        if (cInfo == null || !cInfo.loginDone || TeleportDetector.Omissions.Contains(cInfo.entityId))
                         {
-                            entity.MarkToUnload();
+                            continue;
                         }
-                        else if (Market.IsEnabled && Market.IsMarket(entity.position))
+                        player = GetEntityPlayer(cInfo.entityId);
+                        if (player == null || !player.IsSpawned() || player.IsDead() || player.position == null)
                         {
-                            entity.MarkToUnload();
+                            continue;
+                        }
+                        if (Zones.IsEnabled && Zones.ZoneList.Count > 0)
+                        {
+                            Zones.ZoneCheck(cInfo, player);
+                        }
+                        if (RegionReset.IsEnabled && RegionReset.Regions.Count > 0)
+                        {
+                            RegionReset.IsResetRegion(cInfo, player);
+                        }
+                        if (ChunkReset.IsEnabled && ChunkReset.Chunks.Count > 0)
+                        {
+                            ChunkReset.IsResetChunk(cInfo, player);
+                        }
+                        if (ProtectedZones.IsEnabled && ProtectedZones.ProtectedList.Count > 0)
+                        {
+                            ProtectedZones.InsideProtectedZone(cInfo, player);
                         }
                     }
-                }
-                Running = false;
+
+                    if (!IsBloodmoon())
+                    {
+                        entityList = GameManager.Instance.World.Entities.list;
+                        if (entityList == null || entityList.Count < 1)
+                        {
+                            Running = false;
+                            return;
+                        }
+                        for (int i = 0; i < entityList.Count; i++)
+                        {
+                            entity = entityList[i];
+                            if (entity == null || !entity.IsSpawned() || entity.IsDead() || entity.IsMarkedForUnload())
+                            {
+                                continue;
+                            }
+                            if (entity is EntityZombie || entity is EntityEnemyAnimal)
+                            {
+                                if (Lobby.IsEnabled && Lobby.IsLobby(entity.position))
+                                {
+                                    entity.MarkToUnload();
+                                }
+                                else if (Market.IsEnabled && Market.IsMarket(entity.position))
+                                {
+                                    entity.MarkToUnload();
+                                }
+                            }
+                        }
+                    }
+                    Running = false;
+                });
             }
         }
 
@@ -839,29 +784,6 @@ namespace ServerTools
             }
         }
 
-        public static bool ClaimedByNone(Vector3i _position)
-        {
-            chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_position);
-            if (chunk != null)
-            {
-                PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-                if (persistentPlayerList != null)
-                {
-                    int claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize);
-                    Dictionary<Vector3i, PersistentPlayerData> claims = persistentPlayerList.m_lpBlockMap;
-                    foreach (var claim in claims)
-                    {
-                        float distance = (claim.Key.ToVector3() - _position.ToVector3()).magnitude;
-                        if (distance <= claimSize / 2 && GameManager.Instance.World.IsLandProtectionValidForPlayer(claim.Value))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
         public static EnumLandClaimOwner ClaimedByWho(PlatformUserIdentifierAbs _uId, Vector3i _position)
         {
             PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
@@ -874,36 +796,6 @@ namespace ServerTools
                 }
             }
             return EnumLandClaimOwner.None;
-        }
-
-        public static bool ClaimedBySelfOrAlly(ClientInfo _cInfo, Vector3i _position)
-        {
-            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
-            if (persistentPlayerList != null)
-            {
-                int claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize);
-                Dictionary<Vector3i, PersistentPlayerData> claims = persistentPlayerList.m_lpBlockMap;
-                foreach (var claim in claims)
-                {
-                    float distance = (claim.Key.ToVector3() - _position.ToVector3()).magnitude;
-                    if (distance <= claimSize / 2 && GameManager.Instance.World.IsLandProtectionValidForPlayer(claim.Value))
-                    {
-                        if (claim.Value.EntityId == _cInfo.entityId)
-                        {
-                            return true;
-                        }
-                        else if (claim.Value.ACL.Contains(_cInfo.PlatformId) || claim.Value.ACL.Contains(_cInfo.CrossplatformId))
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return false;
         }
 
         public static void ReturnBlock(ClientInfo _cInfo, string _blockName, int _quantity, string _phrase)
@@ -1053,36 +945,69 @@ namespace ServerTools
 
         public static void JailPlayer(ClientInfo _cInfoKiller)
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfoKiller.CrossplatformId.CombinedString), null);
             Phrases.Dict.TryGetValue("Jail1", out string phrase);
             phrase = phrase.Replace("{PlayerName}", _cInfoKiller.playerName);
             ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("st-Jail add {0} 120", _cInfoKiller.CrossplatformId.CombinedString), null);
         }
 
-        public static void KillPlayer(ClientInfo _cInfo)
+        public static void KillPlayer(ClientInfo _cInfo, int _toolNumber)
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
-            Phrases.Dict.TryGetValue("Zones4", out string phrase);
-            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
+            {
+                string phrase = "";
+                if (_toolNumber == 1)
+                {
+                    Phrases.Dict.TryGetValue("Lobby14", out phrase);
+                }
+                else if (_toolNumber == 2)
+                {
+                    Phrases.Dict.TryGetValue("Market14", out phrase);
+                }
+                ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.CrossplatformId.CombinedString), null);
+            }, null);
         }
 
-        public static void KickPlayer(ClientInfo _cInfo)
+        public static void KickPlayer(ClientInfo _cInfo, string _reason)
         {
-            Phrases.Dict.TryGetValue("Zones6", out string phrase);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-            Phrases.Dict.TryGetValue("Zones5", out phrase);
-            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
+            {
+                GameUtils.KickPlayerForClientInfo(_cInfo, new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), _reason));
+            }, null);
         }
 
-        public static void BanPlayer(ClientInfo _cInfo)
+        public static void BanPlayer(ClientInfo _cInfo, string _reason)
         {
-            Phrases.Dict.TryGetValue("Zones8", out string phrase);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.CrossplatformId.CombinedString, phrase), null);
-            Phrases.Dict.TryGetValue("Zones7", out phrase);
-            phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
+            ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
+            {
+                if (_cInfo != null)
+                {
+                    DateTime time = DateTime.Now.AddYears(5);
+                    string name = _cInfo.playerName;
+                    if (_cInfo.PlatformId != null)
+                    {
+                        GameManager.Instance.adminTools.Blacklist.AddBan(name, _cInfo.PlatformId, time, _reason);
+                        SdtdConsole.Instance.Output("{0} banned until {1}, reason: {2}.", _cInfo.PlatformId, time.ToCultureInvariantString(), _reason);
+
+                        if (_cInfo.PlatformId is UserIdentifierSteam)
+                        {
+                            UserIdentifierSteam steamIdentifier = _cInfo.PlatformId as UserIdentifierSteam;
+                            if (steamIdentifier != null && !steamIdentifier.OwnerId.Equals(steamIdentifier))
+                            {
+                                GameManager.Instance.adminTools.Blacklist.AddBan(name, steamIdentifier.OwnerId, time, _reason);
+                                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Steam Family Sharing license owner {0} banned until {1}, reason: {2}.", steamIdentifier.OwnerId, time.ToCultureInvariantString(), _reason);
+                            }
+                        }
+                    }
+                    if (_cInfo.CrossplatformId != null)
+                    {
+                        GameManager.Instance.adminTools.Blacklist.AddBan(name, _cInfo.CrossplatformId, time, _reason);
+                        SdtdConsole.Instance.Output("{0} banned until {1}, reason: {2}.", _cInfo.CrossplatformId, time.ToCultureInvariantString(), _reason);
+                    }
+                    GameUtils.KickPlayerForClientInfo(_cInfo, new GameUtils.KickPlayerData(GameUtils.EKickReason.Banned, 0, time, _reason));
+                }
+            }, null);
         }
 
         public static void CommandsList(ClientInfo _cInfo)
@@ -1123,15 +1048,15 @@ namespace ServerTools
                 }
                 if (AnimalTracking.IsEnabled)
                 {
-                    if (AnimalTracking.Command_trackanimal != "")
+                    if (AnimalTracking.Command_animal != "")
                     {
-                        if (CommandList.Dict.TryGetValue(AnimalTracking.Command_trackanimal, out string[] values))
+                        if (CommandList.Dict.TryGetValue(AnimalTracking.Command_animal, out string[] values))
                         {
                             if (bool.TryParse(values[1], out bool hidden))
                             {
                                 if (!hidden)
                                 {
-                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_trackanimal);
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, AnimalTracking.Command_animal);
                                 }
                             }
                         }
@@ -1842,54 +1767,54 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Homes.Command_save != "")
+                    if (Homes.Command_home_save != "")
                     {
-                        if (CommandList.Dict.TryGetValue(Homes.Command_save, out string[] values))
+                        if (CommandList.Dict.TryGetValue(Homes.Command_home_save, out string[] values))
                         {
                             if (bool.TryParse(values[1], out bool hidden))
                             {
                                 if (!hidden)
                                 {
-                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_save);
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_home_save);
                                 }
                             }
                         }
                     }
-                    if (Homes.Command_delete != "")
+                    if (Homes.Command_home_delete != "")
                     {
-                        if (CommandList.Dict.TryGetValue(Homes.Command_delete, out string[] values))
+                        if (CommandList.Dict.TryGetValue(Homes.Command_home_delete, out string[] values))
                         {
                             if (bool.TryParse(values[1], out bool hidden))
                             {
                                 if (!hidden)
                                 {
-                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_delete);
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_home_delete);
                                 }
                             }
                         }
                     }
-                    if (Homes.Command_go != "" && Homes.Invite.ContainsKey(_cInfo.entityId))
+                    if (Homes.Command_go_home != "" && Homes.Invite.ContainsKey(_cInfo.entityId))
                     {
-                        if (CommandList.Dict.TryGetValue(Homes.Command_go, out string[] values))
+                        if (CommandList.Dict.TryGetValue(Homes.Command_go_home, out string[] values))
                         {
                             if (bool.TryParse(values[1], out bool hidden))
                             {
                                 if (!hidden)
                                 {
-                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_go);
+                                    commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_go_home);
                                 }
                             }
                         }
                     }
-                    if (Homes.Command_set != "")
+                    if (Homes.Command_sethome != "")
                     {
-                        if (CommandList.Dict.TryGetValue(Homes.Command_set, out string[] values))
+                        if (CommandList.Dict.TryGetValue(Homes.Command_sethome, out string[] values))
                         {
                             if (bool.TryParse(values[1], out bool hidden))
                             {
                                 if (!hidden)
                                 {
-                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_set);
+                                    commands = string.Format("{0} {1}{2} 'name'", commands, ChatHook.Chat_Command_Prefix1, Homes.Command_sethome);
                                 }
                             }
                         }
@@ -2501,6 +2426,19 @@ namespace ServerTools
                         }
                     }
                 }
+                if (Harvest.IsEnabled)
+                {
+                    if (CommandList.Dict.TryGetValue(Harvest.Command_harvest, out string[] values))
+                    {
+                        if (bool.TryParse(values[1], out bool hidden))
+                        {
+                            if (!hidden)
+                            {
+                                commands = string.Format("{0} {1}{2}", commands, ChatHook.Chat_Command_Prefix1, Harvest.Command_harvest);
+                            }
+                        }
+                    }
+                }
                 if (commands.Length > 100)
                 {
                     for (int i = 0; i < 10; i += 100)
@@ -2546,16 +2484,6 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.AdminCommandList: {0}", e.Message));
             }
-        }
-
-        public static void SetWindowLinks()
-        {
-            WebAPI.LinksRequireUpdate = false;
-            Auction.SetLink();
-            InteractiveMap.SetLink();
-            RIO.SetLink();
-            Shop.SetLink();
-            Log.Out(string.Format("[SERVERTOOLS] Links for Auction, Interactive_Map, RIO and Shop have been synced with the Web_API"));
         }
 
         public static void Overlay(ClientInfo _cInfo)
@@ -2631,11 +2559,6 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in GeneralFunctions.LogAction: {0}", e.Message));
             }
-        }
-
-        public static void KickPlayer(ClientInfo _cInfo, string _reason)
-        {
-            GameUtils.KickPlayerForClientInfo(_cInfo, new GameUtils.KickPlayerData(GameUtils.EKickReason.ManualKick, 0, default(DateTime), _reason));
         }
     }
 }

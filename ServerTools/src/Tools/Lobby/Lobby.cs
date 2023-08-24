@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class Lobby
     {
-        public static bool IsEnabled = false, Return = false, Reserved_Only = false, PvE = true, Damage_Z = true, Bloodmoon = false,
+        public static bool IsEnabled = false, Return = false, Reserved_Only = false, PvE = true, Bloodmoon = false,
             Player_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0, Player_Killing_Mode = 0;
         public static string Lobby_Position = "0,0,0", Command_lobbyback = "lobbyback", Command_lback = "lback", 
@@ -117,7 +117,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && Wallet.IsEnabled)
+                if (Command_Cost > 0)
                 {
                     CommandCost(_cInfo);
                 }
@@ -140,17 +140,34 @@ namespace ServerTools
 
         private static void CommandCost(ClientInfo _cInfo)
         {
-            int currency = 0;
+            int currency = 0, bankCurrency = 0, cost = Command_Cost;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
             if (Bank.IsEnabled && Bank.Direct_Payment)
             {
-                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
             }
-            if (currency >= Command_Cost)
+            if (currency + bankCurrency >= cost)
             {
+                if (currency > 0)
+                {
+                    if (currency < cost)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                        cost -= currency;
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                    else
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                }
+                else
+                {
+                    Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                }
                 LobbyTele(_cInfo);
             }
             else
@@ -213,10 +230,6 @@ namespace ServerTools
                                     TeleportDetector.Omissions.Add(_cInfo.entityId);
                                 }
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(i, j, k), null, false));
-                                if (Command_Cost >= 1 && Wallet.IsEnabled)
-                                {
-                                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                                }
                                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastLobby = DateTime.Now;
                                 PersistentContainer.DataChange = true;
                             }
@@ -273,45 +286,65 @@ namespace ServerTools
             return false;
         }
 
-        public static bool PvEViolation(ClientInfo _cInfo2)
+        public static void PvEViolation(ClientInfo _cInfo)
         {
             try
             {
-                Phrases.Dict.TryGetValue("Lobby11", out string phrase);
-                ChatHook.ChatMessage(_cInfo2, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                if (GeneralOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
+                if (GeneralOperations.PvEViolations.ContainsKey(_cInfo.entityId))
                 {
-                    GeneralOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
-                    _violations++;
-                    GeneralOperations.PvEViolations[_cInfo2.entityId] = _violations;
-                    if (GeneralOperations.Jail_Violation > 0 && _violations == GeneralOperations.Jail_Violation)
+                    GeneralOperations.PvEViolations.TryGetValue(_cInfo.entityId, out int _violations);
+                    GeneralOperations.PvEViolations[_cInfo.entityId] += 1;
+                    if (TooManyViolations(_cInfo, _violations + 1))
                     {
-                        GeneralOperations.JailPlayer(_cInfo2);
-                    }
-                    if (GeneralOperations.Kill_Violation > 0 && _violations == GeneralOperations.Kill_Violation)
-                    {
-                        GeneralOperations.KillPlayer(_cInfo2);
-                    }
-                    if (GeneralOperations.Kick_Violation > 0 && _violations == GeneralOperations.Kick_Violation)
-                    {
-                        GeneralOperations.KickPlayer(_cInfo2);
-                    }
-                    else if (GeneralOperations.Ban_Violation > 0 && _violations == GeneralOperations.Ban_Violation)
-                    {
-                        GeneralOperations.BanPlayer(_cInfo2);
+                        return;
                     }
                 }
                 else
                 {
-                    GeneralOperations.PvEViolations.Add(_cInfo2.entityId, 1);
+                    GeneralOperations.PvEViolations.Add(_cInfo.entityId, 1);
+                    if (TooManyViolations(_cInfo, 1))
+                    {
+                        return;
+                    }
                 }
-                return false;
+                Phrases.Dict.TryGetValue("Lobby11", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Lobby.PvEViolation: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Lobby.PvEViolation: {0}", e.Message);
             }
-            return true;
+        }
+
+        public static bool TooManyViolations(ClientInfo _cInfo, int _violations)
+        {
+            if (GeneralOperations.Jail_Violation > 0 && _violations == GeneralOperations.Jail_Violation)
+            {
+                GeneralOperations.PvEViolations.Remove(_cInfo.entityId);
+                GeneralOperations.JailPlayer(_cInfo);
+                return true;
+            }
+            if (GeneralOperations.Kill_Violation > 0 && _violations == GeneralOperations.Kill_Violation)
+            {
+                GeneralOperations.PvEViolations.Remove(_cInfo.entityId);
+                GeneralOperations.KillPlayer(_cInfo, 1);
+                return true;
+            }
+            if (GeneralOperations.Kick_Violation > 0 && _violations == GeneralOperations.Kick_Violation)
+            {
+                GeneralOperations.PvEViolations.Remove(_cInfo.entityId);
+                Phrases.Dict.TryGetValue("Lobby15", out string phrase);
+                GeneralOperations.KickPlayer(_cInfo, phrase);
+                return true;
+            }
+            else if (GeneralOperations.Ban_Violation > 0 && _violations == GeneralOperations.Ban_Violation)
+            {
+                GeneralOperations.PvEViolations.Remove(_cInfo.entityId);
+
+                GeneralOperations.BanPlayer(_cInfo, "");
+                return true;
+            }
+            return false;
         }
     }
 }

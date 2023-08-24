@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -237,7 +238,7 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Command_Cost >= 1 && Wallet.IsEnabled)
+                        if (Command_Cost >= 1 && (Wallet.IsEnabled || (Bank.IsEnabled && Bank.Direct_Payment)))
                         {
                             CommandCost(_cInfo);
                         }
@@ -302,7 +303,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
+                    if (Command_Cost >= 1)
                     {
                         CommandCost(_cInfo);
                     }
@@ -332,17 +333,34 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
+                int currency = 0, bankCurrency = 0, cost = Command_Cost;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
                 if (Bank.IsEnabled && Bank.Direct_Payment)
                 {
-                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 }
-                if (currency >= Command_Cost)
+                if (currency + bankCurrency >= cost)
                 {
+                    if (currency > 0)
+                    {
+                        if (currency < cost)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                            cost -= currency;
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                    }
+                    else
+                    {
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
                     ZCheck(_cInfo);
                 }
                 else
@@ -398,64 +416,69 @@ namespace ServerTools
                     int.TryParse(item[4], out int maxQuality);
                     int count = new System.Random().Next(minCount, maxCount + 1);
                     int quality = new System.Random().Next(minQuality, maxQuality + 1);
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type);
-                    itemValue.Quality = 0;
-                    itemValue.Modifications = new ItemValue[0];
-                    itemValue.CosmeticMods = new ItemValue[0];
-                    int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                    if (modSlots > 0)
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, false, null);
+                    if (itemValue == null)
                     {
-                        itemValue.Modifications = new ItemValue[modSlots];
+                        return;
                     }
-                    itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
-                    if (itemValue.HasQuality)
+                    ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
                     {
-                        if (quality > 0)
-                        {
-                            itemValue.Quality = quality;
-                        }
-                        else
-                        {
-                            itemValue.Quality = 1;
-                        }
-                    }
-                    World world = GameManager.Instance.World;
-                    EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                    {
-                        entityClass = EntityClass.FromString("item"),
-                        id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(itemValue, count),
-                        pos = world.Players.dict[_cInfo.entityId].position,
-                        rot = new Vector3(20f, 0f, 20f),
-                        lifetime = 60f,
-                        belongsPlayerId = _cInfo.entityId
-                    });
-                    world.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
-                    PersistentContainer.DataChange = true;
-                    Phrases.Dict.TryGetValue("Gimme2", out string _phrase);
-                    _phrase = _phrase.Replace("{ItemCount}", count.ToString());
-                    if (item[0] != "")
-                    {
-                        _phrase = _phrase.Replace("{ItemName}", item[0]);
-                    }
-                    else
-                    {
-                        _phrase = _phrase.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
-                    }
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        ThreadManager.StartCoroutine(SpawnItem(_cInfo, itemValue, count, item[0], GameManager.Instance.World));
+                    }, null);
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in Gimme.RandomItem: {0}", e.Message));
             }
+        }
+
+        private static IEnumerator SpawnItem(ClientInfo _cInfo, ItemValue _itemValue, int _itemCount, string _itemName, World _world)
+        {
+            try
+            {
+                if (_itemValue == null || _world == null)
+                {
+                    yield break;
+                }
+                EntityPlayer player;
+                EntityItem entityItem;
+                player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                if (player != null && player.IsSpawned() && !player.IsDead())
+                {
+                    entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    {
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = new ItemStack(_itemValue, _itemCount),
+                        pos = _world.Players.dict[_cInfo.entityId].position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    _world.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                    _world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
+                    PersistentContainer.DataChange = true;
+                    Phrases.Dict.TryGetValue("Gimme2", out string _phrase);
+                    _phrase = _phrase.Replace("{ItemCount}", _itemCount.ToString());
+                    if (_itemName != "")
+                    {
+                        _phrase = _phrase.Replace("{ItemName}", _itemName);
+                    }
+                    else
+                    {
+                        _phrase = _phrase.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                    }
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out("[SERVERTOOLS] Error in Gimme.SpawnItem: {0}", e.StackTrace);
+            }
+            yield break;
         }
 
         private static void RandomZombie(ClientInfo _cInfo)
@@ -473,10 +496,6 @@ namespace ServerTools
                         {
                             SdtdConsole.Instance.ExecuteSync(string.Format("st-SpawnEntityRadius {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Gimme tool spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
-                            if (Command_Cost >= 1 && Wallet.IsEnabled)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                            }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme4", out string phrase);
@@ -493,10 +512,6 @@ namespace ServerTools
                         {
                             SdtdConsole.Instance.ExecuteSync(string.Format("st-SpawnEntityRadius {0} r.15 {1}", _cInfo.CrossplatformId.CombinedString, _zombieId), null);
                             Log.Out(string.Format("[SERVERTOOLS] Gimme tool spawned an entity for id '{0}' '{1}' named '{2}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName));
-                            if (Command_Cost >= 1 && Wallet.IsEnabled)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                            }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastGimme = DateTime.Now;
                             PersistentContainer.DataChange = true;
                             Phrases.Dict.TryGetValue("Gimme4", out string _phrase);

@@ -15,8 +15,8 @@ namespace ServerTools
         public static Dictionary<Vector3i,int> DamagedBlockId = new Dictionary<Vector3i,int>();
         public static Dictionary<Vector3i, DateTime> BrokenBlockTime = new Dictionary<Vector3i, DateTime>();
 
-        private static readonly string DetectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static readonly string DetectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, DetectionFile);
+        public static readonly string DetectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        public static readonly string DetectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, DetectionFile);
 
         private static readonly string DamageFile = string.Format("DamageLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static readonly string DamageFilepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, DamageFile);
@@ -111,7 +111,7 @@ namespace ServerTools
             });
         }
 
-        public static void SetProtection()
+        public static void GetClaimProtectionLevel()
         {
             ClaimProtection = GamePrefs.GetInt(EnumGamePrefs.LandClaimOnlineDurabilityModifier);
         }

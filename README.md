@@ -1,6 +1,9 @@
 # 7dtd-ServerTools
 Server tools for 7 days to die dedicated servers<br>
 <br>
+Donations to the project can be made here. Donors and their information is private<br>
+https://www.paypal.me/ObsessiveCoder <br>
+<br>
 # Installation
 <br>
 Go to the releases tab and check for the latest ServerTools files for download. https://github.com/dmustanger/7dtd-ServerTools/releases <br>
@@ -92,6 +95,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Gamble](#gamble)
   - [Gimme](#gimme)
   - [Hardcore](#hardcore)
+  - [Harvest](#harvest)
   - [High_Ping_Kicker](#high_ping_kicker)
   - [Homes & Homes_Extended](#homes--homes_extended)
   - [Hordes](#hordes)
@@ -142,7 +146,7 @@ Once a module/tool is enabled, if it has an xml it will be generated and placed 
   - [Vehicle_Recall & Vehicle_Rcall_Extended](#vehicle_recall--vehicle_rcall_extended)
   - [Voting & Voting_Extended](#voting--voting_extended)
   - [Wall](#wall)
-  - [Wallet](#wallet)
+  - [Wallet](#wallet--wallet_extended)
   - [Watch_List](#watch_list)
   - [Waypoints & Waypoints_Extended](#waypoints--waypoints_extended)
   - [Web_API](#web_api)
@@ -1472,7 +1476,6 @@ Zombie_Id controls which zombie can potentially be spawned instead of an item.
 
 Command cost controls how much must be in a player's wallet to use the command.
 
-
 ## Hardcore
 ```xml
 <Tool Name="Hardcore" Enable="False" Optional="True" Max_Deaths="9" Max_Extra_Lives="3" Life_Price="2000" />
@@ -1502,6 +1505,27 @@ When a player is kicked, they are given their stats and score.
 When the player joins again, they can check their last stats/score or check the top 3 playtime and top 3 scores on the server.
 
 Set Max_Extra_Lives above 0 to allow players to buy lives and how many.
+
+## Harvest
+```xml
+<Tool Name="Harvest" Enable="False" Delay_Between_Uses="30" Command_Cost="50" />
+```
+
+### Attributes
+* __Enable__  
+Set True or False for Enable
+* __Delay_Between_Uses__  
+Set a numeric value for Delay_Between_Uses
+* __Command_Cost__  
+Set a numeric value for Command_Cost
+
+### Description
+Players can harvest near by plants.
+
+Typing /harvest will attempt to harvest plants in a 5 x 5 square surrounding the player's location.
+
+Command_Cost controls how much they must pay in currency to use the command.
+
 
 ## High_Ping_Kicker
 ```xml

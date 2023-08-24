@@ -9,6 +9,7 @@ namespace ServerTools
     class InfiniteAmmo
     {
         public static bool IsEnabled = false;
+        public static int Admin_Level = 0;
 
         public static Dictionary<int, int[]> Dict = new Dictionary<int, int[]>();
 

@@ -36,21 +36,37 @@ namespace ServerTools
 
         public static void EnterLottery(ClientInfo _cInfo)
         {
-            int currency = 0;
+            int currency = 0, bankCurrency = 0, cost = Entry_Cost;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
             if (Bank.IsEnabled && Bank.Direct_Payment)
             {
-                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
             }
-            if (currency >= Entry_Cost)
+            if (currency + bankCurrency >= cost)
             {
+                if (currency > 0)
+                {
+                    if (currency < cost)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                        cost -= currency;
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                    else
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                }
+                else
+                {
+                    Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                }
                 int newTicket = NewTicket();
                 if (newTicket < 1000)
                 {
-                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Entry_Cost);
                     Entries.Add(newTicket, _cInfo.CrossplatformId.CombinedString);
                     if (Entries.Count == 1)
                     {

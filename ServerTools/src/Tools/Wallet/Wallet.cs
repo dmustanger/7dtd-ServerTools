@@ -30,8 +30,8 @@ namespace ServerTools
                     {
                         sw.WriteLine("<configs>");
                         sw.WriteLine();
-                        sw.WriteLine(string.Format("<set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", _item));
-                        sw.WriteLine("<!-- ..... Wallet and Bank currency ^ ..... -->");
+                        sw.WriteLine("  <set xpath=\"/items/item[@name='{0}']/property[@name='Tags']/@value\">dukes,currency</set>", Item_Name);
+                        sw.WriteLine("  <!-- ..... Wallet and Bank currency ^ ..... -->");
                         sw.WriteLine();
                         sw.WriteLine("</configs>");
                         sw.Flush();

@@ -32,15 +32,15 @@ public static class Injections
         return true;
     }
 
-    public static void NetPackageSetBlock_ProcessPackage_Prefix(GameManager _callbacks, List<BlockChangeInfo> ___blockChanges, int ___localPlayerThatChanged)
+    public static void NetPackageSetBlock_ProcessPackage_Prefix(GameManager _callbacks, ref List<BlockChangeInfo> ___blockChanges, int ___localPlayerThatChanged)
     {
         try
         {
-            BlockChange.ProcessBlockChange(_callbacks, ___blockChanges, ___localPlayerThatChanged);
+            BlockChange.ProcessBlockChange(_callbacks, ref ___blockChanges, ___localPlayerThatChanged);
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.NetPackageSetBlock_ProcessPackage_Prefix: {0}", e.Message));
+            Log.Out("[SERVERTOOLS] Error in Injections.NetPackageSetBlock_ProcessPackage_Prefix: {0}", e.Message);
         }
     }
 
@@ -52,7 +52,7 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ServerConsoleCommand_Postfix: {0}", e.Message));
+            Log.Out("[SERVERTOOLS] Error in Injections.ServerConsoleCommand_Postfix: {0}", e.Message);
         }
     }
 
@@ -167,10 +167,11 @@ public static class Injections
         return true;
     }
 
-    public static bool GameManager_ExplosionServer_Prefix(int _entityId)
+    public static bool GameManager_ExplosionServer_Prefix(int _entityId, Vector3i _blockPos)
     {
         Entity entity = GeneralOperations.GetEntity(_entityId);
-        if ((entity == null || !entity.IsSpawned()) && _entityId != -1)
+        if ((entity == null || _blockPos == null || !entity.IsSpawned()) && _entityId != -1 || 
+            ProtectedZones.IsEnabled && ProtectedZones.ProtectedList.Count > 0 && ProtectedZones.IsProtected(_blockPos))
         {
             return false;
         }
@@ -227,7 +228,7 @@ public static class Injections
                         if (entityPlayer != null)
                         {
                             EnumLandClaimOwner owner = GeneralOperations.ClaimedByWho(cInfo.CrossplatformId, new Vector3i(entityPlayer.position));
-                            if (owner != EnumLandClaimOwner.Self && owner != EnumLandClaimOwner.Ally && !GeneralOperations.ClaimedByNone(new Vector3i(entityPlayer.position)))
+                            if (owner != EnumLandClaimOwner.Self && owner != EnumLandClaimOwner.Ally && owner != EnumLandClaimOwner.None)
                             {
                                 Phrases.Dict.TryGetValue("WorkstationLock1", out string phrase);
                                 ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
@@ -352,7 +353,7 @@ public static class Injections
 
     public static void EntityAlive_OnAddedToWorld_Postfix(EntityAlive __instance)
     {
-        if (BigHead.IsEnabled && __instance is EntityZombie && !__instance.IsSleeper)
+        if (BigHead.IsEnabled && __instance is EntityZombie && !__instance.IsSleeper && __instance.EntityClass.CanBigHead)
         {
             __instance.SetBigHead();
         }
@@ -522,7 +523,7 @@ public static class Injections
     {
         try
         {
-            if (_tileEntity != null && _tileEntity is TileEntityLootContainer && _tileEntity.bPlayerStorage &&
+            if (Vault.IsEnabled && _tileEntity != null && _tileEntity is TileEntityLootContainer && _tileEntity.bPlayerStorage &&
                 _tileEntity.blockValue.Block != null && _tileEntity.blockValue.Block.GetBlockName() == "VaultBox")
             {
                 return Vault.Exec(_entityIdThatOpenedIt, ref _tileEntity);
@@ -535,24 +536,18 @@ public static class Injections
         return true;
     }
 
-    public static void NetPackageTileEntity_ProcessPackage_Postfix(NetPackageTileEntity __instance, World _world, int ___clrIdx, Vector3i ___teWorldPos, byte ___handle)
+    public static void NetPackageTileEntity_Setup_Postfix(NetPackageTileEntity __instance, TileEntity _te, byte _handle)
     {
         try
         {
-            if (!Vault.IsEnabled && __instance == null || ___teWorldPos == null)
+            if (__instance == null || _te == null)
             {
                 return;
             }
-            TileEntity tileEntity = _world.GetTileEntity(___clrIdx, ___teWorldPos);
-            if (tileEntity == null)
+            if (Vault.IsEnabled && _te is TileEntitySecureLootContainerSigned)
             {
-                return;
-            }
-            if (tileEntity is TileEntityLootContainer)
-            {
-                TileEntityLootContainer lootContainer = tileEntity as TileEntityLootContainer;
-                if (lootContainer != null && lootContainer.bPlayerStorage && lootContainer.blockValue.Block != null &&
-                    lootContainer.blockValue.Block.GetBlockName() == "VaultBox" && ___handle != 255)
+                TileEntitySecureLootContainerSigned lootContainer = _te as TileEntitySecureLootContainerSigned;
+                if (lootContainer != null && lootContainer.GetText().ToLower() == "vault" && _handle != 255)
                 {
                     Vault.UpdateData(lootContainer);
                 }
@@ -560,7 +555,7 @@ public static class Injections
         }
         catch (Exception e)
         {
-            Log.Out("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_ProcessPackage_Postfix: {0}", e.Message);
+            Log.Out("[SERVERTOOLS] Error in Injections.NetPackageTileEntity_Setup_Postfix: {0}", e.Message);
         }
     }
 

@@ -10,9 +10,14 @@ namespace ServerTools
     class ProtectedZones
     {
         public static bool IsEnabled = false, IsRunning = false;
+        public static int Admin_Level = 0;
 
         public static List<int[]> ProtectedList = new List<int[]>();
-        public static Dictionary<int, int[]> Vectors = new Dictionary<int, int[]>();
+        public static List<int> Players = new List<int>();
+
+        private static Vector3 playerPosition;
+        private static int[] protectedZoneOne = new int[5];
+        private static int[] protectedZoneTwo = new int[5];
 
         private const string file = "ProtectedZones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -51,12 +56,9 @@ namespace ServerTools
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
                 ProtectedList.Clear();
-                if (childNodes != null && (childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version)))
+                if (childNodes != null && childNodes[0] != null && childNodes[0].OuterXml.Contains("Version") && childNodes[0].OuterXml.Contains(Config.Version))
                 {
                     List<int[]> oldProtections = ProtectedList;
-                    string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
-                    RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
-                    List<Chunk> chunks = new List<Chunk>();
                     for (int i = 0; i < childNodes.Count; i++)
                     {
                         if (childNodes[i].NodeType == XmlNodeType.Comment)
@@ -96,159 +98,16 @@ namespace ServerTools
                         int.TryParse(corner2Split[0], out int corner2_x);
                         int.TryParse(corner2Split[1], out int corner2_z);
                         int[] vectors = new int[5];
-                        vectors[0] = (corner1_x <= corner2_x) ? corner1_x : corner2_x;
-                        vectors[1] = (corner1_z <= corner2_z) ? corner1_z : corner2_z;
-                        vectors[2] = (corner1_x <= corner2_x) ? corner2_x : corner1_x;
-                        vectors[3] = (corner1_z <= corner2_z) ? corner2_z : corner1_z;
+                        vectors[0] = ((corner1_x <= corner2_x) ? corner1_x : corner2_x) - 2;
+                        vectors[1] = ((corner1_z <= corner2_z) ? corner1_z : corner2_z) - 2;
+                        vectors[2] = ((corner1_x <= corner2_x) ? corner2_x : corner1_x) +2;
+                        vectors[3] = ((corner1_z <= corner2_z) ? corner2_z : corner1_z) +2;
                         vectors[4] = 1;
                         if (!ProtectedList.Contains(vectors))
                         {
                             ProtectedList.Add(vectors);
-                            for (int j = vectors[0]; j <= vectors[2]; j++)
-                            {
-                                for (int k = vectors[1]; k <= vectors[3]; k++)
-                                {
-                                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                    if (chunk != null)
-                                    {
-                                        Bounds bounds = chunk.GetAABB();
-                                        int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
-                                        if (active)
-                                        {
-                                            if (chunk.IsTraderArea(x, z))
-                                            {
-                                                continue;
-                                            }
-                                            chunk.SetTraderArea(x, z, true);
-                                            if (!chunks.Contains(chunk))
-                                            {
-                                                chunks.Add(chunk);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (!chunk.IsTraderArea(x, z))
-                                            {
-                                                continue;
-                                            }
-                                            chunk.SetTraderArea(x, z, false);
-                                            if (!chunks.Contains(chunk))
-                                            {
-                                                chunks.Add(chunk);
-                                            }
-                                        }
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        int num = World.toChunkXZ(j);
-                                        int num2 = World.toChunkXZ(k);
-                                        long key = WorldChunkCache.MakeChunkKey(num, num2);
-                                        if (regionFileManager.ContainsChunkSync(key))
-                                        {
-                                            chunk = regionFileManager.GetChunkSync(key);
-                                            if (chunk == null)
-                                            {
-                                                continue;
-                                            }
-                                            Bounds bounds = chunk.GetAABB();
-                                            int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
-                                            if (active)
-                                            {
-                                                if (!chunk.IsTraderArea(x, z))
-                                                {
-                                                    chunk.SetTraderArea(x, z, true);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (chunk.IsTraderArea(x, z))
-                                                {
-                                                    chunk.SetTraderArea(x, z, false);
-                                                }
-                                            }
-                                            GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
-                                        }
-                                        continue;
-                                    }
-                                }
-                            }
                         }
                     }
-                    for (int i = 0; i < oldProtections.Count; i++)
-                    {
-                        if (ProtectedList.Contains(oldProtections[i]))
-                        {
-                            continue;
-                        }
-                        for (int j = oldProtections[i][0]; j <= oldProtections[i][2]; j++)
-                        {
-                            for (int k = oldProtections[i][1]; k <= oldProtections[i][3]; k++)
-                            {
-                                Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                if (chunk != null)
-                                {
-                                    Bounds bounds = chunk.GetAABB();
-                                    int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
-                                    if (!chunk.IsTraderArea(x, z))
-                                    {
-                                        continue;
-                                    }
-                                    chunk.SetTraderArea(x, z, false);
-                                    if (!chunks.Contains(chunk))
-                                    {
-                                        chunks.Add(chunk);
-                                    }
-                                    continue;
-                                }
-                                else
-                                {
-                                    int num = World.toChunkXZ(j);
-                                    int num2 = World.toChunkXZ(k);
-                                    long key = WorldChunkCache.MakeChunkKey(num, num2);
-                                    if (regionFileManager.ContainsChunkSync(key))
-                                    {
-                                        chunk = regionFileManager.GetChunkSync(key);
-                                        if (chunk == null)
-                                        {
-                                            continue;
-                                        }
-                                        Bounds bounds = chunk.GetAABB();
-                                        int x = j - (int)bounds.min.x, z = k - (int)bounds.min.z;
-                                        if (chunk.IsTraderArea(x, z))
-                                        {
-                                            chunk.SetTraderArea(x, z, false);
-                                            GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
-                                        }
-                                    }
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                    if (chunks.Count > 0)
-                    {
-                        List<ClientInfo> clientList = GeneralOperations.ClientList();
-                        if (clientList == null || clientList.Count < 1)
-                        {
-                            for (int i = 0; i < clientList.Count; i++)
-                            {
-                                ClientInfo cInfo = clientList[i];
-                                if (cInfo == null)
-                                {
-                                    continue;
-                                }
-                                for (int j = 0; j < chunks.Count; j++)
-                                {
-                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
-                                }
-                            }
-                        }
-                    }
-                    GameManager.Instance.World.ChunkCache.Save();
-                    regionFileManager.MakePersistent(GameManager.Instance.World.ChunkCache, true);
-                    regionFileManager.WaitSaveDone();
-                    regionFileManager.Cleanup();
                 }
                 else
                 {
@@ -281,7 +140,6 @@ namespace ServerTools
         public static void UpdateXml()
         {
             FileWatcher.EnableRaisingEvents = false;
-            File.Delete(FilePath);
             using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
             {
                 sw.WriteLine("<Protected>");
@@ -327,116 +185,103 @@ namespace ServerTools
             LoadXml();
         }
 
+        public static bool IsProtected(Vector3i _position)
+        {
+            for (int i = 0; i < ProtectedList.Count; i++)
+            {
+                protectedZoneOne = ProtectedList[i];
+                if (_position.x >= protectedZoneOne[0] && _position.x <= protectedZoneOne[2] && _position.z >= protectedZoneOne[1] && _position.z <= protectedZoneOne[3])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static void InsideProtectedZone(ClientInfo _cInfo, EntityPlayer _player)
+        {
+            playerPosition = _player.serverPos.ToVector3() / 32;
+            for (int i = 0; i < ProtectedList.Count; i++)
+            {
+                protectedZoneTwo = ProtectedList[i];
+                if (playerPosition.x >= protectedZoneTwo[0] && playerPosition.x <= protectedZoneTwo[2] && playerPosition.z >= protectedZoneTwo[1] && playerPosition.z <= protectedZoneTwo[3])
+                {
+                    if (!Players.Contains(_cInfo.entityId))
+                    {
+                        Players.Add(_cInfo.entityId);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} block_protection", _cInfo.CrossplatformId.CombinedString), null);
+                    }
+                    return;
+                }
+            }
+            if (Players.Contains(_cInfo.entityId))
+            {
+                Players.Remove(_cInfo.entityId);
+                SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} block_protection", _cInfo.CrossplatformId.CombinedString), null);
+            }
+        }
+
         public static void ClearSingleChunkProtection(ClientInfo _cInfo)
         {
-            try
+            ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
             {
-                List<Chunk> chunkList = new List<Chunk>();
-                EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
+                try
                 {
-                    Vector3 position = player.position;
-                    int x = (int)position.x, z = (int)position.z;
-                    if (GameManager.Instance.World.IsChunkAreaLoaded(x, 1, z))
+                    EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                    if (player != null)
                     {
-                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
-                        if (!chunkList.Contains(chunk))
-                        {
-                            chunkList.Add(chunk);
-                        }
+                        Vector3 position = player.serverPos.ToVector3() / 32;
+                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)position.x, 1, (int)position.z);
                         Bounds bounds = chunk.GetAABB();
                         for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
                         {
                             for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
                             {
-                                x = i - (int)bounds.min.x;
-                                z = j - (int)bounds.min.z;
-                                chunk.SetTraderArea(x, z, false);
-                            }
-                        }
-                    }
-                }
-                if (chunkList.Count > 0)
-                {
-                    for (int k = 0; k < chunkList.Count; k++)
-                    {
-                        Chunk chunk = chunkList[k];
-                        List<ClientInfo> clientList = GeneralOperations.ClientList();
-                        if (clientList != null)
-                        {
-                            for (int l = 0; l < clientList.Count; l++)
-                            {
-                                ClientInfo cInfo2 = clientList[l];
-                                if (cInfo2 != null)
+                                for (int k = 0; k < ProtectedList.Count; k++)
                                 {
-                                    cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunk, true));
+                                    if (i >= ProtectedList[k][0] && i <= ProtectedList[k][2] && j >= ProtectedList[k][1] && j <= ProtectedList[k][3])
+                                    {
+                                        ProtectedList.Remove(ProtectedList[k]);
+                                        Log.Out("[SERVERTOOLS] Removed protection of a zone via console command for '{0}' named '{1}' @ '{2}'", _cInfo.playerName, _cInfo.CrossplatformId.CombinedString, position);
+                                        return;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZones.ClearChunkProtection: {0}", e.Message));
-            }
+                catch (Exception e)
+                {
+                    Log.Out("[SERVERTOOLS] Error in ProtectedZones.ClearSingleChunkProtection: {0}", e.Message);
+                }
+            });
         }
 
-        public static void ClearNineChunkProtection(ClientInfo _cInfo)
+        public static void ClearSurroundingChunkProtection(ClientInfo _cInfo)
         {
             try
             {
-                List<Chunk> chunkList = new List<Chunk>();
-                List<int[]> positionList = new List<int[]>();
                 EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-                if (player != null)
+                if (player != null && ProtectedList.Count > 0)
                 {
-                    positionList.Add(new int[] { (int)player.position.x, (int)player.position.z });
-                    positionList.Add(new int[] { (int)player.position.x + 16, (int)player.position.z });
-                    positionList.Add(new int[] { (int)player.position.x + 16, (int)player.position.z - 16 });
-                    positionList.Add(new int[] { (int)player.position.x, (int)player.position.z - 16 });
-                    positionList.Add(new int[] { (int)player.position.x - 16, (int)player.position.z - 16 });
-                    positionList.Add(new int[] { (int)player.position.x - 16, (int)player.position.z });
-                    positionList.Add(new int[] { (int)player.position.x - 16, (int)player.position.z + 16 });
-                    positionList.Add(new int[] { (int)player.position.x, (int)player.position.z + 16 });
-                    positionList.Add(new int[] { (int)player.position.x + 16, (int)player.position.z + 16 });
-                    for (int i = 0; i < positionList.Count; i++)
+                    int[][] zones = ProtectedList.ToArray();
+                    Vector3i position = new Vector3i(player.serverPos.ToVector3() / 32f);
+                    List<Chunk> chunkList = GeneralOperations.GetSurroundingChunks(position);
+                    Bounds bounds;
+                    for (int i = 0; i < chunkList.Count; i++)
                     {
-                        int x = positionList[i][0], z = positionList[i][1];
-                        if (GameManager.Instance.World.IsChunkAreaLoaded(x, 1, z))
+                        bounds = chunkList[i].GetAABB();
+                        for (int j = (int)bounds.min.x; j < (int)bounds.max.x; j++)
                         {
-                            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(x, 1, z);
-                            if (!chunkList.Contains(chunk))
+                            for (int k = (int)bounds.min.z; k < (int)bounds.max.z; k++)
                             {
-                                chunkList.Add(chunk);
-                            }
-                            Bounds bounds = chunk.GetAABB();
-                            for (int j = (int)bounds.min.x; j < (int)bounds.max.x; j++)
-                            {
-                                for (int k = (int)bounds.min.z; k < (int)bounds.max.z; k++)
+                                for (int l = 0; l < zones.Length; l++)
                                 {
-                                    x = j - (int)bounds.min.x;
-                                    z = k - (int)bounds.min.z;
-                                    chunk.SetTraderArea(x, z, false);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (chunkList.Count > 0)
-                {
-                    for (int k = 0; k < chunkList.Count; k++)
-                    {
-                        Chunk chunk = chunkList[k];
-                        List<ClientInfo> clientList = GeneralOperations.ClientList();
-                        if (clientList != null)
-                        {
-                            for (int l = 0; l < clientList.Count; l++)
-                            {
-                                ClientInfo cInfo2 = clientList[l];
-                                if (cInfo2 != null)
-                                {
-                                    cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunk, true));
+                                    if (ProtectedList.Contains(zones[l]) && i >= zones[l][0] && i <= zones[l][2] && j >= zones[l][1] && j <= zones[l][3])
+                                    {
+                                        ProtectedList.Remove(zones[l]);
+                                        Log.Out("[SERVERTOOLS] Removed protection of a zone via console command for '{0}' named '{1}' @ '{2}'", _cInfo.playerName, _cInfo.CrossplatformId.CombinedString, position);
+                                    }
                                 }
                             }
                         }
@@ -445,7 +290,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZones.ClearNineChunkProtection: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in ProtectedZones.ClearNineChunkProtection: {0}", e.Message);
             }
         }
 

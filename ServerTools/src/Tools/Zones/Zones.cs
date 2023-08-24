@@ -21,11 +21,11 @@ namespace ServerTools
 
         private static DateTime time = new DateTime();
         private static string EventDelay = "";
+        private static readonly System.Random Random = new System.Random();
+
         private const string file = "Zones.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        private static readonly System.Random Random = new System.Random();
 
         public static void Load()
         {
@@ -295,27 +295,26 @@ namespace ServerTools
                             EventSchedule.AddToSchedule("Zones", time);
                             return;
                         }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours1).AddMinutes(minutes1);
+                            EventSchedule.AddToSchedule("Zones", time);
+                        }
                     }
-                    string[] timeSplit2 = times[0].Split(':');
-                    int.TryParse(timeSplit2[0], out int hours2);
-                    int.TryParse(timeSplit2[1], out int minutes2);
-                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
-                    EventSchedule.AddToSchedule("Zones", time);
-                    return;
                 }
                 else if (Reminder_Delay.Contains(":"))
                 {
-                    string[] timeSplit3 = Reminder_Delay.Split(':');
-                    int.TryParse(timeSplit3[0], out int hours3);
-                    int.TryParse(timeSplit3[1], out int minutes3);
-                    time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
+                    string[] timeSplit2 = Reminder_Delay.Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddHours(hours2).AddMinutes(minutes2);
                     if (DateTime.Now < time)
                     {
                         EventSchedule.AddToSchedule("Zones", time);
                     }
                     else
                     {
-                        time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                        time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
                         EventSchedule.AddToSchedule("Zones", time);
                     }
                     return;
@@ -386,19 +385,19 @@ namespace ServerTools
                 switch (_zone[9])
                 {
                     case "0":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} pve_zone", _cInfo.CrossplatformId.CombinedString), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 0", true));
                         break;
                     case "1":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} pvp_ally_zone", _cInfo.CrossplatformId.CombinedString), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 1", true));
                         break;
                     case "2":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} pvp_stranger_zone", _cInfo.CrossplatformId.CombinedString), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 2", true));
                         break;
                     case "3":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} pvp_zone", _cInfo.CrossplatformId.CombinedString), null);
                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("sgs PlayerKillingMode 3", true));
                         break;
                 }
@@ -420,16 +419,16 @@ namespace ServerTools
                 switch (_zone[9])
                 {
                     case "0":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pve_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} pve_zone", _cInfo.CrossplatformId.CombinedString), null);
                         break;
                     case "1":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_ally_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} pvp_ally_zone", _cInfo.CrossplatformId.CombinedString), null);
                         break;
                     case "2":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_stranger_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} pvp_stranger_zone", _cInfo.CrossplatformId.CombinedString), null);
                         break;
                     case "3":
-                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, "pvp_zone"), null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("debuffplayer {0} pvp_zone", _cInfo.CrossplatformId.CombinedString), null);
                         break;
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup(string.Format("sgs PlayerKillingMode {0}", GeneralOperations.Player_Killing_Mode), true));

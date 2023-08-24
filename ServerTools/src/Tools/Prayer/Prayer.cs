@@ -221,7 +221,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost > 0)
                     {
                         CommandCost(_cInfo);
                     }
@@ -251,17 +251,34 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
+                int currency = 0, bankCurrency = 0, cost = Command_Cost;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
                 if (Bank.IsEnabled && Bank.Direct_Payment)
                 {
-                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 }
-                if (currency >= Command_Cost)
+                if (currency + bankCurrency >= cost)
                 {
+                    if (currency > 0)
+                    {
+                        if (currency < cost)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                            cost -= currency;
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                    }
+                    else
+                    {
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
                     SetBuff(_cInfo);
                 }
                 else
@@ -288,10 +305,6 @@ namespace ServerTools
                     string message = Dict[randomKey];
                     SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.CrossplatformId.CombinedString, randomKey), null);
                     ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + message + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                    }
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastPrayer = DateTime.Now;
                     PersistentContainer.DataChange = true;
                 }

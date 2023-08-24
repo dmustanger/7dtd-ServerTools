@@ -141,7 +141,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (Command_Cost > 0)
                     {
                         CommandCost(_cInfo, _player, _vehicleId);
                     }
@@ -168,17 +168,34 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, Entity _player, int _vehicleId)
         {
-            int currency = 0;
+            int currency = 0, bankCurrency = 0, cost = Command_Cost;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
             if (Bank.IsEnabled && Bank.Direct_Payment)
             {
-                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
             }
-            if (currency >= Command_Cost)
+            if (currency + bankCurrency >= cost)
             {
+                if (currency > 0)
+                {
+                    if (currency < cost)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                        cost -= currency;
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                    else
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                }
+                else
+                {
+                    Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                }
                 TeleVehicle(_cInfo, _player, _vehicleId);
             }
             else
@@ -202,10 +219,6 @@ namespace ServerTools
                     }
                     if (Vector3.Distance(vehicleListData[i].pos, _player.position) <= Distance)
                     {
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
-                        {
-                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                        }
                         vehicleListData[i].pos = new Vector3(_player.position.x + 1, _player.position.y + 0.3f, _player.position.z + 1);
                         int delay = Delay_Between_Uses;
                         if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -262,10 +275,6 @@ namespace ServerTools
                 }
                 else if (entity.GetDistance(_player) <= Distance)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                    }
                     int delay = Delay_Between_Uses;
                     vehicle.SetPosition(new Vector3(_player.position.x, _player.position.y, _player.position.z));
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)

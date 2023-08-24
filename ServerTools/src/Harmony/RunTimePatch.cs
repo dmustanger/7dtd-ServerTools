@@ -301,17 +301,17 @@ namespace ServerTools
                     harmony.Patch(original, new HarmonyMethod(prefix), null);
                 }
 
-                original = AccessTools.Method(typeof(NetPackageTileEntity), "ProcessPackage");
+                original = AccessTools.Method(typeof(NetPackageTileEntity), "Setup", new Type[] { typeof(TileEntity), typeof(TileEntity.StreamModeWrite), typeof(byte) });
                 if (original == null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity.ProcessPackage Class.Method was not found"));
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity.Setup Class.Method was not found"));
                 }
                 else
                 {
-                    MethodInfo postfix = typeof(Injections).GetMethod("NetPackageTileEntity_ProcessPackage_Postfix");
+                    MethodInfo postfix = typeof(Injections).GetMethod("NetPackageTileEntity_Setup_Postfix");
                     if (postfix == null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_ProcessPackage_Postfix"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageTileEntity_Setup_Postfix"));
                     }
                     harmony.Patch(original, null, new HarmonyMethod(postfix));
                 }

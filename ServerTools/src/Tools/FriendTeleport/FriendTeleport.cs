@@ -128,7 +128,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && Wallet.IsEnabled)
+                if (Command_Cost >= 1)
                 {
                     CommandCost(_cInfo, _friend);
                 }
@@ -149,17 +149,34 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, ClientInfo _friend)
         {
-            int currency = 0;
+            int currency = 0, bankCurrency = 0, cost = Command_Cost;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
             if (Bank.IsEnabled && Bank.Direct_Payment)
             {
-                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
             }
-            if (currency >= Command_Cost)
+            if (currency + bankCurrency >= cost)
             {
+                if (currency > 0)
+                {
+                    if (currency < cost)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                        cost -= currency;
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                    else
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                }
+                else
+                {
+                    Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                }
                 MessageFriend(_cInfo, _friend);
             }
             else
@@ -207,10 +224,6 @@ namespace ServerTools
                     cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)player.position.x, (int)player.position.y, (int)player.position.z), null, false));
                     PersistentContainer.Instance.Players[cInfo2.CrossplatformId.CombinedString].LastFriendTele = DateTime.Now;
                     PersistentContainer.DataChange = true;
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
-                    {
-                        Wallet.RemoveCurrency(cInfo2.CrossplatformId.CombinedString, Command_Cost);
-                    }
                 }
             }
             else

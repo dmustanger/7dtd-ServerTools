@@ -200,25 +200,16 @@ namespace ServerTools
                 string item = _items[0];
                 if (Dict.TryGetValue(item, out int[] itemData))
                 {
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item, false).type);
-                    itemValue.Quality = 0;
-                    itemValue.Modifications = new ItemValue[0];
-                    itemValue.CosmeticMods = new ItemValue[0];
-                    int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                    if (modSlots > 0)
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(item, false).type, 1, 1, false, null);
+                    if (itemValue == null)
                     {
-                        itemValue.Modifications = new ItemValue[modSlots];
+                        return;
                     }
-                    itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
                     if (itemValue.HasQuality)
                     {
                         if (itemData[1] > 0)
                         {
                             itemValue.Quality = itemData[1];
-                        }
-                        else
-                        {
-                            itemValue.Quality = 1;
                         }
                     }
                     EntityItem entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -241,7 +232,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Player named '{0}' with Id '{1}' '{2}' received their starting items", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString));
+                        Log.Out("[SERVERTOOLS] Player named '{0}' with Id '{1}' '{2}' received their starting items", _cInfo.playerName, _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString);
                         Phrases.Dict.TryGetValue("StartingItems1", out string phrase1);
                         ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                     }

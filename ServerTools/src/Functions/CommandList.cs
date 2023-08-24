@@ -169,26 +169,35 @@ namespace ServerTools
                 {
                     switch (kvp.Key)
                     {
+                        case "go home":
+                            Homes.Command_go_home = kvp.Value[0];
+                            continue;
                         case "home":
                             Homes.Command_home = kvp.Value[0];
+                            continue;
+                        case "ho":
+                            Homes.Command_ho = kvp.Value[0];
                             continue;
                         case "fhome":
                             Homes.Command_fhome = kvp.Value[0];
                             continue;
-                        case "home save":
-                            Homes.Command_save = kvp.Value[0];
-                            continue;
-                        case "home delete":
-                            Homes.Command_delete = kvp.Value[0];
-                            continue;
-                        case "go home":
-                            Homes.Command_go = kvp.Value[0];
+                        case "fho":
+                            Homes.Command_fho = kvp.Value[0];
                             continue;
                         case "sethome":
-                            Homes.Command_set = kvp.Value[0];
+                            Homes.Command_sethome = kvp.Value[0];
                             continue;
-                        case "go way":
-                            Waypoints.Command_go_way = kvp.Value[0];
+                        case "home save":
+                            Homes.Command_home_save = kvp.Value[0];
+                            continue;
+                        case "hs":
+                            Homes.Command_hs = kvp.Value[0];
+                            continue;
+                        case "home delete":
+                            Homes.Command_home_delete = kvp.Value[0];
+                            continue;
+                        case "hd":
+                            Homes.Command_hd = kvp.Value[0];
                             continue;
                         case "top3":
                             Hardcore.Command_top3 = kvp.Value[0];
@@ -253,8 +262,8 @@ namespace ServerTools
                         case "ready":
                             NewSpawnTele.Command_ready = kvp.Value[0];
                             continue;
-                        case "trackanimal":
-                            AnimalTracking.Command_trackanimal = kvp.Value[0];
+                        case "animal":
+                            AnimalTracking.Command_animal = kvp.Value[0];
                             continue;
                         case "track":
                             AnimalTracking.Command_track = kvp.Value[0];
@@ -439,6 +448,9 @@ namespace ServerTools
                         case "session":
                             Session.Command_session = kvp.Value[0];
                             continue;
+                        case "go way":
+                            Waypoints.Command_go_way = kvp.Value[0];
+                            continue;
                         case "waypoint":
                             Waypoints.Command_waypoint = kvp.Value[0];
                             continue;
@@ -456,6 +468,9 @@ namespace ServerTools
                             continue;
                         case "fwp":
                             Waypoints.Command_fwp = kvp.Value[0];
+                            continue;
+                        case "setwaypoint":
+                            Waypoints.Command_setwaypoint = kvp.Value[0];
                             continue;
                         case "waypoint save":
                             Waypoints.Command_waypoint_save = kvp.Value[0];
@@ -568,6 +583,9 @@ namespace ServerTools
                         case "sort":
                             Sorter.Command_sort = kvp.Value[0];
                             continue;
+                        case "harvest":
+                            Harvest.Command_harvest = kvp.Value[0];
+                            continue;
                     }
                 }
             }
@@ -579,13 +597,16 @@ namespace ServerTools
 
         public static void BuildList()
         {
-            Commands.Add("    <Command Default=\"home\" Replacement=\"home\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"fhome\" Replacement=\"fhome\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"home save\" Replacement=\"home save\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"home delete\" Replacement=\"home delete\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"go home\" Replacement=\"go home\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"home\" Replacement=\"home\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"ho\" Replacement=\"ho\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"fhome\" Replacement=\"fhome\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"fho\" Replacement=\"fho\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"sethome\" Replacement=\"sethome\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"go way\" Replacement=\"go way\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"home save\" Replacement=\"home save\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"hs\" Replacement=\"hs\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"home delete\" Replacement=\"home delete\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"hd\" Replacement=\"hd\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"top3\" Replacement=\"top3\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"score\" Replacement=\"score\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"buy life\" Replacement=\"buy life\" Hidden=\"false\" />");
@@ -608,7 +629,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"forgive\" Replacement=\"forgive\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"ready\" Replacement=\"ready\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"vote\" Replacement=\"vote\" Hidden=\"false\" />");
-            Commands.Add("    <Command Default=\"trackanimal\" Replacement=\"trackanimal\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"animal\" Replacement=\"animal\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"track\" Replacement=\"track\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"claim\" Replacement=\"claim\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"clan add\" Replacement=\"clan add\" Hidden=\"false\" />");
@@ -669,12 +690,14 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"join\" Replacement=\"event\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"infoticker\" Replacement=\"infoticker\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"session\" Replacement=\"session\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"go way\" Replacement=\"go way\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"waypoint\" Replacement=\"waypoint\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"way\" Replacement=\"way\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"wp\" Replacement=\"wp\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"fwaypoint\" Replacement=\"fwaypoint\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"fway\" Replacement=\"fway\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"fwp\" Replacement=\"fwp\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"setwaypoint\" Replacement=\"setwaypoint\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"waypoint save\" Replacement=\"waypoint save\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"way save\" Replacement=\"way save\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"ws\" Replacement=\"ws\" Hidden=\"false\" />");
@@ -712,6 +735,7 @@ namespace ServerTools
             Commands.Add("    <Command Default=\"claims\" Replacement=\"claims\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"donate\" Replacement=\"donate\" Hidden=\"false\" />");
             Commands.Add("    <Command Default=\"sort\" Replacement=\"sort\" Hidden=\"false\" />");
+            Commands.Add("    <Command Default=\"harvest\" Replacement=\"harvest\" Hidden=\"false\" />");
         }
 
         public static void UpgradeXml(XmlNodeList nodeList)

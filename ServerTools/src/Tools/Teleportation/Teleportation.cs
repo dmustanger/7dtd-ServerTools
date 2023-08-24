@@ -12,17 +12,14 @@ namespace ServerTools
             for (int i = 0; i < Entities.Count; i++)
             {
                 Entity entity = Entities[i];
-                if (entity != null && _player != entity && entity.IsSpawned() && entity is EntityZombie)
+                if (entity != null && _player != entity && entity.IsSpawned() && entity is EntityZombie && entity is EntityAlive)
                 {
-                    EntityAlive entityAlive = GeneralOperations.GetEntityPlayer(entity.entityId);
-                    if (entityAlive != null)
+                    EntityAlive entityAlive = entity as EntityAlive;
+                    if (entityAlive != null && (_player.serverPos.ToVector3() / 32f - entity.position).sqrMagnitude <= 80 * 80)
                     {
-                        if ((entityAlive.position - entity.position).magnitude <= 100)
-                        {
-                            Phrases.Dict.TryGetValue("Teleport1", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return true;
-                        }
+                        Phrases.Dict.TryGetValue("Teleport1", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return true;
                     }
                 }
             }
@@ -37,14 +34,12 @@ namespace ServerTools
                 for (int i = 0; i < players.Count; i++)
                 {
                     EntityPlayer player2 = players[i];
-                    if (player2 != null && player2.entityId != _cInfo.entityId && !_player.IsFriendsWith(player2))
+                    if (player2 != null && player2.entityId != _cInfo.entityId && !_player.IsFriendsWith(player2) &&
+                        (_player.serverPos.ToVector3() / 32f - player2.serverPos.ToVector3() / 32f).sqrMagnitude <= 150 * 150)
                     {
-                        if ((_player.position - player2.position).magnitude <= 125)
-                        {
-                            Phrases.Dict.TryGetValue("Teleport2", out string _phrase);
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                            return true;
-                        }
+                        Phrases.Dict.TryGetValue("Teleport2", out string phrase);
+                        ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                        return true;
                     }
                 }
             }

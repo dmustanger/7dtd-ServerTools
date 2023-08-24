@@ -12,8 +12,10 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Player_Check = false, Zombie_Check = false, Vehicle = false, Public_Waypoints = false, No_POI = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Reserved_Max_Waypoints = 4, Command_Cost = 0;
-        public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp", Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp", 
-            Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws", Command_waypoint_delete = "waypoint delete", Command_way_delete = "way delete", Command_wd = "wd";
+        public static string Command_go_way = "go way", Command_waypoint = "waypoint", Command_way = "way", Command_wp = "wp",
+            Command_fwaypoint = "fwaypoint", Command_fway = "fway", Command_fwp = "fwp",
+            Command_setwaypoint = "setwaypoint", Command_waypoint_save = "waypoint save", Command_way_save = "way save", Command_ws = "ws",
+            Command_waypoint_delete = "waypoint delete", Command_way_delete = "way delete", Command_wd = "wd";
 
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
@@ -446,17 +448,34 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
+                int currency = 0, bankCurrency = 0, cost = Command_Cost;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
                 if (Bank.IsEnabled && Bank.Direct_Payment)
                 {
-                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 }
-                if (currency >= _cost)
+                if (currency + bankCurrency >= cost)
                 {
+                    if (currency > 0)
+                    {
+                        if (currency < cost)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                            cost -= currency;
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                    }
+                    else
+                    {
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
                     Exec(_cInfo, _waypoint, _position, _friends, _cost);
                 }
                 else
@@ -498,17 +517,13 @@ namespace ServerTools
                 int.TryParse(cords[0], out int x);
                 int.TryParse(cords[1], out int y);
                 int.TryParse(cords[2], out int z);
-                if (GeneralOperations.ClaimedByNone(new Vector3i(x, y, z)))
+                if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(_position)) == EnumLandClaimOwner.None)
                 {
                     if (_friends)
                     {
                         FriendInvite(_cInfo, _position, waypointPosition);
                     }
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    if (_cost >= 1 && Wallet.IsEnabled)
-                    {
-                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, _cost);
-                    }
                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastWaypoint = DateTime.Now;
                     PersistentContainer.DataChange = true;
                     return;
@@ -536,8 +551,7 @@ namespace ServerTools
                     EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        Vector3 position = player.GetPosition();
-                        if (GeneralOperations.ClaimedByNone(new Vector3i(position)))
+                        if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(player.position)) == EnumLandClaimOwner.None)
                         {
                             ReservedCheck(_cInfo, _waypoint);
                         }

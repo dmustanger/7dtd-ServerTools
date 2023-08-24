@@ -1,5 +1,75 @@
 ﻿CHANGELOG
 
+21.1.0
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Added platform id, cross platform id, the day and hour to
+Player_Logs
+-Added Delay option to Horde tool. Controls how often a horde
+is initiated. The Delay is in minutes.
+-Added Admin_Level option to Protected_Zones. This allows admin
+to edit and damage a protected zone
+-Added Harvest tool. Typing /harvest will attempt to collect 
+harvestable plants. 5x5 blocks are checked for plants to harvest
+around the players position
+-Added chat command alternatives for Home tool
+-Added option Max_FPS to Fps tool. Sets the target max fps
+the server can reach. Setting it to 0 will use the game default
+-Fixed modification slots on items spawned through ServerTools
+-Fixed various tools checking for containers being in use
+-Fixed Shop_Panel not recognizing two clients using the same IP
+-Fixed tool links being set to a blank IP or 0.0.0.0
+-Fixed Sorter tool losing items when sorting multiple stacks of
+the same type
+-Fixed Wallet Item_Name option not setting correctly at startup
+-Fixed Inside_Claim option for Bank not functioning as intended
+-Fixed Sleeper_Respawn tool not functioning as intended
+-Fixed source of 'Error in BlockChange.ProcessBlockChange' 
+repeating in the output log
+-Fixed example entry for Shop.xml
+-Fixed Damage_Detector processing blocks broken too fast outside
+of a claimed space
+-Fixed internal event schedule missing specific 24 hour time
+ranges when using multiple times
+-Changed Horde tool option named Zombies to Zombie_Count
+-Changed Auction option Total_Items to Max_Items
+-Changed Animal_Tracking chat command /trackanimal to /animal
+-Changed Protected_Zones process due to specific code being
+remove from the base game. It no longer plays the annoying ding
+noise while inside a protected area. The specified positions
+will have an over hang of 2 blocks to help prevent abuse
+-Changed Auction tool to utilize a writable container marked
+'auction'
+-Changed Vault tool to utilize a writable container marked 
+'vault' and removed the block VaultBox from generating
+-Changed various tools for added multi thread safety
+-Changed various tools to utilize a more accurate position 
+received from clients
+-Changed various tool calculations to utilize a more efficient
+radius check. Accuracy is slightly reduced but impact on the
+server is reduced
+-Changed Lobby and Market tools to stop removing zombies during
+bloodmoons
+-Changed High_Ping_Kicker to only perform checks on players
+that have completed their login
+-Changed Bank tool to operate without Wallet enabled. Some
+commands still require Wallet enabled such as deposit/withdraw
+-Changed Shop tool panel to utilize the requesting player data 
+for item stats. If no corresponding player data can be utilized, 
+the item stats will not correspond to the player
+-Updated load process
+-Updated various tools and process to utilize multi core cpu
+-Updated and added multiple phrases
+-Updated window sync and xpath formations
+-Updated HowToSetup.txt
+
+Known issues:
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
+-RIO is not functioning as intended
+-Some console commands are out of date
+
 21.0.8
 Built using Alpha 21 stable assets
 Functioning with Alpha 21 stable. Untested with other versions
@@ -542,6 +612,7 @@ normally. Custom_Commands no longer require permissions active
 in the xml, just add the command to the ServerAdmin.xml
 -Changed panel cache headers to prevent potential cause of
 Steam browser freezing
+-Removed option Damage_Z from Market and Lobby tools
 -Removed chat commands /setlobby /setmarket. Use the
 console commands for each tool to achieve the same thing
 -Removed Web_API option Icon_Folder. This is now handled 

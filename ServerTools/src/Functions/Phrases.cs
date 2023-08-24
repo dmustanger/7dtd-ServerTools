@@ -617,6 +617,11 @@ namespace ServerTools
                         phrase = "Player {PlayerName} was not found";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Jail11\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Jail12", out phrase))
+                    {
+                        phrase = "You have been released from jail but failed to locate a suitable nearby location. Please rejoin or contact an administrator";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Jail12\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************** New_Spawn_Tele ******************** -->");
@@ -769,6 +774,16 @@ namespace ServerTools
                         phrase = "You can not use this command during the bloodmoon";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Lobby13\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Lobby14", out phrase))
+                    {
+                        phrase = "You have been executed for attacking another player inside a PvE area";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Lobby14\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Lobby15", out phrase))
+                    {
+                        phrase = "You have been kicked for attacking another player inside a PvE area";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Lobby15\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************ Market ************************ -->");
@@ -838,6 +853,16 @@ namespace ServerTools
                         phrase = "You can not use this command during the bloodmoon";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Market13\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Market14", out phrase))
+                    {
+                        phrase = "You have been executed for killing another player inside a PvE area";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Market14\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Market15", out phrase))
+                    {
+                        phrase = "You have been kicked for attacking another player inside a PvE area";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Market15\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************** Waypoints *********************** -->");
@@ -2019,6 +2044,11 @@ namespace ServerTools
                         phrase = "Your bank account holds {Value} {CoinName}";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Bank18\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Bank19", out phrase))
+                    {
+                        phrase = "Bank reduced {Value}";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Bank19\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ********************* Exit_Command ********************* -->");
@@ -2240,7 +2270,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Homes13\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Homes14", out phrase))
                     {
-                        phrase = "Your friend {PlayerName} has invited you to their saved home. Type {Command_Prefix1}{Command_go} to accept the request";
+                        phrase = "Your friend {PlayerName} has invited you to their saved home. Type {Command_Prefix1}{Command_go_home} to accept the request";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Homes14\" Message=\"{0}\" />", phrase));
                     if (!Dict.TryGetValue("Homes15", out phrase))
@@ -3255,6 +3285,11 @@ namespace ServerTools
                         phrase = "Command restricted to reserved only";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Wall4\" Message=\"{0}\" />", phrase));
+                    if (!Dict.TryGetValue("Wall5", out phrase))
+                    {
+                        phrase = "Wall Completed";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Wall5\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ************************** Bed ************************* -->");
@@ -3359,7 +3394,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Vault2\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ********************** InfiniteAmmo ******************** -->");
+                    sw.WriteLine("    <!-- ********************* Infinite_Ammo ******************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("InfiniteAmmo1", out phrase))
                     {
@@ -3382,7 +3417,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("    <Phrase Name=\"Overlay1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
-                    sw.WriteLine("    <!-- ****************** RegionChunkReset ******************** -->");
+                    sw.WriteLine("    <!-- ***************** Region_Chunk_Reset ******************* -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     if (!Dict.TryGetValue("RegionChunkReset1", out phrase))
                     {
@@ -3398,6 +3433,24 @@ namespace ServerTools
                         phrase = "Sort Completed";
                     }
                     sw.WriteLine(string.Format("    <Phrase Name=\"Sorter1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- ******************* Protected_Zones ******************** -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("ProtectedZones1", out phrase))
+                    {
+                        phrase = "Protected Zone";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"ProtectedZones1\" Message=\"{0}\" />", phrase));
+                    sw.WriteLine();
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    sw.WriteLine("    <!-- *********************** Harvest ************************ -->");
+                    sw.WriteLine("    <!-- ******************************************************** -->");
+                    if (!Dict.TryGetValue("Harvest1", out phrase))
+                    {
+                        phrase = "Harvest Complete";
+                    }
+                    sw.WriteLine(string.Format("    <Phrase Name=\"Harvest1\" Message=\"{0}\" />", phrase));
                     sw.WriteLine();
                     sw.WriteLine("    <!-- ******************************************************** -->");
                     sw.WriteLine("    <!-- ******************************************************** -->");

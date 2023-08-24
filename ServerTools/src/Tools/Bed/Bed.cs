@@ -81,7 +81,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bed.Exec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bed.Exec: {0}", e.Message);
             }
         }
 
@@ -91,7 +91,7 @@ namespace ServerTools
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost > 0)
+                    if (Command_Cost > 0)
                     {
                         CommandCost(_cInfo, player);
                     }
@@ -113,7 +113,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bed.Time: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bed.Time: {0}", e.Message);
             }
         }
 
@@ -121,17 +121,34 @@ namespace ServerTools
         {
             try
             {
-                int currency = 0;
+                int currency = 0, bankCurrency = 0, cost = Command_Cost;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
                 if (Bank.IsEnabled && Bank.Direct_Payment)
                 {
-                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 }
-                if (currency >= Command_Cost)
+                if (currency + bankCurrency >= cost)
                 {
+                    if (currency > 0)
+                    {
+                        if (currency < cost)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                            cost -= currency;
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                    }
+                    else
+                    {
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
                     Teleport(_cInfo, player.SpawnPoints[0].ToVector3());
                 }
                 else
@@ -143,7 +160,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bed.CommandCost: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bed.CommandCost: {0}", e.Message);
             }
         }
 
@@ -154,16 +171,12 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue("Bed4", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(position, null, false));
-                if (Command_Cost >= 1 && Wallet.IsEnabled)
-                {
-                    Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                }
                 PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastBed = DateTime.Now;
                 PersistentContainer.DataChange = true;
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bed.Teleport: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bed.Teleport: {0}", e.Message);
             }
         }
     }

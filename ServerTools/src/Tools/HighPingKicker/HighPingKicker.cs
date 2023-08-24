@@ -160,7 +160,7 @@ namespace ServerTools
             try
             {
                 List<ClientInfo> clients = GeneralOperations.ClientList();
-                if (clients == null || clients.Count < 1)
+                if (clients == null || clients.Count == 0)
                 {
                     return;
                 }
@@ -168,7 +168,7 @@ namespace ServerTools
                 for (int i = 0; i < clients.Count; i++)
                 {
                     cInfo = clients[i];
-                    if (cInfo != null)
+                    if (cInfo != null && cInfo.loginDone)
                     {
                         if ((cInfo.PlatformId != null && Dict.ContainsKey(cInfo.PlatformId.CombinedString)) || 
                             (cInfo.CrossplatformId != null && Dict.ContainsKey(cInfo.CrossplatformId.CombinedString)))
@@ -187,7 +187,7 @@ namespace ServerTools
                             }
                             if (Violations[cInfo.entityId] >= Flags)
                             {
-                                KickPlayer(cInfo);
+                                KickPlayer(cInfo, cInfo.ping);
                             }
                         }
                         else if (Violations.ContainsKey(cInfo.entityId))
@@ -199,11 +199,11 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in HighPingKicker.Exec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in HighPingKicker.Exec: {0}", e.Message);
             }
         }
 
-        private static void KickPlayer(ClientInfo _cInfo)
+        private static void KickPlayer(ClientInfo _cInfo, int _ping)
         {
             try
             {
@@ -211,35 +211,16 @@ namespace ServerTools
                 Phrases.Dict.TryGetValue("HighPing1", out string phrase);
                 phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
                 phrase = phrase.Replace("{Value}", _cInfo.ping.ToString());
-                phrase = phrase.Replace("{MaxPing}", Max_Ping.ToString());
+                phrase = phrase.Replace("{MaxPing}", _ping.ToString());
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
-                ThreadManager.AddSingleTaskMainThread("Coroutine", delegate
-                {
-                    ThreadManager.StartCoroutine(KickPlayer(_cInfo, phrase));
-                }, null);
-                Log.Out(string.Format("[SERVERTOOLS] Kicked player with id '{0}' '{1}' named '{2}' for high ping violation of '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _cInfo.ping));
+                Log.Out("[SERVERTOOLS] Kicked player with id '{0}' '{1}' named '{2}' for high ping violation of '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _ping);
+                GeneralOperations.KickPlayer(_cInfo, phrase);
                 return;
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in HighPingKicker.KickPlayer: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in HighPingKicker.KickPlayer: {0}", e.Message);
             }
-        }
-
-        private static IEnumerator KickPlayer(ClientInfo _cInfo, string _phrase)
-        {
-            try
-            {
-                if (_cInfo != null)
-                {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase), null);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Optimize.KickPlayer: {0}", e.StackTrace));
-            }
-            yield break;
         }
 
         public static void UpgradeXml(XmlNodeList nodeList)
@@ -293,7 +274,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in HighPingKicker.UpgradeXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in HighPingKicker.UpgradeXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

@@ -284,21 +284,33 @@ namespace ServerTools
                                 {
                                     Life_Price = 0;
                                 }
-                                int cost = Life_Price * (extraLives + 1);
-                                int currency = 0;
+                                int currency = 0, bankCurrency = 0, cost = Life_Price * (extraLives + 1);
                                 if (Wallet.IsEnabled)
                                 {
                                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                                 }
                                 if (Bank.IsEnabled && Bank.Direct_Payment)
                                 {
-                                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                                 }
-                                if (currency >= cost)
+                                if (currency + bankCurrency >= cost)
                                 {
-                                    if (cost >= 1 && Wallet.IsEnabled)
+                                    if (currency > 0)
                                     {
-                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                                        if (currency < cost)
+                                        {
+                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                                            cost -= currency;
+                                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                                        }
+                                        else
+                                        {
+                                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
                                     }
                                     stats[2] = (extraLives + 1).ToString();
                                     PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].HardcoreStats = stats;

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Xml;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace ServerTools
 {
     public class WebAPI
     {
-        public static bool IsEnabled = false, IsRunning = false, Shutdown = false, Connected = false, LinksRequireUpdate = false;
+        public static bool IsEnabled = false, IsRunning = false, Shutdown = false;
         public static int Port = 8084;
         public static string Directory = "", Panel_Address = "", BaseAddress = "", Icon_Folder = "../Data/ItemIcons";
 
@@ -25,7 +24,9 @@ namespace ServerTools
         public static Dictionary<string, int> LoginAttempts = new Dictionary<string, int>();
         public static Dictionary<string, DateTime> TimeOut = new Dictionary<string, DateTime>();
         public static List<string> Ban = new List<string>();
-        
+
+        public static HttpListener Listener = null;
+
         private static string Redirect = "";
         private static List<string> PostURI = new List<string>();
         private static readonly Version HttpVersion = new Version(1, 1);
@@ -43,6 +44,13 @@ namespace ServerTools
         public static void Unload()
         {
             IsRunning = false;
+            if (Listener != null && Listener.IsListening)
+            {
+                Listener.Stop();
+                Listener.Abort();
+                Listener.Close();
+                Listener = null;
+            }
         }
 
         private static void Start()
@@ -75,13 +83,13 @@ namespace ServerTools
                             return true;
                         }
                     }
-                    Writer(string.Format("The host ip could not be determined. Web_API will not function without this"));
-                    Log.Out(string.Format("[SERVERTOOLS] The host ip could not be determined. Web_API will not function without this"));
+                    Writer("The host ip could not be determined. Web_API will not function without this");
+                    Log.Out("[SERVERTOOLS] The host ip could not be determined. Web_API will not function without this");
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.SetBaseAddress: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in WebAPI.SetBaseAddress: {0}", e.Message);
             }
             return false;
         }
@@ -130,7 +138,7 @@ namespace ServerTools
                     AuthorizedTime = authorizedTimeList;
                     Authorized = AuthorizedList;
                 }
-                if (!PostURI.Contains("SignIn"))
+                if (PostURI.Count == 0)
                 {
                     PostURI.Add("DiscordHandShake");
                     PostURI.Add("DiscordPost");
@@ -168,14 +176,11 @@ namespace ServerTools
                     PostURI.Add("EndTurnRIO");
                     PostURI.Add("AddAIRIO");
                     PostURI.Add("RemoveAIRIO");
-                    PostURI.Add("MapIPSync");
-                    PostURI.Add("EnterMap");
-                    PostURI.Add("Map");
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.BuildLists: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in WebAPI.BuildLists: {0}", e.Message);
             }
         }
 
@@ -187,9 +192,9 @@ namespace ServerTools
                 int telnetPanelPort = GamePrefs.GetInt(EnumGamePrefs.TelnetPort);
                 if (Port == controlPanelPort || Port == telnetPanelPort)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Web_API port was set identically to the server control panel or telnet port. " +
+                    Log.Out("[SERVERTOOLS] Web_API port was set identically to the server control panel or telnet port. " +
                     "You must use a unique and unused port that is open to transmission. Web_API has been disabled. " +
-                    "This means the potential to use Discordian and various tool panels have been disabled"));
+                    "This means the potential to use Discordian and various tool panels have been disabled");
                     return;
                 }
                 if (Port > 1000 && Port < 65536)
@@ -198,31 +203,33 @@ namespace ServerTools
                     {
                         if (BaseAddress == "")
                         {
-                            SetBaseAddress();
+                            if (!SetBaseAddress())
+                            {
+                                return;
+                            }
                         }
                         Redirect = "http://" + BaseAddress + ":" + Port;
                         Panel_Address = "http://" + BaseAddress + ":" + Port + "/st.html";
-                        using (HttpListener listener = new HttpListener())
+                        using (Listener = new HttpListener())
                         {
-                            if (listener != null && !listener.IsListening)
+                            if (Listener != null && !Listener.IsListening)
                             {
-                                listener.Prefixes.Clear();
-                                if (!listener.Prefixes.Contains(string.Format("http://*:{0}/", Port)))
+                                Listener.Prefixes.Clear();
+                                if (!Listener.Prefixes.Contains(string.Format("http://*:{0}/", Port)))
                                 {
-                                    listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
-                                    listener.Start();
-                                    Connected = true;
-                                    Log.Out(string.Format("[SERVERTOOLS] ServerTools web api has opened @ '{0}'", Redirect));
+                                    Listener.Prefixes.Add(string.Format("http://*:{0}/", Port));
+                                    Listener.Start();
+                                    Log.Out("[SERVERTOOLS] ServerTools web api has opened @ '{0}'", Redirect);
                                 }
                                 else
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] ServerTools web api was unable to connect due to the prefix already in use @ '{0}'", Panel_Address));
+                                    Log.Out("[SERVERTOOLS] ServerTools web api was unable to connect due to the prefix already in use @ '{0}'", Panel_Address);
                                     return;
                                 }
                             }
-                            while (listener != null && listener.IsListening)
+                            while (Listener != null && Listener.IsListening)
                             {
-                                HttpListenerContext context = listener.GetContext();
+                                HttpListenerContext context = Listener.GetContext();
                                 if (context != null)
                                 {
                                     bool Allowed = true;
@@ -298,23 +305,29 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] This host can not support the web panel. Panel has been disabled"));
+                        Log.Out("[SERVERTOOLS] This host can not support the web panel. Panel has been disabled");
                     }
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] The port is set to an invalid number. It must be between 1001-65531 for ServerTools web api to function. Web api has been disabled"));
+                    Log.Out("[SERVERTOOLS] The port is set to an invalid number. It must be between 1001-65531 for ServerTools web api to function. Web api has been disabled");
                 }
             }
             catch (Exception e)
             {
                 if (e.Message.Length > 0)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.Exec: {0}", e.Message));
+                    Log.Out("[SERVERTOOLS] Error in WebAPI.Exec: {0}", e.Message);
                 }
-                Connected = false;
                 if (IsEnabled && IsRunning && !GeneralOperations.Shutdown_Initiated)
                 {
+                    if (Listener != null && Listener.IsListening)
+                    {
+                        Listener.Stop();
+                        Listener.Abort();
+                        Listener.Close();
+                    }
+                    Listener = null;
                     Start();
                 }
             }
@@ -1642,7 +1655,7 @@ namespace ServerTools
                                                         Authorized.Add(keyHash, _ip);
                                                         int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
                                                         responseMessage += cInfo.playerName + "☼" + "Balance: " + currency + "☼" + Wallet.Currency_Name +
-                                                            "☼" + Shop.Panel_Name + "☼" + Shop.PanelItems + "☼" + Shop.CategoryString + "☼" + _ip + "☼" + salt;
+                                                            "☼" + Shop.Panel_Name + "☼" + Shop.GetPanelItems(cInfo) + "☼" + Shop.CategoryString + "☼" + _ip + "☼" + salt;
                                                         _response.StatusCode = 200;
                                                         break;
                                                     }
@@ -1698,7 +1711,7 @@ namespace ServerTools
                                                                         Authorized.Add(keyHash, customers[i].Key);
                                                                         int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
                                                                         responseMessage += cInfo.playerName + "☼" + "Balance: " + currency + "☼" + Wallet.Currency_Name +
-                                                                            "☼" + Shop.Panel_Name + "☼" + Shop.PanelItems + "☼" + Shop.CategoryString + "☼" + salt;
+                                                                            "☼" + Shop.Panel_Name + "☼" + Shop.GetPanelItems(cInfo) + "☼" + Shop.CategoryString + "☼" + salt;
                                                                         _response.StatusCode = 200;
                                                                         break;
                                                                     }
@@ -1725,7 +1738,7 @@ namespace ServerTools
                                                     PageHits.Remove(_ip);
                                                 }
                                                 responseMessage += "DBUG" + "☼" + "Balance: " + 0 + "☼" + Wallet.Currency_Name +
-                                                    "☼" + Shop.Panel_Name + "☼" + Shop.PanelItems + "☼" + Shop.CategoryString + "☼" + "";
+                                                    "☼" + Shop.Panel_Name + "☼" + Shop.GetPanelItems(null) + "☼" + Shop.CategoryString + "☼" + "";
                                                 _response.StatusCode = 200;
                                             }
                                         }
@@ -1807,14 +1820,39 @@ namespace ServerTools
                                                                 EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                                                 if (player != null)
                                                                 {
-                                                                    int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
                                                                     int quantity = int.Parse(purchaseData[2]);
                                                                     int count = int.Parse(item[3]);
                                                                     int price = int.Parse(item[5]);
                                                                     int total = price * quantity;
                                                                     int itemCount = count * quantity;
-                                                                    if (currency >= total)
+                                                                    int currency = 0, bankCurrency = 0, cost = total;
+                                                                    if (Wallet.IsEnabled)
                                                                     {
+                                                                        currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                    }
+                                                                    if (Bank.IsEnabled && Bank.Direct_Payment)
+                                                                    {
+                                                                        bankCurrency = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                                    }
+                                                                    if (currency + bankCurrency >= cost)
+                                                                    {
+                                                                        if (currency > 0)
+                                                                        {
+                                                                            if (currency < cost)
+                                                                            {
+                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, currency);
+                                                                                cost -= currency;
+                                                                                Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, cost);
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
+                                                                        }
                                                                         ItemValue itemValue = new ItemValue(ItemClass.GetItem(item[1], false).type);
                                                                         int quality = int.Parse(item[4]);
                                                                         if (itemValue.HasQuality)
@@ -1841,10 +1879,6 @@ namespace ServerTools
                                                                         world.SpawnEntityInWorld(entityItem);
                                                                         cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, cInfo.entityId));
                                                                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                                                        if (total > 0)
-                                                                        {
-                                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, total);
-                                                                        }
                                                                         PersistentContainer.Instance.ShopLog.Add(new string[] { itemValue.ItemClass.Name, itemCount.ToString(), cInfo.PlatformId.CombinedString, cInfo.CrossplatformId.CombinedString, cInfo.playerName, DateTime.Now.ToString() });
                                                                         PersistentContainer.DataChange = true;
 
@@ -2074,10 +2108,34 @@ namespace ServerTools
                                                                             PersistentContainer.Instance.Players[playerId].Auction.ContainsKey(itemId))
                                                                         {
                                                                             PersistentContainer.Instance.Players[playerId].Auction.TryGetValue(itemId, out ItemDataSerializable itemData);
-                                                                            int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                            if (currency >= itemData.price)
+                                                                            int currency = 0, bankCurrency = 0, cost = itemData.price;
+                                                                            if (Wallet.IsEnabled)
                                                                             {
-                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, itemData.price);
+                                                                                currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                            }
+                                                                            if (Bank.IsEnabled && Bank.Direct_Payment)
+                                                                            {
+                                                                                bankCurrency = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                                            }
+                                                                            if (currency + bankCurrency >= cost)
+                                                                            {
+                                                                                if (currency > 0)
+                                                                                {
+                                                                                    if (currency < cost)
+                                                                                    {
+                                                                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, currency);
+                                                                                        cost -= currency;
+                                                                                        Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, cost);
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
+                                                                                }
                                                                                 ItemValue itemValue = new ItemValue(ItemClass.GetItem(itemData.name, false).type);
                                                                                 if (itemValue != null)
                                                                                 {
@@ -2287,27 +2345,38 @@ namespace ServerTools
                                             ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                             if (cInfo != null)
                                             {
-                                                bool valid = true;
                                                 if (PageHits.ContainsKey(_ip))
                                                 {
                                                     PageHits.Remove(_ip);
                                                 }
-                                                if (Wallet.IsEnabled && RIO.Bet > 0)
+                                                int currency = 0, bankCurrency = 0, cost = RIO.Bet;
+                                                if (Wallet.IsEnabled)
                                                 {
-                                                    int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                    if (currency >= RIO.Bet)
+                                                    currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                }
+                                                if (Bank.IsEnabled && Bank.Direct_Payment)
+                                                {
+                                                    bankCurrency = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                }
+                                                if (currency + bankCurrency >= cost)
+                                                {
+                                                    if (currency > 0)
                                                     {
-                                                        Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Bet);
+                                                        if (currency < cost)
+                                                        {
+                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, currency);
+                                                            cost -= currency;
+                                                            Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
+                                                        }
+                                                        else
+                                                        {
+                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, cost);
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        valid = false;
-                                                        RIO.Access.Remove(_ip);
-                                                        _response.StatusCode = 402;
+                                                        Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
                                                     }
-                                                }
-                                                if (valid)
-                                                {
                                                     string keyHash = "";
                                                     for (int j = 0; j < 10; j++)
                                                     {
@@ -2496,6 +2565,11 @@ namespace ServerTools
                                                         _response.StatusCode = 202;
                                                     }
                                                 }
+                                                else
+                                                {
+                                                    RIO.Access.Remove(_ip);
+                                                    _response.StatusCode = 402;
+                                                }
                                             }
                                             else
                                             {
@@ -2528,27 +2602,38 @@ namespace ServerTools
                                                                 ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(entityId);
                                                                 if (cInfo != null)
                                                                 {
-                                                                    bool valid = true;
                                                                     if (PageHits.ContainsKey(_ip))
                                                                     {
                                                                         PageHits.Remove(_ip);
                                                                     }
-                                                                    if (Wallet.IsEnabled && RIO.Bet > 0)
+                                                                    int currency = 0, bankCurrency = 0, cost = RIO.Bet;
+                                                                    if (Wallet.IsEnabled)
                                                                     {
-                                                                        int currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
-                                                                        if (currency >= RIO.Bet)
+                                                                        currency = Wallet.GetCurrency(cInfo.CrossplatformId.CombinedString);
+                                                                    }
+                                                                    if (Bank.IsEnabled && Bank.Direct_Payment)
+                                                                    {
+                                                                        bankCurrency = PersistentContainer.Instance.Players[cInfo.CrossplatformId.CombinedString].Bank;
+                                                                    }
+                                                                    if (currency + bankCurrency >= cost)
+                                                                    {
+                                                                        if (currency > 0)
                                                                         {
-                                                                            Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, RIO.Bet);
+                                                                            if (currency < cost)
+                                                                            {
+                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, currency);
+                                                                                cost -= currency;
+                                                                                Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                Wallet.RemoveCurrency(cInfo.CrossplatformId.CombinedString, cost);
+                                                                            }
                                                                         }
                                                                         else
                                                                         {
-                                                                            valid = false;
-                                                                            RIO.Access.Remove(allPlayers[i].Key);
-                                                                            _response.StatusCode = 402;
+                                                                            Bank.SubtractCurrencyFromBank(cInfo.CrossplatformId.CombinedString, cost);
                                                                         }
-                                                                    }
-                                                                    if (valid)
-                                                                    {
                                                                         for (int j = 0; j < 10; j++)
                                                                         {
                                                                             string salt = RIO.CreatePassword(4);
@@ -2735,6 +2820,11 @@ namespace ServerTools
                                                                             responseMessage += tableId + "☼" + 1;
                                                                             _response.StatusCode = 202;
                                                                         }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        RIO.Access.Remove(allPlayers[i].Key);
+                                                                        _response.StatusCode = 402;
                                                                     }
                                                                 }
                                                                 else
@@ -3465,7 +3555,28 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebAPI.POST: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in WebAPI.POST: {0}", e.Message);
+            }
+        }
+
+        public static void AssignAddress(string _ip, int _port)
+        {
+            if (_ip != "" && _ip != "0.0.0.0" && _ip != "127.0.0.1")
+            {
+                BaseAddress = _ip;
+            }
+            if (Port != _port)
+            {
+                Port = _port;
+            }
+            if (IsEnabled && IsRunning && !GeneralOperations.Shutdown_Initiated && Listener != null && Listener.IsListening)
+            {
+                Log.Out("[SERVERTOOLS] Listener closure/reboot 2");
+                Listener.Stop();
+                Listener.Abort();
+                Listener.Close();
+                Listener = null;
+                Start();
             }
         }
 

@@ -73,7 +73,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Command_Cost >= 1 && Wallet.IsEnabled)
+                if (Command_Cost >= 1)
                 {
                     CommandCost(_cInfo);
                 }
@@ -96,17 +96,34 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            int currency = 0;
+            int currency = 0, bankCurrency = 0, cost = Command_Cost;
             if (Wallet.IsEnabled)
             {
                 currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
             }
             if (Bank.IsEnabled && Bank.Direct_Payment)
             {
-                currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
             }
-            if (currency >= Command_Cost)
+            if (currency + bankCurrency >= cost)
             {
+                if (currency > 0)
+                {
+                    if (currency < cost)
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                        cost -= currency;
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                    else
+                    {
+                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                    }
+                }
+                else
+                {
+                    Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+                }
                 PlayerLevel(_cInfo);
             }
             else
@@ -182,10 +199,6 @@ namespace ServerTools
                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y + 1, z), null, false));
                             DeathTime.Remove(_cInfo.entityId);
                             LastDeathPos.Remove(_cInfo.entityId);
-                            if (Command_Cost >= 1 && Wallet.IsEnabled)
-                            {
-                                Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                            }
                             PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastDied = DateTime.Now;
                             PersistentContainer.DataChange = true;
                         }

@@ -13,63 +13,60 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            EntityPlayer entityPlayer = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-            if (entityPlayer == null)
+            ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
             {
-                return;
-            }
-            Vector3i position = new Vector3i(entityPlayer.serverPos.ToVector3() / 32f);
-            TileEntitySecureLootContainerSigned signedContainer;
-            List<Chunk> surroundingChunks = GeneralOperations.GetSurroundingChunks(position);
-            if (surroundingChunks == null || surroundingChunks.Count == 0)
-            {
-                return;
-            }
-            Dictionary<TileEntity, int> lockedTiles = lockedTileEntities(GameManager.Instance);
-            DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
-            for (int i = 0; i < surroundingChunks.Count; i++)
-            {
-                tiles = surroundingChunks[i].GetTileEntities();
-                foreach (var tile in tiles.dict)
+                EntityPlayer entityPlayer = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                if (entityPlayer == null)
                 {
-                    if (!(tile.Value is TileEntitySecureLootContainerSigned))
+                    return;
+                }
+                Vector3i position = new Vector3i(entityPlayer.serverPos.ToVector3() / 32f);
+                TileEntitySecureLootContainerSigned signedContainer;
+                List<Chunk> surroundingChunks = GeneralOperations.GetSurroundingChunks(position);
+                if (surroundingChunks == null || surroundingChunks.Count == 0)
+                {
+                    return;
+                }
+                Dictionary<TileEntity, int> lockedTiles = lockedTileEntities(GameManager.Instance);
+                DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
+                for (int i = 0; i < surroundingChunks.Count; i++)
+                {
+                    tiles = surroundingChunks[i].GetTileEntities();
+                    foreach (var tile in tiles.dict)
                     {
-                        continue;
-                    }
-                    signedContainer = tile.Value as TileEntitySecureLootContainerSigned;
-                    if (signedContainer != null && signedContainer.GetText().ToLower() == "sort" && !lockedTiles.ContainsKey(signedContainer))
-                    {
-                        EnumLandClaimOwner claimOwner = GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, signedContainer.ToWorldPos());
-                        if (claimOwner == EnumLandClaimOwner.Self || claimOwner == EnumLandClaimOwner.Ally)
+                        if (!(tile.Value is TileEntitySecureLootContainerSigned))
                         {
-                            SecureLootContainer(_cInfo, signedContainer, surroundingChunks, lockedTiles);
-                            Phrases.Dict.TryGetValue("Sorter1", out string phrase);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageShowToolbeltMessage>().Setup(phrase, string.Empty));
-                            return;
+                            continue;
+                        }
+                        signedContainer = tile.Value as TileEntitySecureLootContainerSigned;
+                        if (signedContainer != null && signedContainer.GetText().ToLower() == "sort" && !lockedTiles.ContainsKey(signedContainer))
+                        {
+                            EnumLandClaimOwner claimOwner = GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, signedContainer.ToWorldPos());
+                            if (claimOwner == EnumLandClaimOwner.Self || claimOwner == EnumLandClaimOwner.Ally)
+                            {
+                                SortLootContainer(_cInfo, signedContainer, surroundingChunks, lockedTiles);
+                                Phrases.Dict.TryGetValue("Sorter1", out string phrase);
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageShowToolbeltMessage>().Setup(phrase, string.Empty));
+                                return;
+                            }
                         }
                     }
                 }
-            }
+            });
         }
 
-        public static void SecureLootContainer(ClientInfo _cInfo, TileEntitySecureLootContainerSigned _secureLoot, List<Chunk> _surroundingChunks, Dictionary<TileEntity, int> _lockedTiles)
+        public static void SortLootContainer(ClientInfo _cInfo, TileEntitySecureLootContainerSigned _secureLoot, List<Chunk> _surroundingChunks, Dictionary<TileEntity, int> _lockedTiles)
         {
             if (_secureLoot.IsEmpty() || _lockedTiles.ContainsKey(_secureLoot))
             {
                 return;
             }
-            ItemStack[] mainContainer = _secureLoot.items;
+            ItemStack[] mainContainer = _secureLoot.items, secondaryContainer;
             EnumLandClaimOwner claimOwner;
             TileEntityLootContainer lootContainer;
-            ItemStack[] secondaryContainer;
             Dictionary<Vector3i, TileEntity> tiles = new Dictionary<Vector3i, TileEntity>();
-            int newStackCount = 0, stackMax = 0;
             for (int i = 0; i < _surroundingChunks.Count; i++)
             {
-                if (_secureLoot.IsEmpty())
-                {
-                    break;
-                }
                 tiles = _surroundingChunks[i].GetTileEntities().dict;
                 foreach (var tile in tiles)
                 {
@@ -86,9 +83,10 @@ namespace ServerTools
                     if (claimOwner == EnumLandClaimOwner.Self || claimOwner == EnumLandClaimOwner.Ally)
                     {
                         secondaryContainer = lootContainer.items;
+                        bool modified = false;
                         for (int j = 0; j < mainContainer.Length; j++)
                         {
-                            if (mainContainer[j].IsEmpty() || !mainContainer[j].itemValue.ItemClass.CanStack() || !lootContainer.HasItem(mainContainer[j].itemValue))
+                            if (mainContainer[j].IsEmpty() || !mainContainer[j].itemValue.ItemClass.CanStack() || !lootContainer.HasItem(_secureLoot.items[j].itemValue))
                             {
                                 continue;
                             }
@@ -96,34 +94,32 @@ namespace ServerTools
                             {
                                 for (int k = 0; k < secondaryContainer.Length; k++)
                                 {
-                                    if (!secondaryContainer[k].IsEmpty() && mainContainer[j].itemValue.GetItemOrBlockId() == secondaryContainer[k].itemValue.GetItemOrBlockId())
+                                    if (!secondaryContainer[k].IsEmpty() && _secureLoot.items[j].itemValue.GetItemOrBlockId() == secondaryContainer[k].itemValue.GetItemOrBlockId())
                                     {
-                                        newStackCount = mainContainer[j].count + secondaryContainer[k].count;
-                                        stackMax = mainContainer[j].itemValue.ItemClass.Stacknumber.Value;
+                                        int newStackCount = mainContainer[j].count + secondaryContainer[k].count;
+                                        int stackMax = mainContainer[j].itemValue.ItemClass.Stacknumber.Value;
                                         if (newStackCount <= stackMax)
                                         {
-                                            _secureLoot.RemoveItem(mainContainer[j].itemValue);
+                                            mainContainer[j] = new ItemStack(ItemValue.None, 0);
                                             secondaryContainer[k].count = newStackCount;
-                                            lootContainer.items[k].count = newStackCount;
-                                            lootContainer.SetModified();
+                                            modified = true;
                                             break;
                                         }
                                         else if (secondaryContainer[k].count < stackMax)
                                         {
-                                            newStackCount = secondaryContainer[k].count + mainContainer[j].count;
                                             if (newStackCount <= stackMax)
                                             {
-                                                _secureLoot.RemoveItem(mainContainer[j].itemValue);
-                                                lootContainer.items[k].count = newStackCount;
-                                                lootContainer.SetModified();
+                                                mainContainer[j] = new ItemStack(ItemValue.None, 0);
+                                                secondaryContainer[k].count = newStackCount;
+                                                modified = true;
                                                 break;
                                             }
                                             else
                                             {
                                                 newStackCount = stackMax - secondaryContainer[k].count;
-                                                _secureLoot.items[j].count = newStackCount;
-                                                lootContainer.items[k].count = stackMax;
-                                                lootContainer.SetModified();
+                                                mainContainer[j].count -= newStackCount;
+                                                secondaryContainer[k].count = stackMax;
+                                                modified = true;
                                                 break;
                                             }
                                         }
@@ -131,16 +127,21 @@ namespace ServerTools
                                 }
                                 if (!mainContainer[j].IsEmpty() && lootContainer.AddItem(mainContainer[j]))
                                 {
-                                    _secureLoot.RemoveItem(mainContainer[j].itemValue);
-                                    lootContainer.SetModified();
+                                    mainContainer[j] = new ItemStack(ItemValue.None, 0);
                                     continue;
                                 }
                             }
                         }
-                        _secureLoot.SetModified();
+                        if (modified)
+                        {
+                            lootContainer.items = secondaryContainer;
+                            lootContainer.SetModified();
+                        }
                     }
                 }
             }
+            _secureLoot.items = mainContainer;
+            _secureLoot.SetModified();
         }
     }
 }

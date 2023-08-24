@@ -14,7 +14,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("NightAlert") && !EventSchedule.Expired.Contains("NightAlert"))
+                if (EventSchedule.Schedule.ContainsKey("NightAlert"))
                 {
                     EventSchedule.RemoveFromSchedule("NightAlert");
                 }
@@ -33,30 +33,28 @@ namespace ServerTools
                             EventSchedule.AddToSchedule("NightAlert", time);
                             return;
                         }
+                        else
+                        {
+                            time = DateTime.Today.AddDays(1).AddHours(hours1).AddMinutes(minutes1);
+                            EventSchedule.AddToSchedule("NightAlert", time);
+                        }
                     }
-                    string[] timeSplit2 = times[0].Split(':');
-                    int.TryParse(timeSplit2[0], out int hours2);
-                    int.TryParse(timeSplit2[1], out int minutes2);
-                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
-                    EventSchedule.AddToSchedule("NightAlert", time);
-                    return;
                 }
                 else if (Delay.Contains(":"))
                 {
-                    string[] timeSplit3 = Delay.Split(':');
-                    int.TryParse(timeSplit3[0], out int hours3);
-                    int.TryParse(timeSplit3[1], out int minutes3);
-                    time = DateTime.Today.AddHours(hours3).AddMinutes(minutes3);
+                    string[] timeSplit2 = Delay.Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddHours(hours2).AddMinutes(minutes2);
                     if (DateTime.Now < time)
                     {
                         EventSchedule.AddToSchedule("NightAlert", time);
                     }
                     else
                     {
-                        time = DateTime.Today.AddDays(1).AddHours(hours3).AddMinutes(minutes3);
+                        time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
                         EventSchedule.AddToSchedule("NightAlert", time);
                     }
-                    return;
                 }
                 else
                 {
@@ -70,7 +68,6 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Invalid Night_Alert Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
                         Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
                     }
-                    return;
                 }
             }
         }

@@ -55,6 +55,7 @@ namespace ServerTools
             {
                 Phrases.Dict.TryGetValue("Wall3", out string phrase);
                 ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                return;
             }
             List<Vector3i> potentialPositions = new List<Vector3i>();
             List<Vector3i> wallPositions = new List<Vector3i>();
@@ -194,6 +195,8 @@ namespace ServerTools
                     blockList.Add(new BlockChangeInfo(0, wallPositions[i], _value));
                 }
                 GameManager.Instance.SetBlocksRPC(blockList, null);
+                Phrases.Dict.TryGetValue("Wall5", out string phrase);
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageShowToolbeltMessage>().Setup(phrase, string.Empty));
             }
         }
     }

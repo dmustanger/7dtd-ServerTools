@@ -8,7 +8,7 @@ namespace ServerTools
     public class AnimalTracking
     {
         public static bool IsEnabled = false;
-        public static string Command_trackanimal = "trackanimal", Command_track = "track";
+        public static string Command_animal = "animal", Command_track = "track";
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
         public static string Animal_Ids = "87,88,89,90";
 
@@ -16,15 +16,24 @@ namespace ServerTools
         {
             try
             {
+                if (Animal_Ids == "")
+                {
+                    return;
+                }
+                EntityPlayer entityPlayer = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
+                if (entityPlayer == null)
+                {
+                    return;
+                }
                 if (Delay_Between_Uses < 1)
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        CommandCost(_cInfo);
+                        CommandCost(_cInfo, entityPlayer);
                     }
                     else
                     {
-                        GiveAnimals(_cInfo);
+                        GiveAnimals(_cInfo, entityPlayer);
                     }
                 }
                 else
@@ -46,7 +55,7 @@ namespace ServerTools
                                 if (DateTime.Now < dt)
                                 {
                                     int delay = Delay_Between_Uses / 2;
-                                    Time(_cInfo, timepassed, delay);
+                                    Time(_cInfo, timepassed, delay, entityPlayer);
                                     return;
                                 }
                             }
@@ -55,7 +64,7 @@ namespace ServerTools
                                 if (DateTime.Now < dt)
                                 {
                                     int delay = Delay_Between_Uses / 2;
-                                    Time(_cInfo, timepassed, delay);
+                                    Time(_cInfo, timepassed, delay, entityPlayer);
                                     return;
                                 }
                             }
@@ -64,31 +73,31 @@ namespace ServerTools
                     if (PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].ReducedDelay)
                     {
                         int delay = Delay_Between_Uses / 2;
-                        Time(_cInfo, timepassed, delay);
+                        Time(_cInfo, timepassed, delay, entityPlayer);
                         return;
                     }
-                    Time(_cInfo, timepassed, Delay_Between_Uses);
+                    Time(_cInfo, timepassed, Delay_Between_Uses, entityPlayer);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Animals.Exec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Animals.Exec: {0}", e.Message);
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay, EntityPlayer entityPlayer)
         {
             try
             {
                 if (_timepassed >= _delay)
                 {
-                    if (Command_Cost >= 1 && Wallet.IsEnabled)
+                    if (Command_Cost >= 1)
                     {
-                        CommandCost(_cInfo);
+                        CommandCost(_cInfo, entityPlayer);
                     }
                     else
                     {
-                        GiveAnimals(_cInfo);
+                        GiveAnimals(_cInfo, entityPlayer);
                     }
                 }
                 else
@@ -101,26 +110,45 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Animals.Time: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Animals.Time: {0}", e.Message);
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo)
+        public static void CommandCost(ClientInfo _cInfo, EntityPlayer entityPlayer)
         {
             try
             {
-                int currency = 0;
+                int currency = 0, bankCurrency = 0, cost = Command_Cost;
                 if (Wallet.IsEnabled)
                 {
                     currency = Wallet.GetCurrency(_cInfo.CrossplatformId.CombinedString);
                 }
                 if (Bank.IsEnabled && Bank.Direct_Payment)
                 {
-                    currency += PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
+                    bankCurrency = PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].Bank;
                 }
-                if (currency >= Command_Cost)
+                if (currency + bankCurrency >= cost)
                 {
-                    GiveAnimals(_cInfo);
+                    if (currency > 0)
+                    {
+                        if (currency < cost)
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, currency);
+                            cost -= currency;
+                            Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+
+                        }
+                        else
+                        {
+                            Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, cost);
+                        }
+                    }
+                    else
+                    {
+                        Bank.SubtractCurrencyFromBank(_cInfo.CrossplatformId.CombinedString, cost);
+
+                    }
+                    GiveAnimals(_cInfo, entityPlayer);
                 }
                 else
                 {
@@ -131,11 +159,11 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Animals.CommandCost: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Animals.CommandCost: {0}", e.Message);
             }
         }
 
-        public static void GiveAnimals(ClientInfo _cInfo)
+        public static void GiveAnimals(ClientInfo _cInfo, EntityPlayer entityPlayer)
         {
             try
             {
@@ -174,26 +202,18 @@ namespace ServerTools
                     int counter = 1;
                     foreach (int i in entityTypesCollection)
                     {
-                        EntityClass eClass = EntityClass.list[i];
                         if (randomId == counter)
                         {
-                            EntityPlayer entityPlayer = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
-                            if (entityPlayer != null)
+                            if (SpawnAnimal(_cInfo, entityPlayer, nextRadius, randomId))
                             {
-                                if (SpawnAnimal(_cInfo, entityPlayer, nextRadius, randomId))
-                                {
-                                    if (Command_Cost >= 1 && Wallet.IsEnabled)
-                                    {
-                                        Wallet.RemoveCurrency(_cInfo.CrossplatformId.CombinedString, Command_Cost);
-                                    }
-                                    PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastAnimal = DateTime.Now;
-                                    PersistentContainer.DataChange = true;
-                                    break;
-                                }
+                                PersistentContainer.Instance.Players[_cInfo.CrossplatformId.CombinedString].LastAnimal = DateTime.Now;
+                                PersistentContainer.DataChange = true;
+                                break;
                             }
                         }
                         counter++;
                     }
+
                 }
                 else
                 {
@@ -203,7 +223,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Animals.GiveAnimals: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Animals.GiveAnimals: {0}", e.Message);
             }
         }
 
@@ -229,13 +249,13 @@ namespace ServerTools
                             SdtdConsole.Instance.Output("[SERVERTOOLS] Spawned a '{0}' at '{1} x, {2} y, {3} z'", entity.EntityClass.entityClassName, x, y, z);
                             Phrases.Dict.TryGetValue("AnimalTracking3", out string phrase);
                             phrase = phrase.Replace("{Radius}", _radius.ToString());
-                            ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageShowToolbeltMessage>().Setup(phrase, string.Empty));
                             return true;
                         }
                         count++;
                     }
                 }
-                SdtdConsole.Instance.Output("[SERVERTOOLS] Unable to find entity matching id '{0}'", _animalId);
+                Log.Out("[SERVERTOOLS] Unable to find entity matching id '{0}'", _animalId);
                 return false;
             }
             else

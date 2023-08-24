@@ -55,7 +55,7 @@ namespace ServerTools
                 }
                 catch (XmlException e)
                 {
-                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    Log.Error("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message);
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
@@ -87,27 +87,27 @@ namespace ServerTools
                             }
                             if (!GeneralOperations.IsValidItem(name))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry. Item name not found: {0}", name));
+                                Log.Out("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry. Item name not found: {0}", name);
                                 continue;
                             }
                             if (!int.TryParse(line.GetAttribute("MinCount"), out int minCount))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml));
+                                Log.Out("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", line.OuterXml);
                                 continue;
                             }
                             if (!int.TryParse(line.GetAttribute("MaxCount"), out int maxCount))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml));
+                                Log.Out("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", line.OuterXml);
                                 continue;
                             }
                             if (!int.TryParse(line.GetAttribute("MinQuality"), out int minQuality))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml));
+                                Log.Out("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", line.OuterXml);
                                 continue;
                             }
                             if (!int.TryParse(line.GetAttribute("MaxQuality"), out int maxQuality))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml));
+                                Log.Out("[SERVERTOOLS] Ignoring BloodmoonWarrior.xml entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", line.OuterXml);
                                 continue;
                             }
                             ItemValue itemValue = ItemClass.GetItem(name, false);
@@ -164,7 +164,7 @@ namespace ServerTools
                     {
                         Timers.UpgradeBloodmoonWarriorXml(nodeList);
                         //UpgradeXml(nodeList);
-                        Log.Out(string.Format("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version));
+                        Log.Out("[SERVERTOOLS] The existing BloodmoonWarrior.xml was too old or misconfigured. File deleted and rebuilt for version {0}", Config.Version);
                         return;
                     }
                 }
@@ -178,7 +178,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.LoadXml: {0}", e.Message));
+                    Log.Out("[SERVERTOOLS] Error in BloodmoonWarrior.LoadXml: {0}", e.Message);
                 }
             }
         }
@@ -198,7 +198,7 @@ namespace ServerTools
                     {
                         foreach (KeyValuePair<string, string[]> kvp in Dict)
                         {
-                            sw.WriteLine(string.Format("    <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4]));
+                            sw.WriteLine("    <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4]);
                         }
                     }
                     sw.WriteLine("</BloodmoonWarrior>");
@@ -208,7 +208,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.UpdateXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BloodmoonWarrior.UpdateXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -233,31 +233,37 @@ namespace ServerTools
 
         public static void Exec()
         {
+
             try
             {
+
                 if (!BloodmoonStarted)
                 {
                     if (GeneralOperations.IsBloodmoon())
                     {
                         BloodmoonStarted = true;
                         List<ClientInfo> clientList = GeneralOperations.ClientList();
-                        if (clientList != null)
+                        if (clientList == null || clientList.Count == 0)
                         {
-                            for (int i = 0; i < clientList.Count; i++)
+                            return;
+                        }
+                        ClientInfo cInfo;
+                        EntityPlayer player;
+                        for (int i = 0; i < clientList.Count; i++)
+                        {
+                            cInfo = clientList[i];
+                            if (cInfo == null)
                             {
-                                ClientInfo cInfo = clientList[i];
-                                if (cInfo != null)
-                                {
-                                    EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
-                                    if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) <= Chance)
-                                    {
-                                        WarriorList.Add(cInfo.entityId);
-                                        KilledZombies.Add(cInfo.entityId, 0);
-                                        Phrases.Dict.TryGetValue("BloodmoonWarrior1", out string phrase);
-                                        phrase = phrase.Replace("{Count}", Zombie_Kills.ToString());
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
+                                continue;
+                            }
+                            player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+                            if (player != null && player.IsSpawned() && player.IsAlive() && player.Died > 0 && player.Progression.GetLevel() >= 10 && Random.Next(0, 100) <= Chance)
+                            {
+                                WarriorList.Add(cInfo.entityId);
+                                KilledZombies.Add(cInfo.entityId, 0);
+                                Phrases.Dict.TryGetValue("BloodmoonWarrior1", out string phrase);
+                                phrase = phrase.Replace("{Count}", Zombie_Kills.ToString());
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -270,8 +276,9 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.Exec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BloodmoonWarrior.Exec: {0}", e.Message);
             }
+
         }
 
         public static void RewardWarriors()
@@ -279,37 +286,41 @@ namespace ServerTools
             try
             {
                 List<int> warriors = WarriorList;
+                EntityPlayer player;
+                ClientInfo cInfo;
                 for (int i = 0; i < warriors.Count; i++)
                 {
                     int warrior = warriors[i];
-                    EntityPlayer player = GeneralOperations.GetEntityPlayer(warrior);
-                    if (player != null && player.IsAlive())
+                    player = GeneralOperations.GetEntityPlayer(warrior);
+                    if (player == null || !player.IsAlive())
                     {
-                        if (KilledZombies.TryGetValue(warrior, out int _killedZ))
+                        continue;
+                    }
+                    if (KilledZombies.TryGetValue(warrior, out int _killedZ))
+                    {
+                        if (_killedZ >= Zombie_Kills)
                         {
-                            if (_killedZ >= Zombie_Kills)
+                            cInfo = GeneralOperations.GetClientInfoFromEntityId(warrior);
+                            if (cInfo == null)
                             {
-                                ClientInfo cInfo = GeneralOperations.GetClientInfoFromEntityId(warrior);
-                                if (cInfo != null)
+                                continue;
+                            }
+                            Counter(cInfo, Reward_Count);
+                            if (Reduce_Death_Count)
+                            {
+                                if (player.Died > 0)
                                 {
-                                    Counter(cInfo, Reward_Count);
-                                    if (Reduce_Death_Count)
-                                    {
-                                        if (player.Died > 0)
-                                        {
-                                            player.Died -= 1;
-                                            player.bPlayerStatsChanged = true;
-                                            cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
-                                            Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string phrase);
-                                            ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Phrases.Dict.TryGetValue("BloodmoonWarrior3", out string phrase);
-                                        ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    player.Died -= 1;
+                                    player.bPlayerStatsChanged = true;
+                                    cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
+                                    Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string phrase);
+                                    ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                 }
+                            }
+                            else
+                            {
+                                Phrases.Dict.TryGetValue("BloodmoonWarrior3", out string phrase);
+                                ChatHook.ChatMessage(cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -317,7 +328,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RewardWarriors: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BloodmoonWarrior.RewardWarriors: {0}", e.Message);
             }
             WarriorList.Clear();
             KilledZombies.Clear();
@@ -349,7 +360,7 @@ namespace ServerTools
             try
             {
                 string randomItem = List.RandomObject();
-                if (Dict.TryGetValue(randomItem, out string[]  item))
+                if (Dict.TryGetValue(randomItem, out string[] item))
                 {
                     int minCount = int.Parse(item[1]);
                     int maxCount = int.Parse(item[2]);
@@ -357,26 +368,10 @@ namespace ServerTools
                     int maxQuality = int.Parse(item[4]);
                     int count = Random.Next(minCount, maxCount + 1);
                     int quality = Random.Next(minCount, maxCount + 1);
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, 1, 1, true, null, 1f);
-                    itemValue.Quality = 0;
-                    itemValue.Modifications = new ItemValue[0];
-                    itemValue.CosmeticMods = new ItemValue[0];
-                    int modSlots = (int)EffectManager.GetValue(PassiveEffects.ModSlots, itemValue, itemValue.Quality - 1);
-                    if (modSlots > 0)
+                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(randomItem, false).type, quality, quality, true, null, 1f);
+                    if (itemValue == null)
                     {
-                        itemValue.Modifications = new ItemValue[modSlots];
-                    }
-                    itemValue.CosmeticMods = new ItemValue[itemValue.ItemClass.HasAnyTags(ItemClassModifier.CosmeticItemTags) ? 1 : 0];
-                    if (itemValue.HasQuality)
-                    {
-                        if (quality > 0)
-                        {
-                            itemValue.Quality = quality;
-                        }
-                        else
-                        {
-                            itemValue.Quality = 1;
-                        }
+                        return;
                     }
                     World world = GameManager.Instance.World;
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -396,7 +391,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RandomItem: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BloodmoonWarrior.RandomItem: {0}", e.Message);
             }
         }
 
@@ -466,7 +461,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.UpgradeXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BloodmoonWarrior.UpgradeXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

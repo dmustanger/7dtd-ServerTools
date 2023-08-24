@@ -6,6 +6,8 @@ namespace ServerTools
 {
     class ProtectedZonesConsole : ConsoleCmdAbstract
     {
+        public static Dictionary<int, int[]> Vectors = new Dictionary<int, int[]>();
+
         protected override string getDescription()
         {
             return "[ServerTools] - Enabled, disable, add, remove or list protected spaces";
@@ -101,108 +103,44 @@ namespace ServerTools
                         if (player != null)
                         {
                             int x = (int)player.position.x, z = (int)player.position.z;
-                            if (!ProtectedZones.Vectors.ContainsKey(player.entityId))
+                            if (!Vectors.ContainsKey(player.entityId))
                             {
                                 int[] vectors = new int[5];
                                 vectors[0] = x;
                                 vectors[1] = z;
-                                ProtectedZones.Vectors.Add(player.entityId, vectors);
+                                Vectors.Add(player.entityId, vectors);
                                 SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] The first position has been set to {0}x,{1}z", x, z));
-                                SdtdConsole.Instance.Output("[SERVERTOOLS] Stand in the opposite corner and use add again. Use cancel to clear the saved location and start again");
+                                SdtdConsole.Instance.Output("[SERVERTOOLS] Stand in the opposite corner and use add again. Use cancel to clear the saved position");
                                 return;
                             }
                             else
                             {
-                                ProtectedZones.Vectors.TryGetValue(player.entityId, out int[] vectors);
-                                ProtectedZones.Vectors.Remove(player.entityId);
+                                Vectors.TryGetValue(player.entityId, out int[] vectors);
+                                Vectors.Remove(player.entityId);
                                 if (vectors[0] < x)
                                 {
-                                    vectors[2] = x;
+                                    vectors[2] = x + 2;
                                 }
                                 else
                                 {
-                                    vectors[2] = vectors[0];
-                                    vectors[0] = x;
+                                    vectors[2] = vectors[0] - 2;
+                                    vectors[0] = x - 2;
                                 }
                                 if (vectors[1] < z)
                                 {
-                                    vectors[3] = z;
+                                    vectors[3] = z + 2;
                                 }
                                 else
                                 {
-                                    vectors[3] = vectors[1];
-                                    vectors[1] = z;
+                                    vectors[3] = vectors[1] - 2;
+                                    vectors[1] = z - 2;
                                 }
                                 vectors[4] = 1;
                                 if (!ProtectedZones.ProtectedList.Contains(vectors))
                                 {
-                                    string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
-                                    RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
-                                    List<Chunk> chunks = new List<Chunk>();
                                     ProtectedZones.ProtectedList.Add(vectors);
-                                    for (int j = vectors[0]; j <= vectors[2]; j++)
-                                    {
-                                        for (int k = vectors[1]; k <= vectors[3]; k++)
-                                        {
-                                            Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                            if (chunk != null)
-                                            {
-                                                Bounds bounds = chunk.GetAABB();
-                                                int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
-                                                if (!chunk.IsTraderArea(posX, posZ))
-                                                {
-                                                    chunk.SetTraderArea(posX, posZ, true);
-                                                    if (!chunks.Contains(chunk))
-                                                    {
-                                                        chunks.Add(chunk);
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                int num = World.toChunkXZ(j);
-                                                int num2 = World.toChunkXZ(k);
-                                                long key = WorldChunkCache.MakeChunkKey(num, num2);
-                                                if (regionFileManager.ContainsChunkSync(key))
-                                                {
-                                                    chunk = regionFileManager.GetChunkSync(key);
-                                                    if (chunk != null)
-                                                    {
-                                                        Bounds bounds = chunk.GetAABB();
-                                                        int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
-                                                        if (!chunk.IsTraderArea(posX, posZ))
-                                                        {
-                                                            chunk.SetTraderArea(posX, posZ, true);
-                                                        }
-                                                        GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (chunks.Count > 0)
-                                    {
-                                        List<ClientInfo> clientList = GeneralOperations.ClientList();
-                                        if (clientList != null && clientList.Count > 0)
-                                        {
-                                            for (int i = 0; i < clientList.Count; i++)
-                                            {
-                                                ClientInfo cInfo = clientList[i];
-                                                if (cInfo != null)
-                                                {
-                                                    for (int j = 0; j < chunks.Count; j++)
-                                                    {
-                                                        cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    GameManager.Instance.World.ChunkCache.Save();
-                                    regionFileManager.MakePersistent(GameManager.Instance.World.ChunkCache, true);
-                                    regionFileManager.WaitSaveDone();
-                                    regionFileManager.Cleanup();
                                     ProtectedZones.UpdateXml();
+                                    ProtectedZones.LoadXml();
                                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3]));
                                     return;
                                 }
@@ -237,96 +175,16 @@ namespace ServerTools
                             return;
                         }
                         int[] vectors = new int[5];
-                        if (xMin < xMax)
-                        {
-                            vectors[0] = xMin;
-                            vectors[2] = xMax;
-                        }
-                        else
-                        {
-                            vectors[0] = xMax;
-                            vectors[2] = xMin;
-                        }
-                        if (zMin < zMax)
-                        {
-                            vectors[1] = zMin;
-                            vectors[3] = zMax;
-                        }
-                        else
-                        {
-                            vectors[1] = zMax;
-                            vectors[3] = zMin;
-                        }
+                        vectors[0] = (xMin < xMax ? xMin : xMax) - 2;
+                        vectors[1] = (zMin < zMax ? zMin : zMax) - 2;
+                        vectors[2] = (xMax > xMin ? xMax : xMin) + 2;
+                        vectors[3] = (zMax > zMin ? zMax : zMin) + 2;
                         vectors[4] = 1;
                         if (!ProtectedZones.ProtectedList.Contains(vectors))
                         {
-                            string saveGameRegionDir = GameIO.GetSaveGameRegionDir();
-                            RegionFileManager regionFileManager = new RegionFileManager(saveGameRegionDir, saveGameRegionDir, 0, true);
-                            List<Chunk> chunks = new List<Chunk>();
                             ProtectedZones.ProtectedList.Add(vectors);
-                            for (int j = vectors[0]; j <= vectors[2]; j++)
-                            {
-                                for (int k = vectors[1]; k <= vectors[3]; k++)
-                                {
-                                    Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
-                                    if (chunk != null)
-                                    {
-                                        Bounds bounds = chunk.GetAABB();
-                                        int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
-                                        if (!chunk.IsTraderArea(posX, posZ))
-                                        {
-                                            chunk.SetTraderArea(posX, posZ, true);
-                                            if (!chunks.Contains(chunk))
-                                            {
-                                                chunks.Add(chunk);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        int num = World.toChunkXZ(j);
-                                        int num2 = World.toChunkXZ(k);
-                                        long key = WorldChunkCache.MakeChunkKey(num, num2);
-                                        if (regionFileManager.ContainsChunkSync(key))
-                                        {
-                                            chunk = regionFileManager.GetChunkSync(key);
-                                            if (chunk != null)
-                                            {
-                                                Bounds bounds = chunk.GetAABB();
-                                                int posX = j - (int)bounds.min.x, posZ = k - (int)bounds.min.z;
-                                                if (!chunk.IsTraderArea(posX, posZ))
-                                                {
-                                                    chunk.SetTraderArea(posX, posZ, true);
-                                                }
-                                                GameManager.Instance.World.ChunkCache.AddChunkSync(chunk);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (chunks.Count > 0)
-                            {
-                                List<ClientInfo> clientList = GeneralOperations.ClientList();
-                                if (clientList != null && clientList.Count > 0)
-                                {
-                                    for (int i = 0; i < clientList.Count; i++)
-                                    {
-                                        ClientInfo cInfo = clientList[i];
-                                        if (cInfo != null)
-                                        {
-                                            for (int j = 0; j < chunks.Count; j++)
-                                            {
-                                                cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(chunks[j], true));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            GameManager.Instance.World.ChunkCache.Save();
-                            regionFileManager.MakePersistent(GameManager.Instance.World.ChunkCache, true);
-                            regionFileManager.WaitSaveDone();
-                            regionFileManager.Cleanup();
                             ProtectedZones.UpdateXml();
+                            ProtectedZones.LoadXml();
                             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added protected zone from {0}x,{1}z to {2}x,{3}z", vectors[0], vectors[1], vectors[2], vectors[3]));
                             return;
                         }
@@ -344,9 +202,9 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] You are not in game. There is nothing to cancel"));
                         return;
                     }
-                    if (ProtectedZones.Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
+                    if (Vectors.ContainsKey(_senderInfo.RemoteClientInfo.entityId))
                     {
-                        ProtectedZones.Vectors.Remove(_senderInfo.RemoteClientInfo.entityId);
+                        Vectors.Remove(_senderInfo.RemoteClientInfo.entityId);
                         SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Cancelled your saved corner positions"));
                         return;
                     }
@@ -366,7 +224,8 @@ namespace ServerTools
                             {
                                 if (_senderInfo.RemoteClientInfo != null)
                                 {
-                                    ProtectedZones.ClearNineChunkProtection(_senderInfo.RemoteClientInfo);
+                                    ProtectedZones.ClearSurroundingChunkProtection(_senderInfo.RemoteClientInfo);
+                                    SdtdConsole.Instance.Output("[SERVERTOOLS] Cleared the protected zones that overlap the chunk you are standing in and the surrounding chunks");
                                     return;
                                 }
                             }
@@ -378,30 +237,33 @@ namespace ServerTools
                                     ProtectedZones.ProtectedList.Remove(_vectors);
                                     ProtectedZones.UpdateXml();
                                     ProtectedZones.LoadXml();
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed protected zone {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                    SdtdConsole.Instance.Output("[SERVERTOOLS] Removed protected zone {0}: {1}x,{2}z to {3}x,{4}z", _listNum, _vectors[0], _vectors[1], _vectors[2], _vectors[3]);
                                     return;
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid list number '{0}'", _params[1]));
+                                    SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid list number '{0}'", _params[1]);
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer '{0}'", _params[1]));
+                                SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid argument '{0}'", _params[1]);
                                 return;
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no protected zones"));
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] There are no protected zones");
                             return;
                         }
                     }
                     else if (_senderInfo.RemoteClientInfo != null)
                     {
                         ProtectedZones.ClearSingleChunkProtection(_senderInfo.RemoteClientInfo);
+                        ProtectedZones.UpdateXml();
+                        ProtectedZones.LoadXml();
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Cleared the protected zones that overlap the chunk you are standing in");
                         return;
                     }
                 }
@@ -409,24 +271,24 @@ namespace ServerTools
                 {
                     if (ProtectedZones.ProtectedList.Count > 0)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Protected zones list:"));
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Protected zones list:");
                         for (int i = 0; i < ProtectedZones.ProtectedList.Count; i++)
                         {
                             int[] _vectors = ProtectedZones.ProtectedList[i];
                             if (_vectors[4] == 1)
                             {
-                                SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is active", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                SdtdConsole.Instance.Output("#{0}: {1}x,{2}z to {3}x,{4}z is active", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]);
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("#{0}: {1}x,{2}z to {3}x,{4}z is deactivated", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                                SdtdConsole.Instance.Output("#{0}: {1}x,{2}z to {3}x,{4}z is deactivated", i + 1, _vectors[0], _vectors[1], _vectors[2], _vectors[3]);
                             }
                         }
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no protected zones"));
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no protected zones");
                         return;
                     }
                 }
@@ -434,7 +296,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count));
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Wrong number of arguments, expected 2, found '{0}'", _params.Count);
                         return;
                     }
                     int.TryParse(_params[1], out int listEntry);
@@ -447,7 +309,7 @@ namespace ServerTools
                             ProtectedZones.ProtectedList[listEntry - 1] = _protectedSpace;
                             ProtectedZones.UpdateXml();
                             ProtectedZones.LoadXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deactivated protected zone #{0}", listEntry));
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Deactivated protected zone #{0}", listEntry);
                         }
                         else
                         {
@@ -455,24 +317,24 @@ namespace ServerTools
                             ProtectedZones.ProtectedList[listEntry - 1] = _protectedSpace;
                             ProtectedZones.UpdateXml();
                             ProtectedZones.LoadXml();
-                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Activated protected zone #{0}", listEntry));
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Activated protected zone #{0}", listEntry);
                         }
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] This number does not exist on the protected zones list. Unable to active or deactivate"));
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] This number does not exist on the protected zones list. Unable to active or deactivate");
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument '{0}'", _params[0]));
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Invalid argument '{0}'", _params[0]);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZonesConsole.Execute: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in ProtectedZonesConsole.Execute: {0}", e.Message);
             }
         }
     }

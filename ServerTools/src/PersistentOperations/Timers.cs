@@ -10,7 +10,7 @@ namespace ServerTools
         public static bool CoreIsRunning = false, HalfSecondIsRunning = false;
         public static int StopServerMinutes = 0, eventTime = 0;
         private static int twoSecondTick, fiveSecondTick, tenSecondTick, twentySecondTick, oneMinTick, fiveMinTick, stopServerSeconds, eventInvitation,
-            eventOpen, horde, kickVote, muteVote, newPlayer, restartVote, bloodMoans;
+            eventOpen, kickVote, muteVote, newPlayer, restartVote, bloodMoans;
 
         private static readonly System.Timers.Timer Core = new System.Timers.Timer();
         private static readonly System.Timers.Timer HalfSecond = new System.Timers.Timer();
@@ -1045,15 +1045,6 @@ namespace ServerTools
                     KickVote.ProcessKickVote();
                 }
             }
-            if (Hordes.IsEnabled)
-            {
-                horde++;
-                if (horde >= 1200)
-                {
-                    horde = 0;
-                    Hordes.Exec();
-                }
-            }
             if (Event.Invited)
             {
                 eventInvitation++;
@@ -1206,9 +1197,9 @@ namespace ServerTools
 
         private static void Init17()
         {
-            WebPanel.Alert = true;
-            if (WebAPI.Panel_Address != "")
+            if (WebAPI.Panel_Address != "" && !WebPanel.Alert)
             {
+                WebPanel.Alert = true;
                 Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel link @ '{0}'", WebAPI.Panel_Address));
             }
         }

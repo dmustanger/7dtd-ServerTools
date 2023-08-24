@@ -311,7 +311,7 @@ namespace ServerTools
             else if (WebAPI.IsRunning && !WebAPI.IsEnabled)
             {
                 WebAPI.Unload();
-                Log.Out(string.Format("[SERVERTOOLS] The various panels offered by ServerTools are now unavailable due to the Web_API being disabled"));
+                Log.Out("[SERVERTOOLS] The various panels offered by ServerTools are now unavailable due to the Web_API being disabled");
             }
             if (WebPanel.IsEnabled)
             {
@@ -320,7 +320,7 @@ namespace ServerTools
                     if (WebAPI.Panel_Address != "")
                     {
                         WebPanel.Alert = true;
-                        Log.Out(string.Format("[SERVERTOOLS] ServerTools web panel link @ '{0}'", WebAPI.Panel_Address));
+                        Log.Out("[SERVERTOOLS] ServerTools web panel link @ '{0}'", WebAPI.Panel_Address);
                     }
                     else
                     {

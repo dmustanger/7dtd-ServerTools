@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -23,18 +22,18 @@ namespace ServerTools
                     string installPath = gamePath + "/Mods/ServerTools";
                     if (!Directory.Exists(installPath))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", installPath));
+                        Log.Out("[SERVERTOOLS] Unable to locate ServerTools installation files in a mods folder located at '{0}'", installPath);
                         return;
                     }
                     else if (!File.Exists(installPath + "/ServerTools.dll"))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to locate ServerTools.dll file in the mods folder located at '{0}'", installPath));
+                        Log.Out("[SERVERTOOLS] Unable to locate ServerTools.dll file in the mods folder located at '{0}'", installPath);
                         return;
                     }
                     if (Directory.Exists(configPath))
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Located xml and log directory at '{0}'", API.ConfigPath));
-                        Log.Out(string.Format("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder"));
+                        Log.Out("[SERVERTOOLS] Located xml and log directory at '{0}'", API.ConfigPath);
+                        Log.Out("[SERVERTOOLS] Tool XML and log files for ServerTools will be placed in this folder");
                     }
                     if (!Directory.Exists(configPath + "/Logs/ChatLogs"))
                     {
@@ -119,27 +118,25 @@ namespace ServerTools
                     }
                     if (PersistentContainer.Instance.Load())
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Data loaded"));
+                        Log.Out("[SERVERTOOLS] Data loaded");
                     }
                     RunTimePatch.PatchAll();
                     Config.Load();
                     GeneralOperations.CreateCustomXUi();
+                    DamageDetector.GetClaimProtectionLevel();
+                    GeneralOperations.GetProtectionLevel();
                     GeneralOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
                     GeneralOperations.StartTime = DateTime.Now;
                     CommandList.BuildList();
                     CommandList.Load();
-                    InteractiveMap.SetWorldSize();
-                    InteractiveMap.LocateMapFolder();
                     ModularLoader.Load();
                     Phrases.Load();
                     HowToSetup.Load();
-                    GameManager.Instance.waitForTargetFPS.TargetFPS = 60;
-                    DamageDetector.SetProtection();
                     if (SleeperRespawn.IsEnabled)
                     {
                         try
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("sleeperreset"), null);
+                            SdtdConsole.Instance.ExecuteSync("sleeper r", null);
                         }
                         catch (XmlException e)
                         {
@@ -164,11 +161,11 @@ namespace ServerTools
                         DeleteFiles("PollLogs");
                         DeleteFiles("WebAPILogs");
 
-                        Log.Out(string.Format("[SERVERTOOLS] Xml log clean up complete"));
+                        Log.Out("[SERVERTOOLS] Xml log clean up complete");
                     }
                     catch (XmlException e)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message));
+                        Log.Out("[SERVERTOOLS] Failed to delete old logs. Error = {0}", e.Message);
                     }
 
                     if (Directory.Exists(GameIO.GetGamePath().Replace("..", "")))
@@ -176,12 +173,12 @@ namespace ServerTools
                         DirectoryInfo parent = Directory.GetParent(GameIO.GetGamePath().Replace("..", "")).Parent;
                         if (Directory.Exists(parent.FullName + "/Data/ItemIcons"))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Located folder containing game icons"));
+                            Log.Out("[SERVERTOOLS] Located folder containing game icons");
                             WebAPI.Icon_Folder = parent.FullName + "/Data/ItemIcons";
                         }
                         else
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Unable to locate game icons. Shop, Auction and Web panels will be affected by this"));
+                            Log.Out("[SERVERTOOLS] Unable to locate game icons. Shop, Auction and Web panels will be affected by this");
                         }
                     }
                     if (PersistentContainer.Instance.WorldSeed == 0)
@@ -194,7 +191,7 @@ namespace ServerTools
                         if (PersistentContainer.Instance.Players.IDs.Count > 0)
                         {
                             CleanBin.ClearFirstClaims();
-                            Log.Out(string.Format("[SERVERTOOLS] Detected a new world. Some old data has been cleaned up but the majority remains. Run the Clean_Bin tool to remove the data of your choice"));
+                            Log.Out("[SERVERTOOLS] Detected a new world. Some old data has been cleaned up but the majority remains. Run the Clean_Bin tool to remove the data of your choice");
                         }
                     }
                     if (PersistentContainer.Instance.ConnectionTimeOut == null)

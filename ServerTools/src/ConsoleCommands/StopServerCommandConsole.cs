@@ -50,13 +50,15 @@ namespace ServerTools
                             List<ClientInfo> clientList = GeneralOperations.ClientList();
                             if (clientList != null)
                             {
+                                ClientInfo cInfo;
+                                EntityPlayer player;
                                 for (int i = 0; i < clientList.Count; i++)
                                 {
-                                    ClientInfo cInfo = clientList[i];
+                                    cInfo = clientList[i];
                                     if (!ExitCommand.Players.ContainsKey(cInfo.entityId) && (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > ExitCommand.Admin_Level &&
                                         GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > ExitCommand.Admin_Level))
                                     {
-                                        EntityPlayer player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
+                                        player = GeneralOperations.GetEntityPlayer(cInfo.entityId);
                                         if (player != null)
                                         {
                                             ExitCommand.Players.Add(cInfo.entityId, player.position);
