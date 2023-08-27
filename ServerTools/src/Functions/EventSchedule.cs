@@ -90,10 +90,8 @@ namespace ServerTools
                                 {
                                     Expired.Add(entry.Key);
                                     split = entry.Key.Split('_');
-                                    if (GeneralOperations.SessionBonus(split[1]))
-                                    {
-                                        AddToSchedule(entry.Key, dateTime.AddMinutes(15));
-                                    }
+                                    GeneralOperations.SessionBonus(split[1]);
+                                    AddToSchedule(entry.Key, dateTime.AddMinutes(15));
                                 }
                                 break;
                             case "BreakReminder":
@@ -130,7 +128,10 @@ namespace ServerTools
                                     Expired.Add(entry.Key);
                                     try
                                     {
-                                        InfoTicker.Exec();
+                                        ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
+                                        {
+                                            InfoTicker.Exec();
+                                        });
                                     }
                                     finally
                                     {
@@ -255,7 +256,7 @@ namespace ServerTools
             {
                 if (!NewEntries.TryAdd(_toolName, _time))
                 {
-                    Log.Out("[SERVERTOOLS] Unable to add entry to event schedule: '{0}' at '{1}'", _toolName, _time);
+                    Timers.AddEventToSchedule(_toolName, _time);
                 }
             }
         }

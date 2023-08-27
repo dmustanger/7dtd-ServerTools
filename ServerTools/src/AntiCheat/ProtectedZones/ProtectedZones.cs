@@ -132,7 +132,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in ProtectedZones.LoadXml: {0}", e.Message));
+                    Log.Out("[SERVERTOOLS] Error in ProtectedZones.LoadXml: {0}", e.Message);
                 }
             }
         }

@@ -12,11 +12,11 @@ namespace ServerTools
         public static string Command_infoticker = "infoticker", Delay = "60";
 
         public static List<string> ExemptionList = new List<string>();
+        public static List<string> MsgList = new List<string>();
 
         private static string EventDelay = "";
         private static DateTime time = new DateTime();
         private static Dictionary<string, string> Dict = new Dictionary<string, string>();
-        private static List<string> MsgList = new List<string>();
 
         private const string file = "InfoTicker.xml";
         private static readonly string FilePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -104,7 +104,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.LoadXml: {0}", e.Message));
+                    Log.Out("[SERVERTOOLS] Error in InfoTicker.LoadXml: {0}", e.Message);
                 }
             }
         }
@@ -142,7 +142,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.UpdateXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in InfoTicker.UpdateXml: {0}", e.Message);
             }
         }
 
@@ -167,10 +167,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("InfoTicker"))
-                {
-                    EventSchedule.RemoveFromSchedule("InfoTicker");
-                }
+                EventSchedule.Expired.Add("InfoTicker");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {
@@ -218,8 +215,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Invalid Info_Ticker Delay detected. Use a single integer, 24h time or multiple 24h time entries"));
-                        Log.Out(string.Format("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00"));
+                        Log.Out("[SERVERTOOLS] Invalid Info_Ticker Delay detected. Use a single integer, 24h time or multiple 24h time entries");
+                        Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
                     }
                 }
             }
@@ -235,12 +232,13 @@ namespace ServerTools
                     {
                         MsgList.RandomizeList();
                         string message = MsgList[0];
+                        ClientInfo cInfo;
                         List<ClientInfo> clientList = GeneralOperations.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
                             {
-                                ClientInfo cInfo = clientList[i];
+                                cInfo = clientList[i];
                                 if (cInfo != null)
                                 {
                                     if (!ExemptionList.Contains(cInfo.CrossplatformId.CombinedString))
@@ -254,21 +252,18 @@ namespace ServerTools
                                 }
                             }
                             MsgList.RemoveAt(0);
-                            if (MsgList.Count == 0)
-                            {
-                                BuildList();
-                            }
                         }
                     }
                     else
                     {
                         string message = MsgList[0];
+                        ClientInfo cInfo;
                         List<ClientInfo> clientList = GeneralOperations.ClientList();
                         if (clientList != null)
                         {
                             for (int i = 0; i < clientList.Count; i++)
                             {
-                                ClientInfo cInfo = clientList[i];
+                                cInfo = clientList[i];
                                 if (cInfo != null)
                                 {
                                     if (!ExemptionList.Contains(cInfo.CrossplatformId.CombinedString))
@@ -282,17 +277,13 @@ namespace ServerTools
                                 }
                             }
                             MsgList.RemoveAt(0);
-                            if (MsgList.Count == 0)
-                            {
-                                BuildList();
-                            }
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.Exec: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in InfoTicker.Exec: {0}", e.Message);
             }
         }
 
@@ -345,7 +336,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTicker.UpgradeXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in InfoTicker.UpgradeXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

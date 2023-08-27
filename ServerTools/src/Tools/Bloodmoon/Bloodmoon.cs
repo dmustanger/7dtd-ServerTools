@@ -14,10 +14,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _reset)
             {
-                if (EventSchedule.Schedule.ContainsKey("Bloodmoon"))
-                {
-                    EventSchedule.RemoveFromSchedule("Bloodmoon");
-                }
+                EventSchedule.Expired.Add("Bloodmoon");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

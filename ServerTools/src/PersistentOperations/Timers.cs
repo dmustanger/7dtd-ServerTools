@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 using System.Xml;
 using UnityEngine;
@@ -898,6 +899,22 @@ namespace ServerTools
             };
         }
 
+        public static void AddEventToSchedule(string _toolName, DateTime _time)
+        {
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(1000)
+            {
+                AutoReset = false
+            };
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init52(_toolName, _time);
+                singleUseTimer.Stop();
+                singleUseTimer.Close();
+                singleUseTimer.Dispose();
+            };
+        }
+
         public static void PersistentDataSave()
         {
             System.Timers.Timer saveDelay = new System.Timers.Timer(60000)
@@ -1372,6 +1389,11 @@ namespace ServerTools
         private static void Init51()
         {
             LoadProcess.ChunkRegionReset();
+        }
+
+        private static void Init52(string _toolName, DateTime _time)
+        {
+            EventSchedule.AddToSchedule(_toolName, _time);
         }
     }
 }

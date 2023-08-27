@@ -17,10 +17,7 @@ namespace ServerTools
         {
             if (EventDelay != Time || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("Shutdown"))
-                {
-                    EventSchedule.RemoveFromSchedule("Shutdown");
-                }
+                EventSchedule.Expired.Add("Shutdown");
                 EventDelay = Time;
                 DateTime time;
                 if (Time.Contains(",") && Time.Contains(":"))
@@ -81,7 +78,7 @@ namespace ServerTools
             if (GeneralOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
                 DateTime time = DateTime.Now.AddMinutes(10);
-                EventSchedule.Schedule.Add("Shutdown", time);
+                EventSchedule.AddToSchedule("Shutdown", time);
                 if (Event.Open && !Event.OperatorWarned)
                 {
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(Event.Operator);
@@ -129,7 +126,7 @@ namespace ServerTools
             if (GeneralOperations.IsBloodmoon() && !Interrupt_Bloodmoon)
             {
                 DateTime time = DateTime.Now.AddMinutes(10);
-                EventSchedule.Schedule.Add("Shutdown", time);
+                EventSchedule.AddToSchedule("Shutdown", time);
                 if (Event.Open && !Event.OperatorWarned)
                 {
                     ClientInfo cInfo = GeneralOperations.GetClientInfoFromNameOrId(Event.Operator);

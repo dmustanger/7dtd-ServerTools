@@ -1,5 +1,29 @@
 ﻿CHANGELOG
 
+21.1.1
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Fixed internal event scheduler error
+-Fixed Player_Logs triggering an index error
+-Fixed event scheduler utilizing a concurrent collection with
+a non concurrent by passing the work to another thread
+-Fixed Bot_Response not working as intended
+-Fixed /commands not utilizing the CommandList.xml replacements
+-Fixed Sorter tool failing to transfer items when the target
+container had full stacks
+-Changed claim check process inside unloaded chunks
+-Changed CommandList.xml upgrade process
+-Changed all tool delays to note the time interval in the name.
+Some tools allow a 24h time schedule. This has not changed
+-Updated HowToSetup.txt
+
+Known issues:
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
+-RIO is not functioning as intended
+-Some console commands are out of date
+
 21.1.0
 Built using Alpha 21 stable assets
 Functioning with Alpha 21 stable. Untested with other versions
@@ -7,7 +31,7 @@ Functioning with Alpha 21 stable. Untested with other versions
 -Added platform id, cross platform id, the day and hour to
 Player_Logs
 -Added Delay option to Horde tool. Controls how often a horde
-is initiated. The Time is in minutes.
+is initiated. The Delay is in minutes.
 -Added Admin_Level option to Protected_Zones. This allows admin
 to edit and damage a protected zone
 -Added Harvest tool. Typing /harvest will attempt to collect 

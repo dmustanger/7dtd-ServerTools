@@ -59,6 +59,7 @@ namespace ServerTools
                 {
                     Phrases.Dict.TryGetValue("Bank17", out string phrase);
                     phrase = phrase.Replace("{Value}", _amount.ToString());
+                    phrase = phrase.Replace("{CoinName}", Wallet.Currency_Name);
                     cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageShowToolbeltMessage>().Setup(phrase, string.Empty));
                 }
             }
@@ -154,7 +155,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bank.CurrentBankAndId: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bank.CurrentBankAndId: {0}", e.Message);
             }
         }
 
@@ -222,7 +223,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bank.CheckLocation: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bank.CheckLocation: {0}", e.Message);
             }
         }
 
@@ -299,7 +300,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bank.BagToBank: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bank.BagToBank: {0}", e.Message);
             }
         }
 
@@ -377,7 +378,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bank.BankToBag: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bank.BankToBag: {0}", e.Message);
             }
         }
 
@@ -459,7 +460,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Bank.Transfer: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Bank.Transfer: {0}", e.Message);
             }
         }
     }

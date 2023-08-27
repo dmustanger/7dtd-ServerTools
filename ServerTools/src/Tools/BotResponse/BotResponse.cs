@@ -9,9 +9,8 @@ namespace ServerTools
 {
     class BotResponse
     {
-        public static bool IsEnabled = false, IsRunning = false, Whisper = false;
+        public static bool IsEnabled = false, IsRunning = false;
 
-        public static Dictionary<string, string[]> Dict1 = new Dictionary<string, string[]>();
         public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
 
         private const string file = "BotResponse.xml";
@@ -46,7 +45,7 @@ namespace ServerTools
                 }
                 catch (XmlException e)
                 {
-                    Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                    Log.Error("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message);
                     return;
                 }
                 XmlNodeList childNodes = xmlDoc.DocumentElement.ChildNodes;
@@ -72,16 +71,18 @@ namespace ServerTools
                                 continue;
                             }
                             string response = line.GetAttribute("Response");
-                            if (bool.TryParse(line.GetAttribute("Exact"), out bool exact))
+                            if (!bool.TryParse(line.GetAttribute("Exact"), out bool exact))
                             {
-                                if (bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
-                                {
-                                    string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
-                                    if (!Dict.ContainsKey(message))
-                                    {
-                                        Dict.Add(message, values);
-                                    }
-                                }
+                                continue;
+                            }
+                            if (!bool.TryParse(line.GetAttribute("Whisper"), out bool whisper))
+                            {
+                                continue;
+                            }
+                            string[] values = { response, exact.ToString().ToLower(), whisper.ToString().ToLower() };
+                            if (!Dict.ContainsKey(message))
+                            {
+                                Dict.Add(message, values);
                             }
                         }
                     }
@@ -109,7 +110,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in BotResponse.LoadXml: {0}", e.Message));
+                    Log.Out("[SERVERTOOLS] Error in BotResponse.LoadXml: {0}", e.Message);
                 }
             }
         }
@@ -139,7 +140,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BotResponse.UpdateXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BotResponse.UpdateXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -220,7 +221,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BotResponse.UpgradeXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in BotResponse.UpgradeXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

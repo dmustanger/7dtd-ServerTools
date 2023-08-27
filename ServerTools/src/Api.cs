@@ -487,7 +487,7 @@ namespace ServerTools
                             Hardcore.Check(_cInfo, _player, false);
                         }
                     }
-                    EventSchedule.Schedule.Add("Bonus_" + id, DateTime.Now.AddMinutes(15));
+                    EventSchedule.AddToSchedule("Bonus_" + id, DateTime.Now.AddMinutes(15));
                 }
             }
             catch (Exception e)
@@ -609,7 +609,7 @@ namespace ServerTools
                         Teleportation.InsideWorld(_cInfo, _player);
                         Teleportation.InsideBlock(_cInfo, _player);
                     }
-                    EventSchedule.Schedule.Add("Bonus_" + id, DateTime.Now.AddMinutes(15));
+                    EventSchedule.AddToSchedule("Bonus_" + id, DateTime.Now.AddMinutes(15));
                 }
             }
             catch (Exception e)

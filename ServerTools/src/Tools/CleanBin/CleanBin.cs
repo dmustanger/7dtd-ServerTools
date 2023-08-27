@@ -5,7 +5,7 @@ namespace ServerTools
 {
     class CleanBin
     {
-        public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Chunk_Reset = false, Delays = false,
+        public static bool IsEnabled = false, Auction = false, Bank = false, Bounties = false, Chunk_Reset = false, Player_Delays = false,
             Homes = false, Jail = false, Lobby = false, Market = false, New_Spawn_Tele = false, POI_Reset = false, Poll = false,
             Protected_Zones = false, Region_Reset = false, Shop_Log = false, Waypoints = false;
 
@@ -43,7 +43,7 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.ChunkReset = new Dictionary<string, DateTime>();
                 }
-                if (Delays)
+                if (Player_Delays)
                 {
                     PersistentContainer.Instance.Players[id[i]].LastAnimal = new DateTime();
                     PersistentContainer.Instance.Players[id[i]].LastDied = new DateTime();

@@ -551,7 +551,17 @@ namespace ServerTools
                     EntityPlayer player = GeneralOperations.GetEntityPlayer(_cInfo.entityId);
                     if (player != null)
                     {
-                        if (GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(player.position)) == EnumLandClaimOwner.None)
+                        EnumLandClaimOwner claimOwner;
+                        Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)player.position.x, (int)player.position.y, (int)player.position.z);
+                        if (chunk == null)
+                        {
+                            claimOwner = EnumLandClaimOwner.None;
+                        }
+                        else
+                        {
+                            claimOwner = GeneralOperations.ClaimedByWho(_cInfo.CrossplatformId, new Vector3i(player.position));
+                        }
+                        if (claimOwner == EnumLandClaimOwner.None)
                         {
                             ReservedCheck(_cInfo, _waypoint);
                         }

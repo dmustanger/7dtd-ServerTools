@@ -14,10 +14,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("BreakReminder"))
-                {
-                    EventSchedule.RemoveFromSchedule("BreakReminder");
-                }
+                EventSchedule.Expired.Add("BreakReminder");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

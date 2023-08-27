@@ -127,7 +127,6 @@ namespace ServerTools
                     GeneralOperations.GetProtectionLevel();
                     GeneralOperations.Player_Killing_Mode = GamePrefs.GetInt(EnumGamePrefs.PlayerKillingMode);
                     GeneralOperations.StartTime = DateTime.Now;
-                    CommandList.BuildList();
                     CommandList.Load();
                     ModularLoader.Load();
                     Phrases.Load();
@@ -223,7 +222,7 @@ namespace ServerTools
                         CleanBin.Auction = false;
                         CleanBin.Bank = false;
                         CleanBin.Bounties = false;
-                        CleanBin.Delays = false;
+                        CleanBin.Player_Delays = false;
                         CleanBin.Homes = false;
                         CleanBin.Jail = false;
                         CleanBin.Lobby = false;

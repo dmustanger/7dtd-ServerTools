@@ -16,10 +16,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("Hordes"))
-                {
-                    EventSchedule.RemoveFromSchedule("Hordes");
-                }
+                EventSchedule.Expired.Add("Hordes");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

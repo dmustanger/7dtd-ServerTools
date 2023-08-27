@@ -276,10 +276,7 @@ namespace ServerTools
         {
             if (EventDelay != Reminder_Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("Zones") && !EventSchedule.Expired.Contains("Zones"))
-                {
-                    EventSchedule.RemoveFromSchedule("Zones");
-                }
+                EventSchedule.Expired.Add("Zones");
                 EventDelay = Reminder_Delay;
                 if (Reminder_Delay.Contains(",") && Reminder_Delay.Contains(":"))
                 {

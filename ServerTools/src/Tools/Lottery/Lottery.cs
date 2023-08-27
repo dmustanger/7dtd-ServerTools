@@ -71,7 +71,7 @@ namespace ServerTools
                     if (Entries.Count == 1)
                     {
                         DrawTime = DateTime.Now.AddHours(1);
-                        EventSchedule.Schedule.Add("Lottery", DrawTime);
+                        EventSchedule.AddToSchedule("Lottery", DrawTime);
                     }
                     TimeSpan varTime = DrawTime - DateTime.Now;
                     double fractionalMinutes = varTime.TotalMinutes;

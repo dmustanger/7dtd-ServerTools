@@ -17,10 +17,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("AutoBackup"))
-                {
-                    EventSchedule.RemoveFromSchedule("AutoBackup");
-                }
+                EventSchedule.Expired.Add("AutoBackup");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

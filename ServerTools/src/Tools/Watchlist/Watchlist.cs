@@ -163,10 +163,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("WatchList"))
-                {
-                    EventSchedule.RemoveFromSchedule("WatchList");
-                }
+                EventSchedule.Expired.Add("WatchList");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

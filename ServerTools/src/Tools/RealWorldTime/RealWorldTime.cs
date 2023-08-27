@@ -16,10 +16,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("RealWorldTime"))
-                {
-                    EventSchedule.RemoveFromSchedule("RealWorldTime");
-                }
+                EventSchedule.Expired.Add("RealWorldTime");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

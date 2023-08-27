@@ -15,9 +15,10 @@ namespace ServerTools
             List<ClientInfo> clientList = GeneralOperations.ClientList();
             if (clientList != null)
             {
+                ClientInfo cInfoAdmin;
                 for (int i = 0; i < clientList.Count; i++)
                 {
-                    ClientInfo cInfoAdmin = clientList[i];
+                    cInfoAdmin = clientList[i];
                     int userPlatformID = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfoAdmin.PlatformId);
                     int userCrossplatformID = GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfoAdmin.CrossplatformId);
                     if (userPlatformID <= Admin_Level ||
@@ -41,22 +42,22 @@ namespace ServerTools
         {
             if (admins.Count == 0 && mods.Count == 0)
             {
-                Phrases.Dict.TryGetValue("AdminList3", out string phrase3);
-                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase3 + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue("AdminList3", out string phrase);
+                ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             { 
                 if (admins.Count > 0)
                 {
                     string adminList = string.Join(", ", admins.ToArray());
-                    Phrases.Dict.TryGetValue("AdminList1", out string _phrase1);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase1 + adminList + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("AdminList1", out string phrase1);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase1 + adminList + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
                 if (mods.Count > 0)
                 {
                     string modList = string.Join(", ", mods.ToArray());
-                    Phrases.Dict.TryGetValue("AdminList2", out string _phrase2);
-                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + _phrase2 + modList + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue("AdminList2", out string phrase2);
+                    ChatHook.ChatMessage(_cInfo, Config.Chat_Response_Color + phrase2 + modList + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

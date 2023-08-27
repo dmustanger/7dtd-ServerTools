@@ -15,10 +15,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("AutoSaveWorld"))
-                {
-                    EventSchedule.RemoveFromSchedule("AutoSaveWorld");
-                }
+                EventSchedule.Expired.Add("AutoSaveWorld");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

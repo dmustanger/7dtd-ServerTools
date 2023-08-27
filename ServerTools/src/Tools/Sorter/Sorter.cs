@@ -125,10 +125,15 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                if (!mainContainer[j].IsEmpty() && lootContainer.AddItem(mainContainer[j]))
+                                for (int k = 0; k < secondaryContainer.Length; k++)
                                 {
-                                    mainContainer[j] = new ItemStack(ItemValue.None, 0);
-                                    continue;
+                                    if (secondaryContainer[k].IsEmpty())
+                                    {
+                                        secondaryContainer[k] = mainContainer[j];
+                                        mainContainer[j] = new ItemStack(ItemValue.None, 0);
+                                        modified = true;
+                                        continue;
+                                    }
                                 }
                             }
                         }

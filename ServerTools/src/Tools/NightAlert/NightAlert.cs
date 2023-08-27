@@ -14,10 +14,7 @@ namespace ServerTools
         {
             if (EventDelay != Delay || _loading)
             {
-                if (EventSchedule.Schedule.ContainsKey("NightAlert"))
-                {
-                    EventSchedule.RemoveFromSchedule("NightAlert");
-                }
+                EventSchedule.Expired.Add("NightAlert");
                 EventDelay = Delay;
                 if (Delay.Contains(",") && Delay.Contains(":"))
                 {

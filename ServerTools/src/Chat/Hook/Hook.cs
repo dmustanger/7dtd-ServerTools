@@ -1500,16 +1500,29 @@ namespace ServerTools
                         }
                         if (BotResponse.IsEnabled)
                         {
-                            string messageToLower = _message.ToLower();
-                            List<string> responses = BotResponse.Dict.Keys.ToList();
-                            for (int i = 0; i < responses.Count; i++)
+                            ThreadManager.AddSingleTask(delegate (ThreadManager.TaskInfo _taskInfo)
                             {
-                                if (_message == responses[i])
+                                string messageToLower = _message.ToLower();
+                                foreach (var entry in BotResponse.Dict)
                                 {
-                                    BotResponse.Dict.TryGetValue(responses[i], out string[] response);
-                                    if (response[1] == "true")
+                                    if (messageToLower.Contains(entry.Key))
                                     {
-                                        if (response[2] == "true")
+                                        BotResponse.Dict.TryGetValue(entry.Key, out string[] response);
+                                        if (response[1] == "true")
+                                        {
+                                            if (messageToLower == entry.Key)
+                                            {
+                                                if (response[2] == "true")
+                                                {
+                                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, response[0], Config.Server_Response_Name, false, null));
+                                                }
+                                                else
+                                                {
+                                                    GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, Config.Chat_Response_Color + response[0] + "[-]", Config.Server_Response_Name, false, null);
+                                                }
+                                            }
+                                        }
+                                        else if (response[2] == "true")
                                         {
                                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, response[0], Config.Server_Response_Name, false, null));
                                         }
@@ -1519,22 +1532,7 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                else if (_message.Contains(responses[i]))
-                                {
-                                    BotResponse.Dict.TryGetValue(responses[i], out string[] response);
-                                    if (response[1] == "false")
-                                    {
-                                        if (response[2] == "whisper")
-                                        {
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, response[0], Config.Server_Response_Name, false, null));
-                                        }
-                                        else
-                                        {
-                                            GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, Config.Chat_Response_Color + response[0] + "[-]", Config.Server_Response_Name, false, null);
-                                        }
-                                    }
-                                }
-                            }
+                            });
                         }
                     }
                     else if (_type == EChatType.Friends)

@@ -28,7 +28,7 @@ namespace ServerTools
                     return;
                 }
                 ItemStack stack = cInfo.latestPlayerData.inventory[cInfo.latestPlayerData.selectedInventorySlot];
-                if (stack == null || !stack.IsEmpty() && stack.itemValue.ItemClass.CreativeMode == EnumCreativeMode.Dev)
+                if (stack == null || !stack.IsEmpty())
                 {
                     return;
                 }
