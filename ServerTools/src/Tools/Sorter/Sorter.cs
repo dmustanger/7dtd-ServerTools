@@ -86,7 +86,7 @@ namespace ServerTools
                         bool modified = false;
                         for (int j = 0; j < mainContainer.Length; j++)
                         {
-                            if (mainContainer[j].IsEmpty() || !mainContainer[j].itemValue.ItemClass.CanStack() || !lootContainer.HasItem(_secureLoot.items[j].itemValue))
+                            if (mainContainer[j].IsEmpty() || mainContainer[j].itemValue.Modifications.Length > 0 || mainContainer[j].itemValue.CosmeticMods.Length > 0 || !mainContainer[j].itemValue.ItemClass.CanStack() || !lootContainer.HasItem(_secureLoot.items[j].itemValue))
                             {
                                 continue;
                             }

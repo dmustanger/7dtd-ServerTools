@@ -311,7 +311,7 @@ namespace ServerTools
                             {
                                 if (player.Died > 0)
                                 {
-                                    player.Died -= 1;
+                                    player.Died = player.Died - 1;
                                     player.bPlayerStatsChanged = true;
                                     cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(player));
                                     Phrases.Dict.TryGetValue("BloodmoonWarrior2", out string phrase);

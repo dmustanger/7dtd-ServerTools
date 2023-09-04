@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "21.1.2";
+        public const string Version = "21.1.3";
         public static bool FirstLoad = true, UpdateWebAPI = false;
         public static string IP = "";
         public static int Port;

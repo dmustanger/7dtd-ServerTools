@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+21.1.3
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Fixed Sorter tool corrupting items with mod slots
+
+Known issues:
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
+-RIO is not functioning as intended
+-Some console commands are out of date
+
 21.1.2
 Built using Alpha 21 stable assets
 Functioning with Alpha 21 stable. Untested with other versions
@@ -9,6 +21,12 @@ Functioning with Alpha 21 stable. Untested with other versions
 -Fixed /shop buy chat command not working as intended
 -Fixed High_Ping_Kicker chat response
 -Fixed internal event scheduler utilizing multiple 24h entries
+
+Known issues:
+-Vault_Box does not work with all modded servers.
+Might be a mod load order issue
+-RIO is not functioning as intended
+-Some console commands are out of date
 
 21.1.1
 Built using Alpha 21 stable assets
