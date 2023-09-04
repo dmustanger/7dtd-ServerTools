@@ -33,12 +33,13 @@ namespace ServerTools
                             EventSchedule.AddToSchedule("AutoBackup", time);
                             return;
                         }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours1).AddMinutes(minutes1);
-                            EventSchedule.AddToSchedule("AutoBackup", time);
-                        }
                     }
+                    string[] timeSplit2 = times[0].Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                    EventSchedule.AddToSchedule("AutoBackup", time);
+                    return;
                 }
                 else if (Delay.Contains(":"))
                 {
@@ -55,6 +56,7 @@ namespace ServerTools
                         time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
                         EventSchedule.AddToSchedule("AutoBackup", time);
                     }
+                    return;
                 }
                 else
                 {
@@ -62,12 +64,14 @@ namespace ServerTools
                     {
                         time = DateTime.Now.AddMinutes(delay);
                         EventSchedule.AddToSchedule("AutoBackup", time);
+                        return;
                     }
                     else
                     {
                         Log.Out("[SERVERTOOLS] Invalid AutoBackup Delay detected. Use a single integer, 24h time or multiple 24h time entries");
                         Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
                     }
+                    return;
                 }
             }
         }

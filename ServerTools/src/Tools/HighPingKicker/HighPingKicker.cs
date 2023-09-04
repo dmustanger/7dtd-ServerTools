@@ -114,6 +114,7 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
@@ -210,8 +211,8 @@ namespace ServerTools
                 Violations.Remove(_cInfo.entityId);
                 Phrases.Dict.TryGetValue("HighPing1", out string phrase);
                 phrase = phrase.Replace("{PlayerName}", _cInfo.playerName);
-                phrase = phrase.Replace("{Value}", _cInfo.ping.ToString());
-                phrase = phrase.Replace("{MaxPing}", _ping.ToString());
+                phrase = phrase.Replace("{Value}", _ping.ToString());
+                phrase = phrase.Replace("{MaxPing}", Max_Ping.ToString());
                 ChatHook.ChatMessage(null, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Global, null);
                 Log.Out("[SERVERTOOLS] Kicked player with id '{0}' '{1}' named '{2}' for high ping violation of '{3}'", _cInfo.PlatformId.CombinedString, _cInfo.CrossplatformId.CombinedString, _cInfo.playerName, _ping);
                 GeneralOperations.KickPlayer(_cInfo, phrase);
@@ -231,6 +232,7 @@ namespace ServerTools
                 File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<HighPing>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");

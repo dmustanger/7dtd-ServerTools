@@ -622,12 +622,6 @@ namespace ServerTools
                                     Shop.PosCheck(_cInfo, _message, 1, 0);
                                     return false;
                                 }
-                                else if (messageLowerCase.StartsWith(Shop.Command_shop + " ") && Permission(_cInfo, Shop.Command_shop))
-                                {
-                                    string _category = messageLowerCase.Replace(Shop.Command_shop + " ", "");
-                                    Shop.PosCheck(_cInfo, _category, 2, 0);
-                                    return false;
-                                }
                                 else if (messageLowerCase.StartsWith(Shop.Command_shop_buy + " ") && Permission(_cInfo, Shop.Command_shop_buy) && 
                                     (Wallet.IsEnabled || (Bank.IsEnabled && Bank.Direct_Payment)))
                                 {
@@ -652,6 +646,12 @@ namespace ServerTools
                                             ChatMessage(_cInfo, Config.Chat_Response_Color + phrase + "[-]", -1, Config.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
+                                    return false;
+                                }
+                                else if (messageLowerCase.StartsWith(Shop.Command_shop + " ") && Permission(_cInfo, Shop.Command_shop))
+                                {
+                                    string _category = messageLowerCase.Replace(Shop.Command_shop + " ", "");
+                                    Shop.PosCheck(_cInfo, _category, 2, 0);
                                     return false;
                                 }
                             }
@@ -1290,14 +1290,6 @@ namespace ServerTools
                                 {
                                     messageLowerCase = messageLowerCase.Replace(AutoPartyInvite.Command_party_remove + " ", "");
                                     AutoPartyInvite.Remove(_cInfo, messageLowerCase);
-                                    return false;
-                                }
-                            }
-                            if (AllocsMap.IsEnabled)
-                            {
-                                if (messageLowerCase == AllocsMap.Command_map && Permission(_cInfo, AllocsMap.Command_map))
-                                {
-                                    AllocsMap.Exec(_cInfo);
                                     return false;
                                 }
                             }

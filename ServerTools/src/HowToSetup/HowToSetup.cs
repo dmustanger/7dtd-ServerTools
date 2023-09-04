@@ -12,6 +12,7 @@ namespace ServerTools
         {
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.UTF8))
             {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
                 sw.WriteLine("This was drafted for version 21.1.1");
                 sw.WriteLine();

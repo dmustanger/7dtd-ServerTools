@@ -226,6 +226,7 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
@@ -292,12 +293,13 @@ namespace ServerTools
                             EventSchedule.AddToSchedule("Zones", time);
                             return;
                         }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours1).AddMinutes(minutes1);
-                            EventSchedule.AddToSchedule("Zones", time);
-                        }
                     }
+                    string[] timeSplit2 = times[0].Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                    EventSchedule.AddToSchedule("Zones", time);
+                    return;
                 }
                 else if (Reminder_Delay.Contains(":"))
                 {
@@ -707,6 +709,7 @@ namespace ServerTools
                 File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<Zones>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");

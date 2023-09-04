@@ -1,5 +1,15 @@
 ﻿CHANGELOG
 
+21.1.2
+Built using Alpha 21 stable assets
+Functioning with Alpha 21 stable. Untested with other versions
+
+-Added declaration entry to xml files
+-Fixed POI_Protection not working as intended
+-Fixed /shop buy chat command not working as intended
+-Fixed High_Ping_Kicker chat response
+-Fixed internal event scheduler utilizing multiple 24h entries
+
 21.1.1
 Built using Alpha 21 stable assets
 Functioning with Alpha 21 stable. Untested with other versions

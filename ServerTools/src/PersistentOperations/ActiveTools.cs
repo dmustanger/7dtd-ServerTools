@@ -301,19 +301,6 @@ namespace ServerTools
                 Dict.Remove("Admin list");
                 Log.Out("[SERVERTOOLS] Admin list disabled");
             }
-            if (AllocsMap.IsEnabled)
-            {
-                if (!Dict.Contains("Allocs map"))
-                {
-                    Dict.Add("Allocs map");
-                    Log.Out("[SERVERTOOLS] Allocs map enabled");
-                }
-            }
-            else if (Dict.Contains("Allocs map") && !_initiating)
-            {
-                Dict.Remove("Allocs map");
-                Log.Out("[SERVERTOOLS] Allocs map disabled");
-            }
             if (AnimalTracking.IsEnabled)
             {
                 if (!Dict.Contains("Animal tracking"))

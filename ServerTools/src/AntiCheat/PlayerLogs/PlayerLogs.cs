@@ -44,12 +44,13 @@ namespace ServerTools
                                 EventSchedule.AddToSchedule("PlayerLogs", time);
                                 return;
                             }
-                            else
-                            {
-                                time = DateTime.Today.AddDays(1).AddHours(hours1).AddMinutes(minutes1);
-                                EventSchedule.AddToSchedule("PlayerLogs", time);
-                            }
                         }
+                        string[] timeSplit2 = times[0].Split(':');
+                        int.TryParse(timeSplit2[0], out int hours2);
+                        int.TryParse(timeSplit2[1], out int minutes2);
+                        time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                        EventSchedule.AddToSchedule("PlayerLogs", time);
+                        return;
                     }
                     else if (Delay.Contains(":"))
                     {

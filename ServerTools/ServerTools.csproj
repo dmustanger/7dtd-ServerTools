@@ -96,7 +96,6 @@
     <Compile Include="src\PersistentOperations\ActiveTools.cs" />
     <Compile Include="src\PersistentOperations\ProcessDamage.cs" />
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
-    <Compile Include="src\Tools\AllocsMap\AllocsMap.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\AutoPartyInvite\AutoPartyInvite.cs" />
     <Compile Include="src\Tools\AutoRestart\AutoRestart.cs" />

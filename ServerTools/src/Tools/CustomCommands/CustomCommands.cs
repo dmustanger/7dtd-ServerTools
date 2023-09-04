@@ -267,7 +267,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.CustomCommandList: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in CustomCommands.CustomCommandList: {0}", e.Message);
             }
         }
 

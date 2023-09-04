@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class Config
     {
-        public const string Version = "21.1.1";
+        public const string Version = "21.1.2";
         public static bool FirstLoad = true, UpdateWebAPI = false;
         public static string IP = "";
         public static int Port;
@@ -100,32 +100,6 @@ namespace ServerTools
                                         {
                                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_List entry in ServerToolsConfig.xml because of invalid (non-numeric) value for 'Moderator_Level' attribute: {0}", line.OuterXml));
                                             continue;
-                                        }
-                                        break;
-                                    case "Allocs_Map":
-                                        if (!line.HasAttribute("Enable"))
-                                        {
-                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Allocs_Map entry in ServerToolsConfig.xml because of missing 'Enable' attribute: {0}", line.OuterXml));
-                                            continue;
-                                        }
-                                        if (!bool.TryParse(line.GetAttribute("Enable"), out AllocsMap.IsEnabled))
-                                        {
-                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Allocs_Map entry in ServerToolsConfig.xml because of invalid (True/False) value for 'Enable' attribute: {0}", line.OuterXml));
-                                            continue;
-                                        }
-                                        if (!line.HasAttribute("Link"))
-                                        {
-                                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Allocs_Map entry in ServerToolsConfig.xml because of missing 'Link' attribute: {0}", line.OuterXml));
-                                            continue;
-                                        }
-                                        if (line.HasAttribute("Link"))
-                                        {
-                                            string link = line.GetAttribute("Link");
-                                            if (AllocsMap.Link != link)
-                                            {
-                                                AllocsMap.Link = link;
-                                                AllocsMap.SetLink(link);
-                                            }
                                         }
                                         break;
                                     case "Animal_Tracking":
@@ -4673,6 +4647,7 @@ namespace ServerTools
             FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(ConfigFilePath, false, Encoding.UTF8))
             {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                 sw.WriteLine("    <AntiCheat>");
@@ -4932,12 +4907,12 @@ namespace ServerTools
                         }
                     }
                     xml.Save(ConfigFilePath);
-                    Log.Out(string.Format("[SERVERTOOLS] Completed updating ServerToolsConfig.xml"));
+                    Log.Out("[SERVERTOOLS] Completed updating ServerToolsConfig.xml");
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Config.UpgradeXml: {0}", e.Message));
+                Log.Out("[SERVERTOOLS] Error in Config.UpgradeXml: {0}", e.Message);
             }
             FileWatcher.EnableRaisingEvents = true;
             LoadXml();

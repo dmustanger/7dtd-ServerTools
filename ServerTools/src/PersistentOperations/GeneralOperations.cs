@@ -515,7 +515,7 @@ namespace ServerTools
                         {
                             ChunkReset.IsResetChunk(cInfo, player);
                         }
-                        if (ProtectedZones.IsEnabled && ProtectedZones.ProtectedList.Count > 0)
+                        if (ProtectedZones.IsEnabled)
                         {
                             ProtectedZones.InsideProtectedZone(cInfo, player);
                         }

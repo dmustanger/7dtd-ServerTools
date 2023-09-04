@@ -27,11 +27,6 @@ namespace ServerTools
                 {
                     return;
                 }
-                ItemStack stack = cInfo.latestPlayerData.inventory[cInfo.latestPlayerData.selectedInventorySlot];
-                if (stack == null || !stack.IsEmpty())
-                {
-                    return;
-                }
                 World world = __instance.World;
                 BlockChangeInfo newBlockInfo;
                 BlockValue oldBlockValue, newBlockValue;
@@ -69,7 +64,7 @@ namespace ServerTools
                                 }
                             }
                             if (BlockPickup.IsEnabled && BlockPickup.PickupEnabled.Contains(player.entityId) &&
-                                stack.IsEmpty() && oldBlock.Damage <= 10)
+                                cInfo.latestPlayerData.inventory[cInfo.latestPlayerData.selectedInventorySlot].IsEmpty() && oldBlock.Damage <= 10)
                             {
                                 if (GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) <= BlockPickup.Admin_Level ||
                                 GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) <= BlockPickup.Admin_Level)
@@ -122,10 +117,13 @@ namespace ServerTools
                                 }
                             }
                             if (InfiniteAmmo.IsEnabled && GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.PlatformId) > InfiniteAmmo.Admin_Level &&
-                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > InfiniteAmmo.Admin_Level && !stack.IsEmpty() &&
-                                stack.itemValue.ItemClass.IsGun())
+                                GameManager.Instance.adminTools.Users.GetUserPermissionLevel(cInfo.CrossplatformId) > InfiniteAmmo.Admin_Level)
                             {
-                                InfiniteAmmo.Exec(cInfo, cInfo.latestPlayerData.selectedInventorySlot, stack.itemValue);
+                                ItemStack heldItem = cInfo.latestPlayerData.inventory[cInfo.latestPlayerData.selectedInventorySlot];
+                                if (!heldItem.IsEmpty() && heldItem.itemValue.ItemClass.IsGun())
+                                {
+                                    InfiniteAmmo.Exec(cInfo, cInfo.latestPlayerData.selectedInventorySlot, heldItem.itemValue);
+                                }
                             }
                             if (DamageDetector.IsEnabled)
                             {
@@ -281,7 +279,7 @@ namespace ServerTools
                                                     {
                                                         ThreadManager.StartCoroutine(SetBlock(newBlockInfo.pos, oldBlockValue));
                                                     }, null);
-                                                    TimePenalty(player, cInfo, stack.IsEmpty() ? ItemValue.None : stack.itemValue);
+                                                    TimePenalty(player, cInfo, cInfo.latestPlayerData.inventory[cInfo.latestPlayerData.selectedInventorySlot].IsEmpty() ? ItemValue.None : cInfo.latestPlayerData.inventory[cInfo.latestPlayerData.selectedInventorySlot].itemValue);
                                                 }
                                             }
                                             DamageDetector.DamagedBlockId.Remove(newBlockInfo.pos);

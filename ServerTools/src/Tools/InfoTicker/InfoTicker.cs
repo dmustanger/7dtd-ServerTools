@@ -121,6 +121,7 @@ namespace ServerTools
                 FileWatcher.EnableRaisingEvents = false;
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
@@ -183,12 +184,13 @@ namespace ServerTools
                             EventSchedule.AddToSchedule("InfoTicker", time);
                             return;
                         }
-                        else
-                        {
-                            time = DateTime.Today.AddDays(1).AddHours(hours1).AddMinutes(minutes1);
-                            EventSchedule.AddToSchedule("InfoTicker", time);
-                        }
                     }
+                    string[] timeSplit2 = times[0].Split(':');
+                    int.TryParse(timeSplit2[0], out int hours2);
+                    int.TryParse(timeSplit2[1], out int minutes2);
+                    time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
+                    EventSchedule.AddToSchedule("InfoTicker", time);
+                    return;
                 }
                 else if (Delay.Contains(":"))
                 {
@@ -205,6 +207,7 @@ namespace ServerTools
                         time = DateTime.Today.AddDays(1).AddHours(hours2).AddMinutes(minutes2);
                         EventSchedule.AddToSchedule("InfoTicker", time);
                     }
+                    return;
                 }
                 else
                 {
@@ -218,6 +221,7 @@ namespace ServerTools
                         Log.Out("[SERVERTOOLS] Invalid Info_Ticker Delay detected. Use a single integer, 24h time or multiple 24h time entries");
                         Log.Out("[SERVERTOOLS] Example: 120 or 03:00 or 03:00, 06:00, 09:00");
                     }
+                    return;
                 }
             }
         }
@@ -295,6 +299,7 @@ namespace ServerTools
                 File.Delete(FilePath);
                 using (StreamWriter sw = new StreamWriter(FilePath, false, Encoding.UTF8))
                 {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     sw.WriteLine("<InfoTicker>");
                     sw.WriteLine("    <!-- <Version=\"{0}\" /> -->", Config.Version);
                     sw.WriteLine("    <!-- Do not forget to remove these omission tags/arrows on your own entries -->");
