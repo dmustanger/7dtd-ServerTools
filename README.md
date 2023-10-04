@@ -1,29 +1,19 @@
 # 7dtd-ServerTools
 Server tools for 7 days to die dedicated servers<br>
 <br>
+<br>
+*** Project has been moved from Github due to new restrictions and security concerns ***
+You can find all future development at https://bitbucket.org/obsessive-coder/sevendaystodie-servertools/src/core/
+<br>
+<br>
+
 Donations to the project can be made here. Donors and their information is private<br>
 https://www.paypal.me/ObsessiveCoder <br>
 <br>
 # Installation
 <br>
-Go to the releases tab and check for the latest ServerTools files for download. https://github.com/dmustanger/7dtd-ServerTools/releases <br>
-<br>
-*Optionally you can find Country ban and Proxy ban tools at the links provided below. They are modules that work along side ServerTools and get installed the same as any other mod for your server. They both require ServerTools to function. <br>
-https://github.com/ObsComp/ServerTools-CountryBan/releases <br>
-https://github.com/ObsComp/ServerTools-ProxyBan/releases <br>
-<br>
-They have been separated to reduce the size of ServerTools since not all servers need it. It also allows us to update the database for the IP lists of countries and proxies without needing to update ServerTools.*<br>
-<br>
-Download and extract the files.<br>
-<br>
-Copy the Mods folder from the latest release to the user data directory or to the root directory of your server if you prefer.<br>
-It is highly recommended that you use the user data folder. The root folder can be used but the developers will eventually drop support for mods located there.<br>
-<br>
-Start the server.<br>
-<br>
-The mod will auto create a new folder named ServerTools. Inside this folder is the ServerToolsConfig.xml that controls most of mod.<br>
-Enable each part of the mod you want via ServerToolsConfig.xml<br>
-Once a module/tool is enabled, if it has an xml it will be generated and placed in the same ServerTools folder.<br>
+Setup instructions have been provided at the new link
+The details and information provided on Github were last updated Oct 04, 2023. All future details, patches and files can be found at the provided link. If the link is broken or changed, you can find this repository hosted on BitBucket by searching for it
 <br>
 
 # AntiCheat
