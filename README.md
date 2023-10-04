@@ -2,8 +2,8 @@
 Server tools for 7 days to die dedicated servers<br>
 <br>
 <br>
-*** Project has been moved from Github due to new restrictions and security concerns ***
-You can find all future development at https://bitbucket.org/obsessive-coder/sevendaystodie-servertools/src/core/
+*** Project has been moved from Github due to new restrictions and security concerns ***<br>
+You can find all future development at https://bitbucket.org/obsessive-coder/sevendaystodie-servertools/src/core/<br>
 <br>
 <br>
 
