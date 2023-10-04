@@ -7,7 +7,7 @@ You can find all future development at https://bitbucket.org/obsessive-coder/sev
 <br>
 <br>
 
-Donations to the project can be made here. Donors and their information is private<br>
+Donations to the project can be made at the link below. Donor names and their information will be kept private. All records are stored on the PayPal service and will not be disclosed nor distributed in other manner<br>
 https://www.paypal.me/ObsessiveCoder <br>
 <br>
 # Installation
