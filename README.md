@@ -7,15 +7,15 @@ You can find all future development at https://bitbucket.org/obsessive-coder/sev
 <br>
 <br>
 
-Donations to the project can be made at the link below.<br>
-Donor names and their information will be kept private.<br>
+Donations to the project can be made at the link below<br>
+Donor names and their information will be kept private<br>
 All records are stored on the PayPal service and will not be disclosed nor distributed in any manner<br>
 https://www.paypal.me/ObsessiveCoder <br>
 <br>
 # Installation
 <br>
-Setup instructions have been provided at the new link
-The details and information provided on Github were last updated Oct 04, 2023. All future details, patches and files can be found at the provided link. If the link is broken or changed, you can find this repository hosted on BitBucket by searching for it
+Setup instructions have been provided at the new link<br>
+The details and information provided on Github were last updated Oct 04, 2023. All future details, patches and files can be found at the provided link. If the link is broken or changed, you can find this repository hosted on BitBucket by searching for it<br>
 <br>
 
 # AntiCheat
